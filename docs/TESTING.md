@@ -86,6 +86,12 @@ For weather testing:
 7. Forget the location and confirm widgets disappear, settings clear, and no
    further scheduled forecast request occurs.
 
+For standalone wallpaper testing, open Wallpaper colors, choose Manual, use the
+Browse button to select a PNG, JPEG, or WebP, and Apply. Hyprpaper must update all
+untargeted monitors, the chosen absolute path must persist, and Ayame plus Kitty
+must receive the generated palette. Restart the Hyprland session and confirm the
+wallpaper is restored without ML4W being installed.
+
 For clock testing:
 
 1. Click the clock and confirm the centered dashboard opens below the bar.
@@ -370,3 +376,15 @@ Confirm installation runs Hyprland's offline configuration validator. A Hyprland
 login must start Ayame after a short session-ready delay and write failures to
 `~/.local/state/ayame-shell/startup.log`; KDE must not start Ayame or create that
 log.
+
+## Desktop replacement test
+
+Run `./install.sh --replace-desktop` only in an isolated home or disposable VM.
+The preview must identify existing Hyprland and Quickshell directories or
+symlinks, report related desktop data that will remain untouched, and name the
+timestamped backup before confirmation. After accepting, the old active roots
+must exist under `~/.local/state/ayame-shell/migrations/.../original-config`, a
+standalone `hyprland.lua` must validate, and the live session must remain running.
+After logout, only Ayame may start. Run the printed `restore.sh`, confirm it again,
+and verify the exact old directories or symlinks return while the displaced Ayame
+configuration remains inside the migration backup for inspection.

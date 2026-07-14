@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Dialogs
 import Quickshell
 import "../services"
 import "../settings"
@@ -18,6 +19,7 @@ PopupWindow {
     function generatePalette() {
         DynamicPalette.useManual();
         ShellConfig.dynamicColorWallpaper = pathInput.text.trim();
+        WallpaperService.apply(ShellConfig.dynamicColorWallpaper);
         DynamicPalette.generate(ShellConfig.dynamicColorWallpaper);
     }
 
@@ -135,6 +137,30 @@ PopupWindow {
                 }
             }
 
+            Rectangle {
+                Layout.alignment: Qt.AlignRight
+                implicitWidth: 92
+                implicitHeight: 30
+                visible: ShellConfig.dynamicColorMode === "manual"
+                radius: Theme.radiusPill
+                color: browsePointer.containsMouse ? Theme.primary : Theme.primaryContainer
+                StyledText {
+                    anchors.centerIn: parent
+                    text: "BROWSE…"
+                    color: browsePointer.containsMouse
+                        ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                    font.pixelSize: 9
+                    font.weight: Theme.fontWeightTitle
+                }
+                MouseArea {
+                    id: browsePointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: wallpaperDialog.open()
+                }
+            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: Theme.space8
@@ -225,7 +251,7 @@ PopupWindow {
                     visible: ShellConfig.dynamicColorMode === "manual"
                     StyledText {
                         anchors.centerIn: parent
-                        text: "GENERATE"
+                        text: "APPLY"
                         color: generatePointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 9
@@ -241,6 +267,16 @@ PopupWindow {
                     }
                 }
             }
+        }
+    }
+
+    FileDialog {
+        id: wallpaperDialog
+        title: "Choose an Ayame wallpaper"
+        nameFilters: ["Wallpaper images (*.png *.jpg *.jpeg *.webp)", "All files (*)"]
+        onAccepted: {
+            pathInput.text = decodeURIComponent(selectedFile.toString().replace(/^file:\/\//, ""));
+            root.generatePalette();
         }
     }
 

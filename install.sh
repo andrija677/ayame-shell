@@ -4,10 +4,12 @@ set -euo pipefail
 prefix="${XDG_DATA_HOME:-$HOME/.local/share}/ayame-shell"
 assume_yes=false
 install_dependencies=true
+replace_desktop=false
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
         --no-install-deps) install_dependencies=false ;;
+        --replace-desktop) replace_desktop=true ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
     esac
@@ -22,12 +24,14 @@ kitty_dir="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
 kitty_main="$kitty_dir/kitty.conf"
 kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
+migration_backup=""
 
-required=(qs hyprctl hyprlock grim slurp wl-copy kitty)
+required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
     [hyprlock]=hyprlock
+    [hyprpaper]=hyprpaper
     [grim]=grim
     [slurp]=slurp
     [wl-copy]=wl-clipboard
@@ -99,6 +103,70 @@ if [[ "$assume_yes" != true ]]; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
+if [[ "$replace_desktop" == true ]]; then
+    config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    migration_backup="${XDG_STATE_HOME:-$HOME/.local/state}/ayame-shell/migrations/$timestamp"
+    replace_paths=("$config_home/hypr" "$config_home/quickshell")
+    related_paths=(waybar swaync hypridle hyprlock ml4w uwsm)
+
+    echo
+    echo "Desktop replacement preview"
+    echo "  Backup: $migration_backup"
+    for path in "${replace_paths[@]}"; do
+        if [[ -L "$path" ]]; then
+            echo "  Detach symlink: $path -> $(readlink -- "$path")"
+        elif [[ -e "$path" ]]; then
+            echo "  Detach config:  $path"
+        else
+            echo "  Not present:    $path"
+        fi
+    done
+    for name in "${related_paths[@]}"; do
+        [[ -e "$config_home/$name" || -L "$config_home/$name" ]] \
+            && echo "  Preserve related data: $config_home/$name"
+    done
+    echo "The current session will not be stopped; Ayame takes over after logout."
+    if [[ "$assume_yes" == true ]]; then
+        replace_answer=y
+    else
+        read -r -p "Back up the active desktop configs and replace them with Ayame? [y/N] " replace_answer
+    fi
+    [[ "$replace_answer" =~ ^[Yy]$ ]] || exit 0
+
+    mkdir -p "$migration_backup/original-config"
+    for path in "${replace_paths[@]}"; do
+        if [[ -e "$path" || -L "$path" ]]; then
+            mv -- "$path" "$migration_backup/original-config/$(basename -- "$path")"
+        fi
+    done
+
+    cat > "$migration_backup/restore.sh" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+backup_dir="\$(cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)"
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+stamp="\$(date +%Y%m%d-%H%M%S)"
+echo "This removes the current Ayame installation and restores the previous Hyprland and Quickshell configs."
+read -r -p "Continue with rollback? [y/N] " answer
+[[ "\$answer" =~ ^[Yy]$ ]] || exit 0
+if [[ -x "$prefix/uninstall.sh" ]]; then
+    "$prefix/uninstall.sh" --yes --prefix="$prefix"
+fi
+for name in hypr quickshell; do
+    current="\$config_home/\$name"
+    original="\$backup_dir/original-config/\$name"
+    if [[ -e "\$current" || -L "\$current" ]]; then
+        mv -- "\$current" "\$backup_dir/ayame-config-\$name-\$stamp"
+    fi
+    if [[ -e "\$original" || -L "\$original" ]]; then
+        mv -- "\$original" "\$current"
+    fi
+done
+echo "Previous desktop configuration restored. Log out and back in."
+EOF
+    chmod +x "$migration_backup/restore.sh"
+fi
+
 mkdir -p "$(dirname -- "$prefix")" "$bin_dir" "$hypr_dir" "$kitty_dir"
 if [[ -e "$prefix" ]]; then
     backup="${prefix}.backup-${timestamp}"
@@ -152,6 +220,7 @@ local ayame = "$bin_dir/ayame-shell"
 local screenshot = "$prefix/scripts/ayame-screenshot.sh"
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("hyprpaper")
     hl.exec_cmd(ayame .. " --autostart")
 end)
 
@@ -215,3 +284,6 @@ echo "Ayame Shell is installed."
 echo "Run now:  $bin_dir/ayame-shell"
 echo "Uninstall: $prefix/uninstall.sh --prefix=$prefix"
 echo "Log out and back in after enabling the Hyprland fragment."
+if [[ -n "$migration_backup" ]]; then
+    echo "Rollback:   $migration_backup/restore.sh"
+fi

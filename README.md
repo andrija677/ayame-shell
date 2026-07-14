@@ -63,4 +63,16 @@ replacing an existing Kitty configuration.
 Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
 source line; pre-install backups are retained.
 
+To deliberately replace an existing Hyprland and Quickshell desktop, use:
+
+```bash
+./install.sh --replace-desktop
+```
+
+This previews detected configs, moves the active `hypr` and `quickshell` roots
+(including symlinks) into one timestamped state backup, installs a standalone
+Ayame profile, and prints the path to a generated rollback script. Supporting
+ML4W, Waybar, SwayNC, Hyprlock, and UWSM data is detected but left untouched.
+The running session is never terminated by the installer; switch after logout.
+
 See [docs/TESTING.md](docs/TESTING.md) for troubleshooting and rollback steps.

@@ -81,9 +81,10 @@ The compact top-bar temperature also owns a screen-local forecast popup. It
 reuses the dashboard's `WeatherCard`, so current conditions, apparent temperature,
 wind, forecast days, cache state, and units stay consistent between both surfaces.
 
-Dynamic colors follow the current wallpaper automatically when the session
-publishes it through ML4W's `current_wallpaper` cache file. `DynamicPalette`
-watches that file, debounces changes, passes the new local image path to Matugen,
+Ayame can choose and persist its own wallpaper through Hyprpaper, restore it at
+login, and pass the same local image to Matugen. Dynamic colors can also follow
+an existing session that publishes ML4W's `current_wallpaper` cache file.
+`DynamicPalette` watches that file, debounces changes, passes the image to Matugen,
 and atomically swaps palettes after successful generation. A manual path remains
 available as an override. Only generated color data is cached in Quickshell's
 cache directory; the image is never uploaded or copied. Ayame Violet is a
@@ -93,6 +94,13 @@ The optional Kitty fragment consumes the same semantic palette through a small
 generated color include. Palette, light/dark, and Ayame Violet changes rewrite
 that include atomically and signal running Kitty windows to reload; layout and
 key mappings remain in a separate user-reviewable fragment.
+
+Desktop replacement is deliberately separate from ordinary installation. The
+explicit migration mode detaches only the active Hyprland and Quickshell config
+roots into a timestamped state backup, creates a standalone Ayame Lua profile,
+and generates a rollback script that first removes Ayame-owned integration and
+then restores the exact original directories or symlinks. Related desktop data
+is reported but not deleted, and the live compositor is never stopped mid-run.
 
 Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal
