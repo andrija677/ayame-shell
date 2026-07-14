@@ -97,6 +97,8 @@ QtObject {
     readonly property int motionSlow: ShellConfig.animationsEnabled ? 400 : 0
     readonly property int motionUnmapGrace: ShellConfig.animationsEnabled ? 34 : 0
     readonly property int motionMapGrace: ShellConfig.animationsEnabled ? 17 : 0
-    readonly property int easeEnter: Easing.OutQuint
-    readonly property int easeExit: Easing.InQuart
+    // Cubic curves keep large surfaces responsive without the abrupt burst
+    // and long tail produced by the previous quint/quart pairing.
+    readonly property int easeEnter: Easing.OutCubic
+    readonly property int easeExit: Easing.InCubic
 }
