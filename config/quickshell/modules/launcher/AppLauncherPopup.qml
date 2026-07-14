@@ -61,6 +61,11 @@ PopupWindow {
     grabFocus: true
     visible: false
 
+    Shortcut {
+        sequence: "Escape"
+        onActivated: root.closePanel()
+    }
+
     onVisibleChanged: {
         if (!visible) {
             closeTimer.stop();
@@ -156,7 +161,10 @@ PopupWindow {
                     selectByMouse: true
                     clip: true
                     Keys.onEscapePressed: root.closePanel()
-                    Keys.onDownPressed: appList.forceActiveFocus()
+                    Keys.onDownPressed: {
+                        appList.currentIndex = 0;
+                        appList.forceActiveFocus();
+                    }
                     onAccepted: root.launch(root.filteredApps[0])
 
                     StyledText {
@@ -179,6 +187,22 @@ PopupWindow {
                 currentIndex: count > 0 ? 0 : -1
                 keyNavigationWraps: true
                 Keys.onEscapePressed: root.closePanel()
+                Keys.onUpPressed: event => {
+                    if (currentIndex === 0) {
+                        search.forceActiveFocus();
+                        event.accepted = true;
+                    } else {
+                        event.accepted = false;
+                    }
+                }
+                Keys.onPressed: event => {
+                    if (event.text.length > 0 && event.modifiers === Qt.NoModifier) {
+                        search.text += event.text;
+                        search.cursorPosition = search.text.length;
+                        search.forceActiveFocus();
+                        event.accepted = true;
+                    }
+                }
                 Keys.onReturnPressed: root.launch(root.filteredApps[currentIndex])
                 Keys.onEnterPressed: root.launch(root.filteredApps[currentIndex])
 
