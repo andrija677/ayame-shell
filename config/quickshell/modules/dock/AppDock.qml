@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import "../../components"
 import "../../settings"
 import "../../theme"
@@ -16,6 +17,7 @@ PanelWindow {
     exclusiveZone: 0
     visible: ShellConfig.dockEnabled
     color: "transparent"
+    WlrLayershell.namespace: "ayame-shell-dock"
 
     Surface {
         id: dockSurface

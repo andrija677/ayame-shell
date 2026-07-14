@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import "../../components"
+import "../../settings"
 import "../../theme"
 
 PopupWindow {

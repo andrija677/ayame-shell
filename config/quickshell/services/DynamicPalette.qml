@@ -28,6 +28,11 @@ QtObject {
         return entry?.dark?.color ?? entry?.default?.color ?? fallback;
     }
 
+    function modeColor(name, mode, fallback) {
+        const entry = colors?.[name];
+        return entry?.[mode]?.color ?? entry?.default?.color ?? fallback;
+    }
+
     function generate(requestedPath) {
         const path = (requestedPath ?? ShellConfig.dynamicColorWallpaper).trim();
         if (path.length === 0 || generator.running) {

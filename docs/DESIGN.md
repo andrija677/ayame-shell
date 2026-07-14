@@ -35,6 +35,15 @@ palette visible until the replacement is ready, then every semantic surface and
 accent updates together. Manual mode exists for users whose wallpaper service
 does not expose its current image or who intentionally want a different palette.
 
+Both dark and light appearances are full semantic palettes rather than inverted
+surface colors. Optional wallpaper tint gives large shell surfaces more of the
+source hue, while optional blur lowers their opacity and lets Hyprland soften
+the wallpaper beneath them. Each effect is independently reversible.
+
+Quick Settings answers “what changes this session?”; Ayame Settings answers
+“how should my shell look and behave?”. Keeping those purposes separate prevents
+device controls from being buried among long-lived personalization choices.
+
 ## Typography
 
 Ayame uses Fira Sans for interface text, with Medium body copy, SemiBold labels,

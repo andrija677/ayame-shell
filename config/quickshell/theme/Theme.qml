@@ -6,38 +6,61 @@ import "../services"
 
 QtObject {
     readonly property bool compact: ShellConfig.densityMode === "compact"
+    readonly property bool lightMode: ShellConfig.colorScheme === "light"
+
+    function palette(name, darkFallback, lightFallback) {
+        const fallback = lightMode ? lightFallback : darkFallback;
+        return DynamicPalette.active
+            ? DynamicPalette.modeColor(name, lightMode ? "light" : "dark", fallback)
+            : fallback;
+    }
+
+    function blend(base, tint, amount) {
+        return Qt.rgba(
+            base.r * (1 - amount) + tint.r * amount,
+            base.g * (1 - amount) + tint.g * amount,
+            base.b * (1 - amount) + tint.b * amount,
+            base.a
+        );
+    }
+
+    function translucent(color, alpha) {
+        return Qt.rgba(color.r, color.g, color.b, alpha);
+    }
 
     // Semantic colors: components describe a color's purpose, not its shade.
     // A generated wallpaper palette can replace these values later.
-    readonly property color background: DynamicPalette.active
-        ? DynamicPalette.darkColor("background", "#121116") : "#FF121116"
-    readonly property color surface: DynamicPalette.active
-        ? DynamicPalette.darkColor("surface", "#1C1B22") : "#F21C1B22"
-    readonly property color surfaceContainer: DynamicPalette.active
-        ? DynamicPalette.darkColor("surface_container", "#25232C") : "#FF25232C"
-    readonly property color surfaceContainerHigh: DynamicPalette.active
-        ? DynamicPalette.darkColor("surface_container_high", "#302D39") : "#FF302D39"
-    readonly property color foregroundSurface: DynamicPalette.active
-        ? DynamicPalette.darkColor("on_surface", "#F0ECF4") : "#FFF0ECF4"
-    readonly property color foregroundSurfaceVariant: DynamicPalette.active
-        ? DynamicPalette.darkColor("on_surface_variant", "#C9C3CE") : "#FFC9C3CE"
-    readonly property color outline: DynamicPalette.active
-        ? DynamicPalette.darkColor("outline", "#958E9B") : "#FF958E9B"
-    readonly property color outlineVariant: DynamicPalette.active
-        ? DynamicPalette.darkColor("outline_variant", "#49454F") : "#FF49454F"
+    readonly property color primary: palette("primary", "#D0BCFF", "#68548E")
+    readonly property color foregroundPrimary: palette("on_primary", "#381E72", "#FFFFFF")
+    readonly property color primaryContainer: palette("primary_container", "#4F378B", "#EBDDFF")
+    readonly property color foregroundPrimaryContainer: palette("on_primary_container", "#EADDFF", "#230F46")
 
-    readonly property color primary: DynamicPalette.active
-        ? DynamicPalette.darkColor("primary", "#D0BCFF") : "#FFD0BCFF"
-    readonly property color foregroundPrimary: DynamicPalette.active
-        ? DynamicPalette.darkColor("on_primary", "#381E72") : "#FF381E72"
-    readonly property color primaryContainer: DynamicPalette.active
-        ? DynamicPalette.darkColor("primary_container", "#4F378B") : "#FF4F378B"
-    readonly property color foregroundPrimaryContainer: DynamicPalette.active
-        ? DynamicPalette.darkColor("on_primary_container", "#EADDFF") : "#FFEADDFF"
+    readonly property color background: palette("background", "#121116", "#FEF7FF")
+    readonly property color baseSurface: palette("surface", "#1C1B22", "#FEF7FF")
+    readonly property color baseSurfaceContainer: palette("surface_container", "#25232C", "#F2ECF4")
+    readonly property color baseSurfaceContainerHigh: palette("surface_container_high", "#302D39", "#EDE6EE")
+    readonly property real surfaceTintAmount: DynamicPalette.active
+        && ShellConfig.wallpaperTintEnabled ? (lightMode ? 0.08 : 0.14) : 0
+    readonly property color surface: translucent(
+        blend(baseSurface, primary, surfaceTintAmount),
+        ShellConfig.blurEnabled ? (lightMode ? 0.78 : 0.72) : 0.95
+    )
+    readonly property color surfaceContainer: translucent(
+        blend(baseSurfaceContainer, primary, surfaceTintAmount),
+        ShellConfig.blurEnabled ? (lightMode ? 0.72 : 0.68) : 1
+    )
+    readonly property color surfaceContainerHigh: translucent(
+        blend(baseSurfaceContainerHigh, primary, surfaceTintAmount),
+        ShellConfig.blurEnabled ? (lightMode ? 0.78 : 0.74) : 1
+    )
+    readonly property color foregroundSurface: palette("on_surface", "#F0ECF4", "#1D1B20")
+    readonly property color foregroundSurfaceVariant: palette("on_surface_variant", "#C9C3CE", "#49454E")
+    readonly property color outline: palette("outline", "#958E9B", "#7A757F")
+    readonly property color outlineVariant: palette("outline_variant", "#49454F", "#CBC4CF")
 
-    readonly property color success: "#FFA6D6A8"
-    readonly property color warning: "#FFFFDDB3"
-    readonly property color error: "#FFFFB4AB"
+    readonly property color success: lightMode ? "#386A3A" : "#A6D6A8"
+    readonly property color warning: lightMode ? "#765A00" : "#FFDDB3"
+    readonly property color error: palette("error", "#FFB4AB", "#BA1A1A")
 
     readonly property int barHeight: compact ? 38 : 42
     readonly property int dockHeight: compact ? 46 : 50

@@ -5,10 +5,12 @@ import Quickshell.Bluetooth
 import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
+import Quickshell.Wayland
 import "../../components"
 import "../../settings"
 import "../../services"
 import "../../theme"
+import "../settings"
 
 PopupWindow {
     id: root
@@ -39,6 +41,7 @@ PopupWindow {
         return options;
     }
     property bool panelOpen: false
+    property bool keepAwake: false
 
     function toggle() {
         if (panelOpen)
@@ -80,6 +83,11 @@ PopupWindow {
     }
 
     PwObjectTracker { objects: root.sink ? [root.sink] : [] }
+
+    IdleInhibitor {
+        window: root.hostWindow
+        enabled: root.keepAwake
+    }
 
     Timer {
         id: closeTimer
@@ -234,6 +242,25 @@ PopupWindow {
 
             QuickToggleTile {
                 Layout.fillWidth: true
+                title: "Networking"
+                subtitle: SessionService.networkingBusy ? "Switching…"
+                    : checked ? "Connections enabled" : "All connections disabled"
+                checked: SessionService.networkingEnabled
+                interactive: !SessionService.networkingBusy
+                onActivated: SessionService.toggleNetworking()
+            }
+
+            QuickToggleTile {
+                Layout.fillWidth: true
+                visible: Networking.wifiHardwareEnabled
+                title: "Wi-Fi"
+                subtitle: checked ? "Wireless enabled" : "Wireless disabled"
+                checked: Networking.wifiEnabled
+                onActivated: Networking.wifiEnabled = !checked
+            }
+
+            QuickToggleTile {
+                Layout.fillWidth: true
                 visible: root.bluetoothAdapter !== null
                 title: "Bluetooth"
                 subtitle: !root.bluetoothAdapter?.enabled ? "Off"
@@ -244,6 +271,29 @@ PopupWindow {
                 interactive: root.bluetoothAdapter !== null
                 onActivated: root.bluetoothAdapter.enabled
                     = !root.bluetoothAdapter.enabled
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Keep awake"
+                    subtitle: checked ? "Screen stays on" : "Normal idle rules"
+                    checked: root.keepAwake
+                    onActivated: root.keepAwake = !checked
+                }
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Gaming mode"
+                    subtitle: SessionService.gameModeBusy ? "Switching…"
+                        : checked ? "Performance session" : "Normal desktop"
+                    checked: SessionService.gameMode
+                    interactive: !SessionService.gameModeBusy
+                    onActivated: SessionService.toggleGameMode()
+                }
             }
 
             Surface {
@@ -301,193 +351,6 @@ PopupWindow {
                 }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Theme.space8
-
-                QuickToggleTile {
-                    Layout.fillWidth: true
-                    title: "Window title"
-                    subtitle: checked ? "Visible in bar" : "Hidden from bar"
-                    checked: ShellConfig.activeWindowEnabled
-                    onActivated: ShellConfig.activeWindowEnabled = !checked
-                }
-
-                QuickToggleTile {
-                    Layout.fillWidth: true
-                    title: "Passive tray"
-                    subtitle: checked ? "Icons included" : "Active icons only"
-                    checked: ShellConfig.showPassiveTrayItems
-                    onActivated: ShellConfig.showPassiveTrayItems = !checked
-                }
-            }
-
-            QuickToggleTile {
-                Layout.fillWidth: true
-                title: "Dock"
-                subtitle: checked ? "Visible on desktop" : "Hidden"
-                checked: ShellConfig.dockEnabled
-                onActivated: ShellConfig.dockEnabled = !checked
-            }
-
-            QuickToggleTile {
-                Layout.fillWidth: true
-                title: "Animations"
-                subtitle: checked ? "Expressive motion" : "Reduced motion"
-                checked: ShellConfig.animationsEnabled
-                onActivated: ShellConfig.animationsEnabled = !checked
-            }
-
-            QuickToggleTile {
-                Layout.fillWidth: true
-                title: "Compact layout"
-                subtitle: checked ? "Tighter spacing" : "Comfortable spacing"
-                checked: ShellConfig.densityMode === "compact"
-                onActivated: ShellConfig.densityMode = checked ? "normal" : "compact"
-            }
-
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: 68
-                color: Theme.surfaceContainer
-
-                RowLayout {
-                    anchors { fill: parent; margins: Theme.space12 }
-                    spacing: Theme.space8
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: Theme.space2
-                        StyledText {
-                            text: "Wallpaper colors"
-                            font.weight: Theme.fontWeightLabel
-                        }
-                        StyledText {
-                            Layout.fillWidth: true
-                            text: DynamicPalette.active
-                                ? (ShellConfig.dynamicColorMode === "automatic"
-                                    ? "FOLLOWING WALLPAPER • " : "MANUAL • ")
-                                    + ShellConfig.dynamicColorStyle.toUpperCase()
-                                : "Ayame violet"
-                            color: Theme.foregroundSurfaceVariant
-                            font.pixelSize: Theme.fontSmall
-                            elide: Text.ElideRight
-                        }
-                    }
-                    Rectangle {
-                        implicitWidth: 66
-                        implicitHeight: 28
-                        radius: Theme.radiusPill
-                        color: palettePointer.containsMouse ? Theme.primary : Theme.primaryContainer
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: DynamicPalette.active ? "CHANGE" : "SET UP"
-                            color: palettePointer.containsMouse
-                                ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
-                            font.pixelSize: 9
-                            font.weight: Theme.fontWeightTitle
-                        }
-                        MouseArea {
-                            id: palettePointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: paletteSetup.open()
-                        }
-                    }
-                }
-            }
-
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: 72
-                color: Theme.surfaceContainer
-
-                RowLayout {
-                    anchors { fill: parent; margins: Theme.space12 }
-                    spacing: Theme.space8
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        StyledText {
-                            text: "Weather"
-                            font.weight: Theme.fontWeightLabel
-                        }
-                        StyledText {
-                            Layout.fillWidth: true
-                            text: WeatherService.configured
-                                ? ShellConfig.weatherLocationName : "No city configured"
-                            color: Theme.foregroundSurfaceVariant
-                            font.pixelSize: Theme.fontSmall
-                            elide: Text.ElideRight
-                        }
-                    }
-                    Rectangle {
-                        implicitWidth: 30
-                        implicitHeight: 28
-                        radius: Theme.radiusPill
-                        color: refreshPointer.containsMouse
-                            ? Theme.surfaceContainerHigh : "transparent"
-                        visible: WeatherService.configured
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: "↻"
-                            font.pixelSize: 16
-                        }
-                        MouseArea {
-                            id: refreshPointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: WeatherService.refresh()
-                        }
-                    }
-                    Rectangle {
-                        implicitWidth: 46
-                        implicitHeight: 28
-                        radius: Theme.radiusPill
-                        color: unitPointer.containsMouse
-                            ? Theme.surfaceContainerHigh : Theme.outlineVariant
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: ShellConfig.weatherTemperatureUnit === "celsius"
-                                ? "°C" : "°F"
-                            font.family: Theme.fontFamilyNumeric
-                        }
-                        MouseArea {
-                            id: unitPointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                ShellConfig.weatherTemperatureUnit
-                                    = ShellConfig.weatherTemperatureUnit === "celsius"
-                                        ? "fahrenheit" : "celsius";
-                                WeatherService.refresh();
-                            }
-                        }
-                    }
-                    Rectangle {
-                        implicitWidth: 66
-                        implicitHeight: 28
-                        radius: Theme.radiusPill
-                        color: weatherPointer.containsMouse
-                            ? Theme.primary : Theme.primaryContainer
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: WeatherService.configured ? "CHANGE" : "SET UP"
-                            font.pixelSize: 9
-                            font.weight: Theme.fontWeightTitle
-                        }
-                        MouseArea {
-                            id: weatherPointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: weatherSetup.open()
-                        }
-                    }
-                }
-            }
-
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 62
@@ -527,16 +390,37 @@ PopupWindow {
                     }
                 }
             }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 38
+                radius: Theme.radiusPill
+                color: settingsPointer.containsMouse
+                    ? Theme.primary : Theme.primaryContainer
+                StyledText {
+                    anchors.centerIn: parent
+                    text: "OPEN AYAME SETTINGS"
+                    color: settingsPointer.containsMouse
+                        ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                    font.pixelSize: 10
+                    font.weight: Theme.fontWeightTitle
+                }
+                MouseArea {
+                    id: settingsPointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.closePanel();
+                        settingsPanel.openPanel();
+                    }
+                }
+            }
         }
     }
 
-    WeatherSetupPopup {
-        id: weatherSetup
-        hostWindow: root.hostWindow
-    }
-
-    PaletteSetupPopup {
-        id: paletteSetup
+    SettingsPopup {
+        id: settingsPanel
         hostWindow: root.hostWindow
     }
 }

@@ -25,6 +25,9 @@ QtObject {
     property alias dynamicColorMode: values.dynamicColorMode
     property alias dynamicColorWallpaper: values.dynamicColorWallpaper
     property alias dynamicColorStyle: values.dynamicColorStyle
+    property alias colorScheme: values.colorScheme
+    property alias blurEnabled: values.blurEnabled
+    property alias wallpaperTintEnabled: values.wallpaperTintEnabled
     property alias workspaceCount: values.workspaceCount
     property alias weatherEnabled: values.weatherEnabled
     property alias weatherLocationName: values.weatherLocationName
@@ -55,6 +58,9 @@ QtObject {
         values.dynamicColorMode = "automatic";
         values.dynamicColorWallpaper = "";
         values.dynamicColorStyle = "tonal";
+        values.colorScheme = "dark";
+        values.blurEnabled = false;
+        values.wallpaperTintEnabled = true;
         values.workspaceCount = 5;
         values.weatherEnabled = false;
         values.weatherLocationName = "";
@@ -100,6 +106,9 @@ QtObject {
             property string dynamicColorMode: "automatic"
             property string dynamicColorWallpaper: ""
             property string dynamicColorStyle: "tonal"
+            property string colorScheme: "dark"
+            property bool blurEnabled: false
+            property bool wallpaperTintEnabled: true
             property int workspaceCount: 5
             property bool weatherEnabled: false
             property string weatherLocationName: ""

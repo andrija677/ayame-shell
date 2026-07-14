@@ -90,3 +90,23 @@ overlap.
 Quick Settings device tiles are capability-driven. Bluetooth is omitted when
 BlueZ exposes no adapter, connected counts come from its live device model, and
 the performance profile is offered only when UPower reports support for it.
+
+Persistent personalization lives in `SettingsPopup`, reached from Quick
+Settings but animated and owned as a separate surface. It controls color scheme,
+wallpaper palette mode, surface tint, compositor blur, motion, density, shell
+layout, tray policy, and weather. Quick Settings is reserved for immediate
+session state: audio, Wi-Fi, Bluetooth, power profile, idle inhibition, gaming
+mode, network state, and battery state.
+
+Light and dark modes consume the matching semantic branch of the current
+Matugen palette. Wallpaper tint blends the primary hue into surface roles while
+preserving Matugen foreground contrast. Blur uses stable `ayame-shell-*`
+layer-shell namespaces and applies or removes Hyprland layer rules at runtime;
+the QML surfaces adjust opacity in tandem. No live Hyprland configuration file
+is modified.
+
+`SessionService` observes ML4W's existing gaming-mode marker and delegates
+changes to its existing script. Keep Awake uses a Wayland idle inhibitor bound
+to the bar window. Wi-Fi uses Quickshell's writable NetworkManager rfkill
+property. Brightness controls are capability-driven and remain absent when
+`brightnessctl` exposes no display-class backlight.

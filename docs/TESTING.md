@@ -193,6 +193,24 @@ and confirm the current image is detected from ML4W's cache. Select Ayame Violet
 restart once more, and confirm automatic following remains disabled until the
 user explicitly selects it again.
 
+Open Quick Settings and then Ayame Settings. Switch between Dark and Light and
+confirm every foreground remains readable, including inactive pills and nested
+setup windows. Toggle Wallpaper tint and verify large surfaces become more or
+less influenced by the generated primary color without changing accents.
+
+Toggle Background blur and confirm the bar, dock, dashboard, and popups become
+translucent with Hyprland blur behind them. Disable it and verify surfaces return
+to near-opaque colors and the runtime layer rule is removed. Restart in both
+states to verify persistence. Ayame must not edit the user's Hyprland files.
+
+Confirm persistent layout, motion, palette, and weather controls no longer
+appear directly in Quick Settings. Its Networking master and Wi-Fi tiles must
+follow NetworkManager state; do not test them while connectivity is needed.
+Keep Awake must inhibit idle only while selected and reset when Ayame exits.
+Gaming Mode must reflect ML4W's marker, remain disabled while its script runs,
+and update after the script completes. Brightness must be omitted when no display
+backlight is available.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

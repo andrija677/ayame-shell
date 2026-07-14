@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
+import Quickshell.Wayland
 import "../../components"
 import "../../settings"
 import "../../theme"
@@ -24,6 +25,7 @@ PanelWindow {
     visible: ShellConfig.barEnabled
     color: "transparent"
     exclusiveZone: implicitHeight
+    WlrLayershell.namespace: "ayame-shell-bar"
 
     Surface {
         anchors {
