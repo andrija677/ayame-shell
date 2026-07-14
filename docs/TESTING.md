@@ -71,6 +71,20 @@ For dock testing:
 5. Confirm active and urgent indicators update, icons resolve where desktop
    entries exist, and hover motion does not clip.
 6. Move a window between monitors and confirm its item follows the window.
+7. Toggle Dock in Quick Settings, restart Ayame, and confirm visibility persists.
+
+For weather testing:
+
+1. Confirm no weather request or widget appears before a city is configured.
+2. Search a city, choose the correct region/country result, and confirm the bar
+   and dashboard populate.
+3. Confirm Celsius is the initial unit; toggle units and verify a fresh forecast.
+4. Restart Ayame and confirm the location, units, and cached forecast persist.
+5. Disconnect networking and confirm cached data remains with a stale/offline
+   indication rather than disappearing.
+6. Use manual refresh and confirm concurrent requests are prevented.
+7. Forget the location and confirm widgets disappear, settings clear, and no
+   further scheduled forecast request occurs.
 
 For clock testing:
 

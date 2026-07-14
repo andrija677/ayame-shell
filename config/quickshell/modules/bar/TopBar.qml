@@ -142,6 +142,10 @@ PanelWindow {
                             hostWindow: bar
                         }
 
+                        WeatherIndicator {
+                            visible: ShellConfig.weatherEnabled
+                        }
+
                         BatteryIndicator {
                             visible: ShellConfig.batteryEnabled && available
                         }

@@ -26,6 +26,12 @@ running Hyprland toplevels belonging to that monitor, resolves application icons
 through desktop entries, and uses native Wayland activation/minimize requests.
 It overlays windows without reserving a permanent bottom work area.
 
+Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
+the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecasts,
+and keeps the last response in Quickshell's cache directory for offline display.
+The top bar owns a compact reading while the dashboard presents five forecast
+days. Celsius is the default and no request occurs before setup.
+
 Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal
 layout or behavior. `ShellConfig` persists typed values atomically in

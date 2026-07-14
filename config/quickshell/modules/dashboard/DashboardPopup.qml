@@ -122,6 +122,7 @@ PopupWindow {
             }
 
             MediaCard { Layout.fillWidth: true }
+            WeatherCard { Layout.fillWidth: true }
             CalendarCard {
                 Layout.fillWidth: true
                 hostWindow: root.hostWindow

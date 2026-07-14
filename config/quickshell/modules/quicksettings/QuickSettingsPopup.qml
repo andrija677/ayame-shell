@@ -7,6 +7,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import "../../components"
 import "../../settings"
+import "../../services"
 import "../../theme"
 
 PopupWindow {
@@ -321,6 +322,105 @@ PopupWindow {
                 }
             }
 
+            QuickToggleTile {
+                Layout.fillWidth: true
+                title: "Dock"
+                subtitle: checked ? "Visible on desktop" : "Hidden"
+                checked: ShellConfig.dockEnabled
+                onActivated: ShellConfig.dockEnabled = !checked
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 72
+                color: Theme.surfaceContainer
+
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        StyledText {
+                            text: "Weather"
+                            font.weight: Theme.fontWeightLabel
+                        }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: WeatherService.configured
+                                ? ShellConfig.weatherLocationName : "No city configured"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                            elide: Text.ElideRight
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 30
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: refreshPointer.containsMouse
+                            ? Theme.surfaceContainerHigh : "transparent"
+                        visible: WeatherService.configured
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "↻"
+                            font.pixelSize: 16
+                        }
+                        MouseArea {
+                            id: refreshPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: WeatherService.refresh()
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 46
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: unitPointer.containsMouse
+                            ? Theme.surfaceContainerHigh : Theme.outlineVariant
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: ShellConfig.weatherTemperatureUnit === "celsius"
+                                ? "°C" : "°F"
+                            font.family: Theme.fontFamilyNumeric
+                        }
+                        MouseArea {
+                            id: unitPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                ShellConfig.weatherTemperatureUnit
+                                    = ShellConfig.weatherTemperatureUnit === "celsius"
+                                        ? "fahrenheit" : "celsius";
+                                WeatherService.refresh();
+                            }
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 66
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: weatherPointer.containsMouse
+                            ? Theme.primary : Theme.primaryContainer
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: WeatherService.configured ? "CHANGE" : "SET UP"
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: weatherPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: weatherSetup.open()
+                        }
+                    }
+                }
+            }
+
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 62
@@ -361,5 +461,10 @@ PopupWindow {
                 }
             }
         }
+    }
+
+    WeatherSetupPopup {
+        id: weatherSetup
+        hostWindow: root.hostWindow
     }
 }

@@ -22,6 +22,11 @@ QtObject {
     property alias animationsEnabled: values.animationsEnabled
     property alias densityMode: values.densityMode
     property alias workspaceCount: values.workspaceCount
+    property alias weatherEnabled: values.weatherEnabled
+    property alias weatherLocationName: values.weatherLocationName
+    property alias weatherLatitude: values.weatherLatitude
+    property alias weatherLongitude: values.weatherLongitude
+    property alias weatherTemperatureUnit: values.weatherTemperatureUnit
 
     function save() {
         saveTimer.restart();
@@ -43,6 +48,11 @@ QtObject {
         values.animationsEnabled = true;
         values.densityMode = "normal";
         values.workspaceCount = 5;
+        values.weatherEnabled = false;
+        values.weatherLocationName = "";
+        values.weatherLatitude = 0;
+        values.weatherLongitude = 0;
+        values.weatherTemperatureUnit = "celsius";
         save();
     }
 
@@ -79,6 +89,11 @@ QtObject {
             property bool animationsEnabled: true
             property string densityMode: "normal"
             property int workspaceCount: 5
+            property bool weatherEnabled: false
+            property string weatherLocationName: ""
+            property real weatherLatitude: 0
+            property real weatherLongitude: 0
+            property string weatherTemperatureUnit: "celsius"
         }
     }
 }
