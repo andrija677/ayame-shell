@@ -47,6 +47,8 @@ PopupWindow {
     property bool panelOpen: false
     property bool keepAwake: false
 
+    MotionProgress { id: motion; open: root.panelOpen }
+
     function toggle() {
         if (open)
             closePanel();
@@ -83,7 +85,7 @@ PopupWindow {
     implicitWidth: 340
     implicitHeight: panel.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: true
+    grabFocus: false
 
     HyprlandFocusGrab {
         windows: [root, settingsPanel, root.hostWindow]
@@ -130,8 +132,8 @@ PopupWindow {
         id: panel
         width: parent.width
         implicitHeight: content.implicitHeight + Theme.space24
-        y: root.panelOpen ? Theme.space8 : -Theme.space4
-        opacity: root.panelOpen ? 1 : 0
+        y: -Theme.space4 + (Theme.space8 + Theme.space4) * motion.value
+        opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
 
@@ -139,38 +141,8 @@ PopupWindow {
             id: panelScale
             origin.x: panel.width
             origin.y: 0
-            xScale: root.panelOpen ? 1 : 0.92
-            yScale: root.panelOpen ? 1 : 0.84
-
-            Behavior on xScale {
-                enabled: root.visible
-                NumberAnimation {
-                    duration: Theme.motionNormal
-                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-                }
-            }
-            Behavior on yScale {
-                enabled: root.visible
-                NumberAnimation {
-                    duration: Theme.motionNormal
-                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-                }
-            }
-        }
-
-        Behavior on y {
-            enabled: root.visible
-            NumberAnimation {
-                duration: Theme.motionNormal
-                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-            }
-        }
-        Behavior on opacity {
-            enabled: root.visible
-            NumberAnimation {
-                duration: Theme.motionNormal
-                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-            }
+            xScale: 0.92 + 0.08 * motion.value
+            yScale: 0.84 + 0.16 * motion.value
         }
 
         ColumnLayout {

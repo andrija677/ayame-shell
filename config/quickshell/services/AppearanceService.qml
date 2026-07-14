@@ -12,14 +12,10 @@ QtObject {
     function applyBlur() {
         if (ruleProcess.running) return;
         error = "";
-        const animationRule =
-            "if not ayame_no_anim_rule then "
-                + "ayame_no_anim_rule=hl.layer_rule({"
-                + "match={namespace=\"ayame-shell-.*\"},no_anim=true}) end; ";
         if (ShellConfig.blurEnabled) {
             ruleProcess.command = [
                 "hyprctl", "eval",
-                animationRule + "if ayame_blur_rule then "
+                "if ayame_blur_rule then "
                     + "ayame_blur_rule:set_enabled(true) else "
                     + "ayame_blur_rule=hl.layer_rule({"
                     + "match={namespace=\"ayame-shell-.*\"},"
@@ -28,7 +24,7 @@ QtObject {
         } else {
             ruleProcess.command = [
                 "hyprctl", "eval",
-                animationRule + "if ayame_blur_rule then "
+                "if ayame_blur_rule then "
                     + "ayame_blur_rule:set_enabled(false) end"
             ];
         }

@@ -11,6 +11,7 @@ PanelWindow {
     id: root
 
     property bool panelOpen: false
+    MotionProgress { id: motion; open: root.panelOpen }
     readonly property bool commandMode: search.text.startsWith("/")
     readonly property string commandText: commandMode
         ? search.text.slice(1).trim() : ""
@@ -126,12 +127,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         color: Theme.background
-        opacity: root.panelOpen ? 0.34 : 0
-
-        Behavior on opacity {
-            enabled: root.visible
-            NumberAnimation { duration: Theme.motionNormal }
-        }
+        opacity: 0.34 * motion.value
     }
 
     MouseArea {
@@ -144,47 +140,20 @@ PanelWindow {
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: parent.bottom
-            bottomMargin: root.panelOpen
-                ? Theme.dockHeight + Theme.outerMargin * 3
-                : Theme.dockHeight
+            bottomMargin: Theme.dockHeight
+                + Theme.outerMargin * 3 * motion.value
         }
         width: Math.min(420, root.width - Theme.space24)
         implicitHeight: launcherContent.implicitHeight + Theme.space24
-        opacity: root.panelOpen ? 1 : 0
+        opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
 
         transform: Scale {
             origin.x: launcherSurface.width / 2
             origin.y: launcherSurface.height
-            xScale: root.panelOpen ? 1 : 0.94
-            yScale: root.panelOpen ? 1 : 0.86
-            Behavior on xScale {
-                enabled: root.visible
-                NumberAnimation {
-                    duration: Theme.motionNormal
-                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-                }
-            }
-            Behavior on yScale {
-                enabled: root.visible
-                NumberAnimation {
-                    duration: Theme.motionNormal
-                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-                }
-            }
-        }
-
-        Behavior on anchors.bottomMargin {
-            enabled: root.visible
-            NumberAnimation {
-                duration: Theme.motionNormal
-                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
-            }
-        }
-        Behavior on opacity {
-            enabled: root.visible
-            NumberAnimation { duration: Theme.motionNormal }
+            xScale: 0.94 + 0.06 * motion.value
+            yScale: 0.86 + 0.14 * motion.value
         }
 
         ColumnLayout {
