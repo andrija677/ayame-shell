@@ -91,6 +91,8 @@ Browse button to select a PNG, JPEG, or WebP, and Apply. Hyprpaper must update a
 untargeted monitors, the chosen absolute path must persist, and Ayame plus Kitty
 must receive the generated palette. Restart the Hyprland session and confirm the
 wallpaper is restored without ML4W being installed.
+Cancel the Zenity chooser and confirm Ayame Settings returns without changing the
+wallpaper or terminating Quickshell.
 
 For clock testing:
 

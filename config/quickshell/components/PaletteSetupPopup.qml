@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Dialogs
 import Quickshell
+import Quickshell.Io
 import "../services"
 import "../settings"
 import "../theme"
@@ -9,6 +9,7 @@ import "../theme"
 PopupWindow {
     id: root
     required property var hostWindow
+    property string selectedWallpaper: ""
 
     function open() {
         pathInput.text = ShellConfig.dynamicColorWallpaper;
@@ -157,7 +158,10 @@ PopupWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: wallpaperDialog.open()
+                    onClicked: {
+                        root.visible = false;
+                        wallpaperChooser.running = true;
+                    }
                 }
             }
 
@@ -270,13 +274,25 @@ PopupWindow {
         }
     }
 
-    FileDialog {
-        id: wallpaperDialog
-        title: "Choose an Ayame wallpaper"
-        nameFilters: ["Wallpaper images (*.png *.jpg *.jpeg *.webp)", "All files (*)"]
-        onAccepted: {
-            pathInput.text = decodeURIComponent(selectedFile.toString().replace(/^file:\/\//, ""));
-            root.generatePalette();
+    Process {
+        id: wallpaperChooser
+        command: [
+            "zenity", "--file-selection",
+            "--title=Choose an Ayame wallpaper",
+            "--file-filter=Wallpaper images | *.png *.jpg *.jpeg *.webp",
+            "--file-filter=All files | *"
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: root.selectedWallpaper = text.trim()
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0 && root.selectedWallpaper.length > 0) {
+                pathInput.text = root.selectedWallpaper;
+                root.generatePalette();
+            } else {
+                root.visible = true;
+            }
+            root.selectedWallpaper = "";
         }
     }
 

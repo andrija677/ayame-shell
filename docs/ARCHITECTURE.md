@@ -82,7 +82,8 @@ reuses the dashboard's `WeatherCard`, so current conditions, apparent temperatur
 wind, forecast days, cache state, and units stay consistent between both surfaces.
 
 Ayame can choose and persist its own wallpaper through Hyprpaper, restore it at
-login, and pass the same local image to Matugen. Dynamic colors can also follow
+login, and pass the same local image to Matugen. The chooser runs as a separate
+Zenity process so a native dialog cannot crash the layer-shell process. Dynamic colors can also follow
 an existing session that publishes ML4W's `current_wallpaper` cache file.
 `DynamicPalette` watches that file, debounces changes, passes the image to Matugen,
 and atomically swaps palettes after successful generation. A manual path remains
