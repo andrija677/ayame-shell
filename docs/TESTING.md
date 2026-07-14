@@ -92,6 +92,10 @@ For calendar event testing:
    year.
 4. Remove an event and confirm its marker disappears when no events remain.
 5. Cancel the editor and confirm no file data changes.
+6. Choose each reminder lead time and confirm it persists with the event.
+7. Confirm events in the next 30 days appear in Upcoming, ordered by date.
+8. Confirm yearly events use their next future occurrence rather than the year
+   originally stored.
 
 For Quick Settings testing:
 

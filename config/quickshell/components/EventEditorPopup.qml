@@ -14,6 +14,7 @@ PopupWindow {
         eventDate = date;
         titleInput.text = "";
         yearlyToggle.checked = false;
+        reminderSelector.selectedDays = 0;
         visible = true;
         titleInput.forceActiveFocus();
     }
@@ -81,6 +82,59 @@ PopupWindow {
                 onActivated: checked = !checked
             }
 
+            ColumnLayout {
+                id: reminderSelector
+                property int selectedDays: 0
+                Layout.fillWidth: true
+                spacing: Theme.space6
+
+                StyledText {
+                    text: "Remind me"
+                    font.weight: Font.DemiBold
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Theme.space4
+
+                    Repeater {
+                        model: [
+                            { label: "SAME DAY", days: 0 },
+                            { label: "1 DAY BEFORE", days: 1 },
+                            { label: "1 WEEK BEFORE", days: 7 }
+                        ]
+
+                        Rectangle {
+                            required property var modelData
+                            Layout.fillWidth: true
+                            implicitHeight: 28
+                            radius: Theme.radiusPill
+                            color: reminderSelector.selectedDays === modelData.days
+                                ? Theme.primary : reminderPointer.containsMouse
+                                    ? Theme.surfaceContainer : Theme.outlineVariant
+
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: parent.modelData.label
+                                color: reminderSelector.selectedDays === parent.modelData.days
+                                    ? Theme.foregroundPrimary
+                                    : Theme.foregroundSurfaceVariant
+                                font.pixelSize: 8
+                                font.weight: Font.Bold
+                            }
+                            MouseArea {
+                                id: reminderPointer
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: reminderSelector.selectedDays
+                                    = parent.modelData.days
+                            }
+                        }
+                    }
+                }
+            }
+
             RowLayout {
                 Layout.alignment: Qt.AlignRight
                 spacing: Theme.space8
@@ -105,7 +159,8 @@ PopupWindow {
                     id: saveButton
                     function save() {
                         if (EventStore.addEvent(
-                                titleInput.text, root.eventDate, yearlyToggle.checked))
+                                titleInput.text, root.eventDate, yearlyToggle.checked,
+                                reminderSelector.selectedDays))
                             root.visible = false;
                     }
                     implicitWidth: 66

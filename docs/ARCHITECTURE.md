@@ -54,6 +54,8 @@ popups unexpectedly.
 Calendar events are stored atomically in `Quickshell.dataDir/events.json` via a
 typed JSON adapter. One-time and yearly events share the same local model; the
 editor writes only after an explicit save. No calendar data leaves the machine.
+The store computes future occurrences for both one-time and yearly events, and
+the dashboard highlights entries whose configured reminder window has begun.
 
 Dashboard visibility is controlled by Ayame rather than popup focus dismissal.
 This keeps the clock trigger reachable while the popup is open and ensures the

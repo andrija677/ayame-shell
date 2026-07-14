@@ -126,6 +126,7 @@ PopupWindow {
                 Layout.fillWidth: true
                 hostWindow: root.hostWindow
             }
+            UpcomingEventsCard { Layout.fillWidth: true }
 
             Surface {
                 Layout.fillWidth: true

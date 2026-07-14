@@ -23,7 +23,42 @@ QtObject {
             || (event.recurrence === "yearly" && event.date.slice(5) === monthDay));
     }
 
-    function addEvent(title, date, yearly) {
+    function occurrenceForEvent(event, fromDate) {
+        const parts = event.date.split("-").map(Number);
+        let occurrence = new Date(parts[0], parts[1] - 1, parts[2]);
+        if (event.recurrence === "yearly") {
+            occurrence = new Date(fromDate.getFullYear(), parts[1] - 1, parts[2]);
+            if (occurrence < new Date(
+                    fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate()))
+                occurrence.setFullYear(occurrence.getFullYear() + 1);
+        }
+        return occurrence;
+    }
+
+    function upcomingEvents(dayRange) {
+        const today = new Date();
+        const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const dayMs = 24 * 60 * 60 * 1000;
+        const upcoming = [];
+        for (let event of events) {
+            const occurrence = occurrenceForEvent(event, start);
+            const daysUntil = Math.round((occurrence - start) / dayMs);
+            if (daysUntil >= 0 && daysUntil <= dayRange) {
+                upcoming.push({
+                    id: event.id,
+                    title: event.title,
+                    occurrence: occurrence,
+                    daysUntil: daysUntil,
+                    reminderDays: event.reminderDays ?? 0,
+                    recurrence: event.recurrence
+                });
+            }
+        }
+        upcoming.sort((a, b) => a.daysUntil - b.daysUntil);
+        return upcoming;
+    }
+
+    function addEvent(title, date, yearly, reminderDays) {
         const cleanTitle = title.trim();
         if (cleanTitle.length === 0)
             return false;
@@ -33,7 +68,8 @@ QtObject {
             id: Date.now().toString(),
             title: cleanTitle,
             date: dateKey(date),
-            recurrence: yearly ? "yearly" : "none"
+            recurrence: yearly ? "yearly" : "none",
+            reminderDays: reminderDays ?? 0
         });
         adapter.events = updated;
         eventFile.writeAdapter();
