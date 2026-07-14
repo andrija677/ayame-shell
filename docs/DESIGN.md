@@ -34,3 +34,8 @@ Clock-owned panels use the clock's bottom center as their visual origin. They
 enter by unfolding downward, fading in, and settling a short distance below the
 bar. Closing reverses the same path so the panel appears to return into its
 trigger rather than simply disappearing.
+
+Calendar month changes preserve spatial direction: later months travel left and
+enter from the right, while earlier months do the reverse. Clock text uses two
+layers so compact time and expanded date crossfade and settle instead of swapping
+in a single frame.

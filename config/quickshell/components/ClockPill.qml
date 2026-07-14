@@ -8,7 +8,8 @@ Surface {
     property bool expanded: false
     signal activated()
 
-    implicitWidth: clockText.implicitWidth + Theme.space24
+    implicitWidth: (expanded ? dateText.implicitWidth : timeText.implicitWidth)
+        + Theme.space24
     implicitHeight: Theme.itemHeight
     radius: Theme.radiusPill
     color: pointer.containsMouse
@@ -36,20 +37,35 @@ Surface {
     }
 
     StyledText {
-        id: clockText
+        id: timeText
         anchors.centerIn: parent
-        text: root.expanded
-            ? Qt.formatDateTime(clock.date, "ddd, d MMM  •  HH:mm")
-            : Qt.formatDateTime(clock.date, "HH:mm")
-        color: root.expanded
-            ? Theme.foregroundPrimaryContainer
-            : Theme.foregroundSurface
+        text: Qt.formatDateTime(clock.date, "HH:mm")
+        color: Theme.foregroundSurface
+        opacity: root.expanded ? 0 : 1
+        y: root.expanded ? Theme.space4 : 0
+        scale: root.expanded ? 0.92 : 1
         font.pixelSize: Theme.fontNormal
         font.weight: Font.DemiBold
 
-        Behavior on color {
-            ColorAnimation { duration: Theme.motionFast }
-        }
+        Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
+        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
+    }
+
+    StyledText {
+        id: dateText
+        anchors.centerIn: parent
+        text: Qt.formatDateTime(clock.date, "ddd, d MMM  •  HH:mm")
+        color: Theme.foregroundPrimaryContainer
+        opacity: root.expanded ? 1 : 0
+        y: root.expanded ? 0 : -Theme.space4
+        scale: root.expanded ? 1 : 0.92
+        font.pixelSize: Theme.fontNormal
+        font.weight: Font.DemiBold
+
+        Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
+        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
     }
 
     MouseArea {

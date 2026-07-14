@@ -99,7 +99,10 @@ For calendar event testing:
 9. Navigate to previous and next months and confirm event markers recompute.
 10. Press Today and confirm both the visible month and selected date return to
     the current day.
-11. Repeatedly navigate and confirm the calendar fade never gets stuck invisible.
+11. Confirm later months travel left and enter from the right, while earlier
+    months move in the opposite direction.
+12. Repeatedly navigate and confirm the calendar never gets stuck invisible or
+    horizontally offset.
 
 For Quick Settings testing:
 

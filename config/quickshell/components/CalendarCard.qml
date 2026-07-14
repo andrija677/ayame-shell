@@ -11,12 +11,14 @@ Surface {
     property date shownMonth: new Date(today.getFullYear(), today.getMonth(), 1)
     property date selectedDate: today
     property date pendingMonth: shownMonth
+    property int navigationDirection: 1
     readonly property int mondayOffset: (shownMonth.getDay() + 6) % 7
     readonly property date gridStart: new Date(
         shownMonth.getFullYear(), shownMonth.getMonth(), 1 - mondayOffset
     )
 
     function navigateMonth(offset) {
+        navigationDirection = offset < 0 ? -1 : 1;
         pendingMonth = new Date(
             shownMonth.getFullYear(), shownMonth.getMonth() + offset, 1
         );
@@ -25,6 +27,8 @@ Surface {
 
     function returnToToday() {
         pendingMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        navigationDirection = pendingMonth < shownMonth ? -1
+            : pendingMonth > shownMonth ? 1 : 0;
         selectedDate = today;
         monthTransition.restart();
     }
@@ -86,6 +90,7 @@ Surface {
 
         GridLayout {
             id: calendarGrid
+            transform: Translate { id: monthSlide }
             Layout.fillWidth: true
             columns: 7
             rowSpacing: Theme.space4
@@ -263,20 +268,43 @@ Surface {
     SequentialAnimation {
         id: monthTransition
 
-        NumberAnimation {
-            target: calendarGrid
-            property: "opacity"
-            to: 0
-            duration: Theme.motionFast / 2
-            easing.type: Easing.InCubic
+        ParallelAnimation {
+            NumberAnimation {
+                target: monthSlide
+                property: "x"
+                to: -root.navigationDirection * 44
+                duration: Theme.motionFast
+                easing.type: Easing.InCubic
+            }
+            NumberAnimation {
+                target: calendarGrid
+                property: "opacity"
+                to: 0
+                duration: Theme.motionFast
+                easing.type: Easing.InCubic
+            }
         }
         ScriptAction { script: root.shownMonth = root.pendingMonth }
-        NumberAnimation {
-            target: calendarGrid
-            property: "opacity"
-            to: 1
-            duration: Theme.motionFast
-            easing.type: Easing.OutCubic
+        PropertyAction {
+            target: monthSlide
+            property: "x"
+            value: root.navigationDirection * 44
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: monthSlide
+                property: "x"
+                to: 0
+                duration: Theme.motionNormal
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: calendarGrid
+                property: "opacity"
+                to: 1
+                duration: Theme.motionNormal
+                easing.type: Easing.OutCubic
+            }
         }
     }
 }
