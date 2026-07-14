@@ -15,6 +15,8 @@ import "../settings"
 PopupWindow {
     id: root
 
+    signal powerRequested()
+
     required property var hostWindow
     readonly property bool open: panelOpen || settingsPanel.panelOpen
     readonly property var sink: Pipewire.defaultAudioSink
@@ -395,28 +397,58 @@ PopupWindow {
                 }
             }
 
-            Rectangle {
+            RowLayout {
                 Layout.fillWidth: true
-                implicitHeight: 38
-                radius: Theme.radiusPill
-                color: settingsPointer.containsMouse
-                    ? Theme.primary : Theme.primaryContainer
-                StyledText {
-                    anchors.centerIn: parent
-                    text: "OPEN AYAME SETTINGS"
+                spacing: Theme.space8
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: 38
+                    radius: Theme.radiusPill
                     color: settingsPointer.containsMouse
-                        ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
-                    font.pixelSize: 10
-                    font.weight: Theme.fontWeightTitle
+                        ? Theme.primary : Theme.primaryContainer
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: "AYAME SETTINGS"
+                        color: settingsPointer.containsMouse
+                            ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 10
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    MouseArea {
+                        id: settingsPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.closePanel();
+                            settingsPanel.openPanel();
+                        }
+                    }
                 }
-                MouseArea {
-                    id: settingsPointer
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.closePanel();
-                        settingsPanel.openPanel();
+
+                Rectangle {
+                    implicitWidth: 88
+                    implicitHeight: 38
+                    radius: Theme.radiusPill
+                    color: powerPointer.containsMouse ? Theme.error : Theme.surfaceContainerHigh
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: "POWER"
+                        color: powerPointer.containsMouse
+                            ? Theme.foregroundPrimary : Theme.foregroundSurface
+                        font.pixelSize: 10
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    MouseArea {
+                        id: powerPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.closePanel();
+                            root.powerRequested();
+                        }
                     }
                 }
             }

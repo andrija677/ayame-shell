@@ -143,3 +143,17 @@ changes to its existing script. Keep Awake uses a Wayland idle inhibitor bound
 to the bar window. Wi-Fi uses Quickshell's writable NetworkManager rfkill
 property. Brightness controls are capability-driven and remain absent when
 `brightnessctl` exposes no display-class backlight.
+
+Power actions live in a dedicated layer-shell overlay opened from Quick Settings.
+Lock starts Hyprlock with Ayame's project-local configuration; Log Out delegates
+to Hyprland, while Restart and Shut Down delegate to systemd-logind through
+`systemctl`. Lock is immediate, but every session-ending or machine-ending action
+requires a separate confirmation state and warns about unsaved work. Commands are
+never exercised by automated preview testing.
+
+The Hyprlock configuration is self-contained and currently reads ML4W's local
+blurred-wallpaper cache, matching Ayame's development environment. It provides a
+centered clock, date, greeting, and rounded password surface using the same
+Adwaita Sans typography and violet fallback palette. Installation work will
+generate its wallpaper path and colors; the repository never overwrites the live
+`~/.config/hyprlock.conf`.

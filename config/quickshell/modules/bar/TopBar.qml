@@ -9,6 +9,7 @@ import "../../settings"
 import "../../theme"
 import "../dashboard"
 import "../quicksettings"
+import "../power"
 
 PanelWindow {
     id: bar
@@ -266,5 +267,11 @@ PanelWindow {
         id: quickSettings
         hostWindow: bar
         visible: false
+        onPowerRequested: powerScreen.openPanel()
+    }
+
+    PowerScreen {
+        id: powerScreen
+        screen: bar.screen
     }
 }

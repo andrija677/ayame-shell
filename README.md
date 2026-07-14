@@ -16,6 +16,9 @@ owns persistent light/dark appearance, tint, blur, motion, density, and layout,
 while Quick Settings focuses on live device and session controls.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
+Quick Settings also opens a full-screen power surface with safe Lock, Log Out,
+Restart, and Shut Down actions. The repository includes an Ayame Hyprlock design,
+but does not replace the user's live lock configuration during development.
 
 ## Test without installing
 

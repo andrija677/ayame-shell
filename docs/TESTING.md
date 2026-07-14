@@ -246,7 +246,7 @@ Left-click the active icon to minimize and click it again to restore/focus it.
 Restart Ayame and confirm the favorite remains. Right-click it again to unpin it;
 once its window closes, the icon must leave the dock.
 
-Click the Ayame `A` at the start of the dock. Confirm the launcher unfolds above
+Click the nine-dot application grid at the start of the dock. Confirm the launcher unfolds above
 the dock and places keyboard focus in Search. Search using an application's name,
 generic name, and keyword; hidden desktop entries must not appear. Press Enter to
 launch the first result, or use arrow keys and Enter to launch another result.
@@ -264,6 +264,18 @@ qs --path "$HOME/Projects/ayame-shell/config/quickshell" ipc call launcher close
 Confirm the overlay opens on the focused monitor, Search receives keyboard input,
 and the terminal reports no popup-parent or input-serial warnings. The optional
 Hyprland binding in `config/hypr/README.md` must call the same interface.
+
+Open Quick Settings and select Power. Confirm the full-screen surface offers Lock,
+Log Out, Restart, and Shut Down. Clicking Log Out, Restart, or Shut Down must show
+the matching confirmation state and an unsaved-work warning; Cancel must return
+without executing anything. Escape and a background click must close the surface.
+
+Do not confirm a destructive action during ordinary preview testing. Test Lock
+only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the
+wallpaper, clock, date, username greeting, and password field, reject an incorrect
+password visibly, and return to the same session after correct authentication.
+Inspect the project lock configuration directly rather than copying it over the
+user's live Hyprlock configuration.
 
 If the terminal was closed, list Quickshell instances first:
 
