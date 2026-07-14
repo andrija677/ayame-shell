@@ -26,6 +26,14 @@ case "$mode" in
         [[ -n "$monitor" ]] || { echo "No monitor was provided" >&2; exit 2; }
         grim -o "$monitor" "$output"
         ;;
+    geometry)
+        geometry="$monitor"
+        [[ "$geometry" =~ ^-?[0-9]+,-?[0-9]+[[:space:]][0-9]+x[0-9]+$ ]] || {
+            echo "Invalid screenshot geometry: $geometry" >&2
+            exit 2
+        }
+        grim -g "$geometry" "$output"
+        ;;
     area)
         selector_error="$(mktemp)"
         if ! geometry="$(slurp -d -b '#00000099' -c '#c6a0ffff' -s '#6d4c8e66' -w 3 \

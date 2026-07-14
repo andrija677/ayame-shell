@@ -17,6 +17,11 @@ PanelWindow {
     property bool easterEggOpen: false
     property string status: ""
     property string captureError: ""
+    property bool selectionMode: false
+    property real selectionStartX: 0
+    property real selectionStartY: 0
+    property real selectionCurrentX: 0
+    property real selectionCurrentY: 0
     readonly property var bindings: [
         { keys: "SUPER", action: "Open launcher when released" },
         { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
@@ -54,11 +59,36 @@ PanelWindow {
         captureError = "";
         panelOpen = false;
         visible = false;
+        if (captureMode === "area") {
+            captureStartTimer.interval = 220 + captureDelay * 1000;
+        } else {
+            captureStartTimer.interval = 220;
+            captureProcess.command = [
+                Quickshell.shellDir + "/../../scripts/ayame-screenshot.sh",
+                captureMode, captureDelay.toString(), screen.name
+            ];
+        }
+        captureStartTimer.restart();
+    }
+
+    function finishSelection() {
+        const left = Math.round(Math.min(selectionStartX, selectionCurrentX));
+        const top = Math.round(Math.min(selectionStartY, selectionCurrentY));
+        const width = Math.round(Math.abs(selectionCurrentX - selectionStartX));
+        const height = Math.round(Math.abs(selectionCurrentY - selectionStartY));
+        if (width < 2 || height < 2) {
+            selectionMode = false;
+            visible = false;
+            return;
+        }
+        const geometry = left + "," + top + " " + width + "x" + height;
         captureProcess.command = [
             Quickshell.shellDir + "/../../scripts/ayame-screenshot.sh",
-            captureMode, captureDelay.toString(), screen.name
+            "geometry", "0", geometry
         ];
-        captureStartTimer.restart();
+        selectionMode = false;
+        visible = false;
+        captureAfterSelection.restart();
     }
 
     anchors { top: true; bottom: true; left: true; right: true }
@@ -67,15 +97,34 @@ PanelWindow {
     visible: false
     WlrLayershell.namespace: "ayame-shell-utilities"
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: panelOpen ? WlrLayershell.OnDemand : WlrLayershell.None
+    WlrLayershell.keyboardFocus: panelOpen || selectionMode
+        ? WlrLayershell.OnDemand : WlrLayershell.None
 
-    Shortcut { sequence: "Escape"; onActivated: root.closePanel() }
+    Shortcut {
+        sequence: "Escape"
+        onActivated: {
+            if (root.selectionMode) {
+                root.selectionMode = false;
+                root.visible = false;
+            } else {
+                root.closePanel();
+            }
+        }
+    }
     Timer { id: closeTimer; interval: Theme.motionNormal; onTriggered: root.visible = false }
     Timer {
         id: captureStartTimer
         interval: 220
-        onTriggered: captureProcess.running = true
+        onTriggered: {
+            if (root.captureMode === "area") {
+                root.visible = true;
+                root.selectionMode = true;
+            } else {
+                captureProcess.running = true;
+            }
+        }
     }
+    Timer { id: captureAfterSelection; interval: 140; onTriggered: captureProcess.running = true }
 
     Process {
         id: captureProcess
@@ -94,7 +143,7 @@ PanelWindow {
                 const failure = root.captureError.length > 0
                     ? root.captureError : "Screenshot failed. Check that grim and slurp can access this session.";
                 Qt.callLater(() => {
-                    root.openPage("screenshot");
+                    root.openPage("capture");
                     root.status = failure;
                 });
             }
@@ -107,7 +156,7 @@ PanelWindow {
         opacity: root.panelOpen ? 0.72 : 0
         Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
     }
-    MouseArea { anchors.fill: parent; onClicked: root.closePanel() }
+    MouseArea { anchors.fill: parent; enabled: root.panelOpen; onClicked: root.closePanel() }
 
     Surface {
         anchors.centerIn: parent
@@ -232,5 +281,57 @@ PanelWindow {
             asynchronous: true
         }
         MouseArea { anchors.fill: parent; onClicked: root.easterEggOpen = false }
+    }
+
+    Item {
+        anchors.fill: parent
+        visible: root.selectionMode
+        z: 30
+
+        Rectangle { anchors.fill: parent; color: "#99000000" }
+
+        Rectangle {
+            visible: selectionPointer.pressed
+            x: Math.min(root.selectionStartX, root.selectionCurrentX)
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: Math.abs(root.selectionCurrentX - root.selectionStartX)
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            color: "#336d4c8e"
+            border.color: Theme.primary
+            border.width: 3
+        }
+
+        StyledText {
+            anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin: Theme.space24 }
+            text: selectionPointer.pressed
+                ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
+                    + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
+                : "Drag to select an area • Esc to cancel"
+            color: Theme.foregroundPrimary
+            font.weight: Theme.fontWeightLabel
+        }
+
+        MouseArea {
+            id: selectionPointer
+            anchors.fill: parent
+            cursorShape: Qt.CrossCursor
+            onPressed: mouse => {
+                root.selectionStartX = mouse.x;
+                root.selectionStartY = mouse.y;
+                root.selectionCurrentX = mouse.x;
+                root.selectionCurrentY = mouse.y;
+            }
+            onPositionChanged: mouse => {
+                if (pressed) {
+                    root.selectionCurrentX = mouse.x;
+                    root.selectionCurrentY = mouse.y;
+                }
+            }
+            onReleased: mouse => {
+                root.selectionCurrentX = mouse.x;
+                root.selectionCurrentY = mouse.y;
+                root.finishSelection();
+            }
+        }
     }
 }

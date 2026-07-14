@@ -66,10 +66,11 @@ Super combinations and Super-drag window controls.
 Quick Settings opens a compositor-level Utilities surface with Keybinds and
 Screenshot pages. Keybinds documents recovery-critical window controls including
 the Super+Enter Kitty terminal, fullscreen toggle, floating toggle, and
-Super-drag move/resize. Screenshot capture
-delegates to a project script using `grim`, `slurp`, and `wl-copy`; it supports the
-whole desktop, the current monitor, or an interactively selected region after
-zero, three, or five seconds. Output goes to `Pictures/Screenshots`, is copied to
+Super-drag move/resize. Screenshot capture delegates to a project script using
+`grim` and `wl-copy`; area capture uses Ayame's own layer-shell drag selector so
+it does not compete with an external selector for compositor input. The script's
+keyboard-binding fallback still supports `slurp`. Desktop, monitor, and area
+captures can begin after zero, three, or five seconds. Output goes to `Pictures/Screenshots`, is copied to
 the clipboard, and is announced through the current notification service.
 
 Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
