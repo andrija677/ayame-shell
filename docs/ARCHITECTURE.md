@@ -27,3 +27,7 @@ actions stay in the reusable component; the bar only decides where it appears.
 The battery indicator follows UPower's display device and removes itself from
 the layout when no laptop battery is present. Audio, battery, and tray feature
 flags are independent.
+
+Network status uses Quickshell's read-only NetworkManager backend. It reports
+global connectivity for wired and fallback states, and adds signal strength
+when a connected Wi-Fi network is available. It never changes connections.

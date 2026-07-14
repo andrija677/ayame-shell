@@ -92,6 +92,7 @@ PanelWindow {
                 Layout.preferredWidth: Theme.sideAreaWidth
                 implicitHeight: Theme.itemHeight
                 visible: ShellConfig.audioEnabled
+                    || ShellConfig.networkEnabled
                     || ShellConfig.batteryEnabled
                     || ShellConfig.trayEnabled
 
@@ -112,6 +113,10 @@ PanelWindow {
 
                         AudioControl {
                             visible: ShellConfig.audioEnabled
+                        }
+
+                        NetworkIndicator {
+                            visible: ShellConfig.networkEnabled
                         }
 
                         BatteryIndicator {
