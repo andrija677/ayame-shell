@@ -73,6 +73,9 @@ For dashboard testing:
 2. Start an MPRIS-compatible player and confirm title and artist update.
 3. Test previous, play/pause, and next when the player supports each action.
 4. Confirm no notification popup behavior changes while Ayame is running.
+5. Confirm opening unfolds downward from the clock with a top-center origin.
+6. Confirm closing reverses fully before the popup window disappears.
+7. Toggle repeatedly and confirm no half-open or invisible state remains.
 
 ## Stop the development shell
 

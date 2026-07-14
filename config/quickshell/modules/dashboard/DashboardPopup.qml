@@ -8,24 +8,92 @@ PopupWindow {
     id: root
 
     required property var hostWindow
+    readonly property bool open: panelOpen
+    property bool panelOpen: false
+
+    function toggle() {
+        if (panelOpen)
+            closePanel();
+        else
+            openPanel();
+    }
+
+    function openPanel() {
+        closeTimer.stop();
+        visible = true;
+        panelOpen = true;
+    }
+
+    function closePanel() {
+        panelOpen = false;
+        closeTimer.restart();
+    }
 
     anchor.window: hostWindow
     anchor.rect.x: Math.round((hostWindow.width - width) / 2)
     anchor.rect.y: hostWindow.height
     implicitWidth: 420
-    implicitHeight: dashboard.implicitHeight
+    implicitHeight: dashboard.implicitHeight + Theme.space8
     color: "transparent"
     grabFocus: true
 
+    Timer {
+        id: closeTimer
+        interval: Theme.motionNormal
+        onTriggered: root.visible = false
+    }
+
     Surface {
         id: dashboard
-        anchors {
-            fill: parent
-            topMargin: Theme.space8
-        }
+        width: parent.width
         implicitHeight: content.implicitHeight + Theme.space24
+        y: root.panelOpen ? Theme.space8 : -Theme.space4
+        opacity: root.panelOpen ? 1 : 0
         radius: Theme.radiusLarge
         color: Theme.surface
+
+        transform: Scale {
+            id: panelScale
+            origin.x: dashboard.width / 2
+            origin.y: 0
+            xScale: root.panelOpen ? 1 : 0.94
+            yScale: root.panelOpen ? 1 : 0.82
+
+            Behavior on xScale {
+                NumberAnimation {
+                    duration: root.panelOpen
+                        ? Theme.motionSlow : Theme.motionNormal
+                    easing.type: root.panelOpen
+                        ? Easing.OutCubic : Easing.InCubic
+                }
+            }
+
+            Behavior on yScale {
+                NumberAnimation {
+                    duration: root.panelOpen
+                        ? Theme.motionSlow : Theme.motionNormal
+                    easing.type: root.panelOpen
+                        ? Easing.OutCubic : Easing.InCubic
+                }
+            }
+        }
+
+        Behavior on y {
+            NumberAnimation {
+                duration: root.panelOpen
+                    ? Theme.motionSlow : Theme.motionNormal
+                easing.type: root.panelOpen
+                    ? Easing.OutCubic : Easing.InCubic
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Theme.motionNormal
+                easing.type: root.panelOpen
+                    ? Easing.OutCubic : Easing.InCubic
+            }
+        }
 
         ColumnLayout {
             id: content
@@ -60,4 +128,5 @@ PopupWindow {
             }
         }
     }
+
 }

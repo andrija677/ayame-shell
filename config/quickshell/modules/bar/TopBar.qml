@@ -95,11 +95,8 @@ PanelWindow {
                 id: clockPill
                 Layout.alignment: Qt.AlignCenter
                 visible: ShellConfig.clockEnabled
-                expanded: dashboard.visible
-                onActivated: {
-                    if (ShellConfig.dashboardEnabled)
-                        dashboard.visible = !dashboard.visible;
-                }
+                expanded: dashboard.open
+                onActivated: if (ShellConfig.dashboardEnabled) dashboard.toggle()
             }
 
             Item { Layout.fillWidth: true }

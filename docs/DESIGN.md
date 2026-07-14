@@ -27,3 +27,10 @@ Ayame Shell combines three influences without copying an existing shell:
 
 The initial palette is a hand-authored dark violet theme. A later milestone will
 generate the semantic values from wallpapers using Matugen.
+
+## Panel motion
+
+Clock-owned panels use the clock's bottom center as their visual origin. They
+enter by unfolding downward, fading in, and settling a short distance below the
+bar. Closing reverses the same path so the panel appears to return into its
+trigger rather than simply disappearing.
