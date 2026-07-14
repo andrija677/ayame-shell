@@ -5,11 +5,13 @@ prefix="${XDG_DATA_HOME:-$HOME/.local/share}/ayame-shell"
 assume_yes=false
 install_dependencies=true
 replace_desktop=false
+enable_kitty=true
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
         --no-install-deps) install_dependencies=false ;;
         --replace-desktop) replace_desktop=true ;;
+        --no-kitty) enable_kitty=false ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
     esac
@@ -27,7 +29,7 @@ timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty)
+required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty matugen)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
@@ -37,6 +39,7 @@ declare -A command_packages=(
     [slurp]=slurp
     [wl-copy]=wl-clipboard
     [kitty]=kitty
+    [matugen]=matugen
 )
 missing=()
 for command_name in "${required[@]}"; do
@@ -189,22 +192,17 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
     "$prefix/scripts/ayame-logout.sh" "$prefix/uninstall.sh"
 
-install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
-install -m 0644 "$prefix/config/kitty/ayame-colors.conf" "$kitty_dir/ayame-colors.conf"
-if ! grep -Fq "include $kitty_fragment" "$kitty_main" 2>/dev/null; then
-    if [[ "$assume_yes" == true ]]; then
-        kitty_answer=y
-    else
-        read -r -p "Enable the Ayame Kitty design and Ctrl+V paste? [y/N] " kitty_answer
-    fi
-    if [[ "$kitty_answer" =~ ^[Yy]$ ]]; then
+if [[ "$enable_kitty" == true ]]; then
+    install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
+    install -m 0644 "$prefix/config/kitty/ayame-colors.conf" "$kitty_dir/ayame-colors.conf"
+    if ! grep -Fq "include $kitty_fragment" "$kitty_main" 2>/dev/null; then
         if [[ -f "$kitty_main" ]]; then
             cp -a "$kitty_main" "$kitty_main.ayame-backup-$timestamp"
             printf '\n# Ayame Shell\ninclude %s\n' "$kitty_fragment" >> "$kitty_main"
         else
             printf '# Created by Ayame Shell.\ninclude %s\n' "$kitty_fragment" > "$kitty_main"
         fi
-        echo "Enabled the Ayame Kitty design."
+        echo "Enabled the Ayame Kitty design and dynamic colors."
     fi
 fi
 

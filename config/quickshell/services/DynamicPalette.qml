@@ -109,7 +109,18 @@ QtObject {
         kittySync.running = true;
     }
 
-    property Process kittySync: Process {}
+    property Process kittySync: Process {
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.error = "Kitty colors: " + text.trim().split("\n").pop();
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0 && root.error.length === 0)
+                root.error = "Kitty colors could not be updated";
+        }
+    }
 
     property Process generator: Process {
         id: generator
