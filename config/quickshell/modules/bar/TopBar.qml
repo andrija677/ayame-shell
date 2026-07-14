@@ -49,7 +49,11 @@ PanelWindow {
                         required property int index
                         workspaceId: index + 1
                         active: Hyprland.focusedWorkspace?.id === workspaceId
-                        onActivated: Hyprland.dispatch("workspace " + workspaceId)
+                        // Hyprland 0.55 Lua configs require a Lua dispatcher
+                        // expression instead of the legacy `workspace N` form.
+                        onActivated: Hyprland.dispatch(
+                            "hl.dsp.focus({ workspace = " + workspaceId + " })"
+                        )
                     }
                 }
             }

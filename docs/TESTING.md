@@ -10,6 +10,10 @@ qs --path "$HOME/Projects/ayame-shell/config/quickshell"
 
 Keep the terminal open while testing so warnings remain visible.
 
+Click each workspace indicator as part of the test. Ayame Shell targets
+Hyprland 0.55's Lua dispatcher syntax; legacy `workspace N` dispatch strings do
+not work when Hyprland is running a Lua configuration.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.
@@ -33,4 +37,3 @@ git -C "$HOME/Projects/ayame-shell" log --oneline
 
 No rollback command should be run until its effect has been explained, because
 some Git rollback commands can discard uncommitted work.
-
