@@ -240,11 +240,31 @@ PanelWindow {
                     RowLayout {
                         anchors { fill: parent; leftMargin: Theme.space8; rightMargin: Theme.space12 }
                         spacing: Theme.space12
-                        IconImage {
-                            implicitSize: 28
-                            source: Quickshell.iconPath(appDelegate.modelData.icon || "application-x-executable")
-                            asynchronous: true
-                            mipmap: true
+                        Item {
+                            Layout.preferredWidth: 28
+                            Layout.preferredHeight: 28
+                            readonly property string resolvedIcon: Quickshell.iconPath(
+                                appDelegate.modelData.icon || "", true)
+
+                            IconImage {
+                                anchors.fill: parent
+                                source: parent.resolvedIcon
+                                visible: parent.resolvedIcon.length > 0
+                                asynchronous: true
+                                mipmap: true
+                            }
+                            Rectangle {
+                                anchors.fill: parent
+                                visible: parent.resolvedIcon.length === 0
+                                radius: Theme.radiusSmall
+                                color: Theme.primaryContainer
+                                StyledText {
+                                    anchors.centerIn: parent
+                                    text: (appDelegate.modelData.name || "?").slice(0, 1).toUpperCase()
+                                    color: Theme.foregroundPrimaryContainer
+                                    font.weight: Theme.fontWeightTitle
+                                }
+                            }
                         }
                         ColumnLayout {
                             Layout.fillWidth: true

@@ -35,15 +35,32 @@ Rectangle {
         NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
     }
 
+    readonly property string resolvedIcon: Quickshell.iconPath(
+        root.desktopEntry?.icon || "", true)
+
     IconImage {
         id: appIcon
         anchors.centerIn: parent
         implicitSize: 28
-        source: Quickshell.iconPath(
-            root.desktopEntry?.icon || "application-x-executable"
-        )
+        source: root.resolvedIcon
+        visible: root.resolvedIcon.length > 0
         asynchronous: true
         mipmap: true
+    }
+
+    Rectangle {
+        anchors.centerIn: parent
+        width: 28
+        height: 28
+        visible: root.resolvedIcon.length === 0
+        radius: Theme.radiusSmall
+        color: Theme.primaryContainer
+        StyledText {
+            anchors.centerIn: parent
+            text: (root.desktopEntry?.name || root.appId || "?").slice(0, 1).toUpperCase()
+            color: Theme.foregroundPrimaryContainer
+            font.weight: Theme.fontWeightTitle
+        }
     }
 
     Rectangle {
