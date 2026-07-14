@@ -131,6 +131,7 @@ PanelWindow {
 
                         NetworkIndicator {
                             visible: ShellConfig.networkEnabled
+                            hostWindow: bar
                         }
 
                         BatteryIndicator {

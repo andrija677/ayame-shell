@@ -38,10 +38,12 @@ The battery indicator should not reserve space on a desktop without a battery.
 
 For network testing:
 
-1. Confirm connected Wi-Fi displays `WIFI` and its signal percentage.
-2. Confirm a connected non-Wi-Fi route displays `NET`.
-3. Disconnect networking and confirm `OFFLINE` appears in the error color.
+1. Confirm connected Wi-Fi displays signal arcs matching its strength.
+2. Confirm a connected non-Wi-Fi route displays the globe icon.
+3. Disconnect networking and confirm an error-colored cross appears.
 4. Confirm captive-portal or limited connectivity uses the warning color.
+5. Click the icon and confirm connection details appear below it.
+6. Click it again and confirm the details close.
 
 The indicator is passive and must not change NetworkManager state.
 
