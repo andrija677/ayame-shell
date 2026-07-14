@@ -75,6 +75,14 @@ PanelWindow {
     onHasAppItemsChanged: offerPinHint()
     Component.onCompleted: Qt.callLater(offerPinHint)
 
+    Connections {
+        target: ShellConfig
+        function onDockPinHintShownChanged() {
+            if (!ShellConfig.dockPinHintShown)
+                Qt.callLater(dock.offerPinHint);
+        }
+    }
+
     function desktopIdFor(toplevel) {
         const appId = toplevel?.wayland?.appId
             || toplevel?.lastIpcObject?.class || "";

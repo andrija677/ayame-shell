@@ -31,7 +31,24 @@ Rectangle {
 
     transform: Translate { id: pinSlide; x: 14 }
 
-    Component.onCompleted: enterAnimation.start()
+    function playEntryAnimation() {
+        enterAnimation.stop();
+        pinChanging = false;
+        opacity = 0;
+        // Pinned items arrive from the running-app side. Unpinned running
+        // items return from the favorites side to their previous position.
+        pinSlide.x = pinned ? 14 : -14;
+        enterAnimation.start();
+    }
+
+    Component.onCompleted: {
+        if (visible)
+            playEntryAnimation();
+    }
+    onVisibleChanged: {
+        if (visible)
+            playEntryAnimation();
+    }
 
     ParallelAnimation {
         id: enterAnimation
@@ -53,7 +70,8 @@ Rectangle {
                 duration: Theme.motionFast; easing.type: Theme.easeExit
             }
             NumberAnimation {
-                target: pinSlide; property: "x"; to: -16
+                target: pinSlide; property: "x"
+                to: root.pinned ? 16 : -16
                 duration: Theme.motionFast; easing.type: Theme.easeExit
             }
         }
