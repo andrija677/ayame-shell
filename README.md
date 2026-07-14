@@ -57,6 +57,9 @@ autostart Ayame in KDE Plasma or other desktop sessions.
 Autostart waits briefly for the graphical session and records diagnostics under
 `~/.local/state/ayame-shell/startup.log`. Super+Enter opens Kitty, with
 Ctrl+Alt+T available as a VM-friendly fallback.
+An optional, separately included Kitty fragment provides the Ayame Violet
+terminal palette, spacing, transparency, and Ctrl+V clipboard paste without
+replacing an existing Kitty configuration.
 Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
 source line; pre-install backups are retained.
 

@@ -192,6 +192,10 @@ colors must remain active while Matugen runs. Restart in Follow Wallpaper mode
 and confirm the current image is detected from ML4W's cache. Select Ayame Violet,
 restart once more, and confirm automatic following remains disabled until the
 user explicitly selects it again.
+With the Ayame Kitty fragment enabled, confirm Kitty follows generated wallpaper
+colors and light/dark changes without restarting. Returning to Ayame Violet must
+restore the fallback terminal palette, Ctrl+V must paste, and an existing Kitty
+configuration must remain intact apart from its backed-up include line.
 
 Open Quick Settings and then Ayame Settings. Switch between Dark and Light and
 confirm every foreground remains readable, including inactive pills and nested

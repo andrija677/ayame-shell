@@ -89,6 +89,10 @@ available as an override. Only generated color data is cached in Quickshell's
 cache directory; the image is never uploaded or copied. Ayame Violet is a
 persistent off mode, and tonal, vibrant, and expressive schemes share the same
 semantic component API.
+The optional Kitty fragment consumes the same semantic palette through a small
+generated color include. Palette, light/dark, and Ayame Violet changes rewrite
+that include atomically and signal running Kitty windows to reload; layout and
+key mappings remain in a separate user-reviewable fragment.
 
 Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal

@@ -18,6 +18,9 @@ bin_dir="${XDG_BIN_HOME:-$HOME/.local/bin}"
 hypr_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
 hypr_main="$hypr_dir/hyprland.lua"
 hypr_fragment="$hypr_dir/ayame-shell.lua"
+kitty_dir="${XDG_CONFIG_HOME:-$HOME/.config}/kitty"
+kitty_main="$kitty_dir/kitty.conf"
+kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 
 required=(qs hyprctl hyprlock grim slurp wl-copy kitty)
@@ -74,6 +77,18 @@ if ((${#missing[@]})); then
     fi
 fi
 
+if command -v pacman >/dev/null 2>&1 \
+        && ! pacman -Q ttf-jetbrains-mono-nerd >/dev/null 2>&1; then
+    if [[ "$assume_yes" == true ]]; then
+        font_answer=y
+    else
+        read -r -p "Install JetBrainsMono Nerd Font for Ayame and Kitty? [y/N] " font_answer
+    fi
+    if [[ "$font_answer" =~ ^[Yy]$ ]]; then
+        sudo pacman -S --needed ttf-jetbrains-mono-nerd
+    fi
+fi
+
 echo "Ayame Shell installer"
 echo "  Source:      $source_dir"
 echo "  Destination: $prefix"
@@ -84,7 +99,7 @@ if [[ "$assume_yes" != true ]]; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
-mkdir -p "$(dirname -- "$prefix")" "$bin_dir" "$hypr_dir"
+mkdir -p "$(dirname -- "$prefix")" "$bin_dir" "$hypr_dir" "$kitty_dir"
 if [[ -e "$prefix" ]]; then
     backup="${prefix}.backup-${timestamp}"
     echo "Backing up the previous Ayame installation to $backup"
@@ -95,7 +110,27 @@ mkdir -p "$prefix"
 cp -a "$source_dir/assets" "$source_dir/config" "$source_dir/docs" \
     "$source_dir/scripts" "$source_dir/themes" "$source_dir/README.md" \
     "$source_dir/uninstall.sh" "$prefix/"
-chmod +x "$prefix/scripts/ayame-screenshot.sh" "$prefix/uninstall.sh"
+chmod +x "$prefix/scripts/ayame-screenshot.sh" \
+    "$prefix/scripts/ayame-kitty-colors.sh" "$prefix/uninstall.sh"
+
+install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
+install -m 0644 "$prefix/config/kitty/ayame-colors.conf" "$kitty_dir/ayame-colors.conf"
+if ! grep -Fq "include $kitty_fragment" "$kitty_main" 2>/dev/null; then
+    if [[ "$assume_yes" == true ]]; then
+        kitty_answer=y
+    else
+        read -r -p "Enable the Ayame Kitty design and Ctrl+V paste? [y/N] " kitty_answer
+    fi
+    if [[ "$kitty_answer" =~ ^[Yy]$ ]]; then
+        if [[ -f "$kitty_main" ]]; then
+            cp -a "$kitty_main" "$kitty_main.ayame-backup-$timestamp"
+            printf '\n# Ayame Shell\ninclude %s\n' "$kitty_fragment" >> "$kitty_main"
+        else
+            printf '# Created by Ayame Shell.\ninclude %s\n' "$kitty_fragment" > "$kitty_main"
+        fi
+        echo "Enabled the Ayame Kitty design."
+    fi
+fi
 
 cat > "$bin_dir/ayame-shell" <<EOF
 #!/usr/bin/env bash

@@ -84,7 +84,32 @@ QtObject {
         ShellConfig.dynamicColorsEnabled = false;
         ShellConfig.dynamicColorMode = "off";
         error = "";
+        syncKitty();
     }
+
+    function syncKitty() {
+        if (kittySync.running) return;
+        const mode = ShellConfig.colorScheme === "light" ? "light" : "dark";
+        function color(name, fallback) {
+            return active ? modeColor(name, mode, fallback) : fallback;
+        }
+        kittySync.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-kitty-colors.sh",
+            color("background", mode === "light" ? "#FEF7FF" : "#121116"),
+            color("on_surface", mode === "light" ? "#1D1B20" : "#F0ECF4"),
+            color("primary", mode === "light" ? "#68548E" : "#D0BCFF"),
+            color("on_primary", mode === "light" ? "#FFFFFF" : "#381E72"),
+            color("surface", mode === "light" ? "#FEF7FF" : "#1C1B22"),
+            color("surface_container_high", mode === "light" ? "#EDE6EE" : "#302D39"),
+            color("outline", mode === "light" ? "#7A757F" : "#958E9B"),
+            color("error", mode === "light" ? "#BA1A1A" : "#FFB4AB"),
+            mode === "light" ? "#386A3A" : "#A6D6A8",
+            mode === "light" ? "#765A00" : "#FFDDB3"
+        ];
+        kittySync.running = true;
+    }
+
+    property Process kittySync: Process {}
 
     property Process generator: Process {
         id: generator
@@ -115,6 +140,7 @@ QtObject {
                     paletteCache.style = ShellConfig.dynamicColorStyle;
                     paletteFile.writeAdapter();
                     ShellConfig.dynamicColorsEnabled = true;
+                    root.syncKitty();
                     root.error = "";
                 } catch (exception) {
                     root.error = "Matugen returned an invalid palette";
@@ -159,6 +185,7 @@ QtObject {
     }
 
     Component.onCompleted: {
+        syncKitty();
         if (ShellConfig.dynamicColorMode === "manual") {
             const cacheMatches = paletteCache.wallpaper
                     === ShellConfig.dynamicColorWallpaper
@@ -175,5 +202,7 @@ QtObject {
                     && root.detectedWallpaper.length > 0)
                 root.followWallpaper(root.detectedWallpaper);
         }
+        function onColorSchemeChanged() { root.syncKitty(); }
+        function onDynamicColorsEnabledChanged() { root.syncKitty(); }
     }
 }
