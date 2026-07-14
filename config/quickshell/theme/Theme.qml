@@ -4,6 +4,8 @@ import QtQuick
 import "../settings"
 
 QtObject {
+    readonly property bool compact: ShellConfig.densityMode === "compact"
+
     // Semantic colors: components describe a color's purpose, not its shade.
     // A generated wallpaper palette can replace these values later.
     readonly property color background: "#FF121116"
@@ -24,23 +26,23 @@ QtObject {
     readonly property color warning: "#FFFFDDB3"
     readonly property color error: "#FFFFB4AB"
 
-    readonly property int barHeight: 42
-    readonly property int dockHeight: 50
-    readonly property int outerMargin: 8
-    readonly property int itemHeight: 28
-    readonly property int sideAreaWidth: 240
+    readonly property int barHeight: compact ? 38 : 42
+    readonly property int dockHeight: compact ? 46 : 50
+    readonly property int outerMargin: compact ? 6 : 8
+    readonly property int itemHeight: compact ? 26 : 28
+    readonly property int sideAreaWidth: compact ? 220 : 240
 
     readonly property int space2: 2
     readonly property int space4: 4
     readonly property int space6: 6
     readonly property int space8: 8
-    readonly property int space12: 12
-    readonly property int space16: 16
-    readonly property int space24: 24
+    readonly property int space12: compact ? 10 : 12
+    readonly property int space16: compact ? 14 : 16
+    readonly property int space24: compact ? 20 : 24
 
     readonly property int radiusSmall: 8
     readonly property int radiusMedium: 12
-    readonly property int radiusLarge: 16
+    readonly property int radiusLarge: compact ? 14 : 16
     readonly property int radiusPill: 999
 
     readonly property int fontSmall: 12

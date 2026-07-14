@@ -170,6 +170,11 @@ and dock. State changes must remain correct and immediate with no stuck popup or
 partially transformed component. Re-enable it and confirm motion returns without
 a restart.
 
+Toggle Compact layout and confirm the bar, dock, dashboard, and Quick Settings
+reflow immediately with tighter spacing. Restart Ayame and confirm the selected
+density persists, then return to comfortable spacing and check that no text is
+clipped.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

@@ -47,6 +47,11 @@ Reduced motion is a first-class preference. Disabling animations sets the shared
 fast, normal, and slow durations to zero, preserving every state change and
 interaction while removing transitional movement across the shell.
 
+Layout density is also expressed through shared theme tokens. Comfortable mode
+keeps the default breathing room, while compact mode tightens shell margins,
+major gaps, bar and dock height, and wide bar regions without changing content
+or interaction targets unexpectedly.
+
 Calendar month changes preserve spatial direction: later months travel left and
 enter from the right, while earlier months do the reverse. Clock text uses two
 layers so compact time and expanded date crossfade and settle instead of swapping

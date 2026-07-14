@@ -338,6 +338,14 @@ PopupWindow {
                 onActivated: ShellConfig.animationsEnabled = !checked
             }
 
+            QuickToggleTile {
+                Layout.fillWidth: true
+                title: "Compact layout"
+                subtitle: checked ? "Tighter spacing" : "Comfortable spacing"
+                checked: ShellConfig.densityMode === "compact"
+                onActivated: ShellConfig.densityMode = checked ? "normal" : "compact"
+            }
+
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 72
