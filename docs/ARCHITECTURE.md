@@ -30,13 +30,11 @@ instead of creating a duplicate icon. The dock overlays windows without reservin
 a permanent bottom work area.
 
 Optional intelligent hiding observes the active Hyprland workspace's fullscreen
-state and live toplevel geometry directly. Hyprland reports a single tiled window
-as non-fullscreen even when it fills nearly the entire usable monitor, so Ayame
-also treats a window occupying at least 78% of the monitor width and 65% of its
-height as potentially obstructing. It then intersects that window's live global
-position with the dock's monitor-local bottom-center rectangle. Moving a large
-window away from the dock therefore reveals it even if the window remains large;
-split and smaller layouts remain below the size threshold.
+state and live toplevel geometry directly. It intersects every window's live
+global position with the dock's monitor-local bottom-center rectangle, so tiled,
+split, and floating windows hide the dock whenever they would sit behind it.
+Moving a window away from the dock reveals it immediately regardless of the
+window's size.
 When an obstructing window would sit behind the dock,
 the surface slides below the bottom edge without destroying its window or app
 model. A passive hover handler keeps a transparent bottom-edge sensor alive,

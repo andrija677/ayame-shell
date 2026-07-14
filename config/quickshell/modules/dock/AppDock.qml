@@ -36,13 +36,11 @@ PanelWindow {
                 continue;
             const windowRight = position[0] + geometry[0];
             const windowBottom = position[1] + geometry[1];
-            const fillsWidth = geometry[0] >= hyprlandMonitor.width * 0.78;
-            const fillsHeight = geometry[1] >= hyprlandMonitor.height * 0.65;
             const overlapsDock = windowRight > dockLeft
                 && position[0] < dockRight
                 && windowBottom > dockTop
                 && position[1] < monitorBottom;
-            if (fillsWidth && fillsHeight && overlapsDock)
+            if (overlapsDock)
                 return true;
         }
         return false;

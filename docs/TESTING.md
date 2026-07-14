@@ -252,11 +252,11 @@ edge. Move the pointer into the dock's usual bottom-center region and confirm it
 slides back smoothly, remains present while hovered, then hides after a short
 leave delay. Restore or unmaximize the window and confirm the dock stays visible.
 Also test one large tiled window (which Hyprland reports as non-fullscreen) and a
-split layout; the former must hide the dock while the latter keeps it visible.
-Move a large floating window upward or sideways until it no longer intersects the
-dock's bottom-center rectangle; the dock must reappear as soon as the move state
-updates during the live Win-drag, then hide again if the window is moved back over
-it. Disable Intelligent dock hide and confirm the geometry refresh loop stops.
+split layout; any window that intersects the dock's bottom-center rectangle must
+hide it. Move a floating window upward or sideways until it no longer intersects
+that rectangle; the dock must reappear as soon as the move state updates during
+the live Win-drag, then hide again if the window is moved back over it. Disable
+Intelligent dock hide and confirm the geometry refresh loop stops.
 Opening the launcher must hold the dock open. On multiple monitors, obstruction
 and reveal behavior must remain monitor-local. Disable the option and confirm the
 dock returns to always-visible behavior.
