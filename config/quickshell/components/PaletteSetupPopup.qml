@@ -10,6 +10,7 @@ PopupWindow {
     id: root
     required property var hostWindow
     property string selectedWallpaper: ""
+    property bool returnAfterChoosing: false
 
     function open() {
         pathInput.text = ShellConfig.dynamicColorWallpaper;
@@ -22,6 +23,12 @@ PopupWindow {
         ShellConfig.dynamicColorWallpaper = pathInput.text.trim();
         WallpaperService.apply(ShellConfig.dynamicColorWallpaper);
         DynamicPalette.generate(ShellConfig.dynamicColorWallpaper);
+    }
+
+    function chooseWallpaper(returnToPalette) {
+        returnAfterChoosing = returnToPalette;
+        visible = false;
+        wallpaperChooser.running = true;
     }
 
     anchor.window: hostWindow
@@ -158,10 +165,7 @@ PopupWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.visible = false;
-                        wallpaperChooser.running = true;
-                    }
+                    onClicked: root.chooseWallpaper(true)
                 }
             }
 
@@ -289,10 +293,11 @@ PopupWindow {
             if (exitCode === 0 && root.selectedWallpaper.length > 0) {
                 pathInput.text = root.selectedWallpaper;
                 root.generatePalette();
-            } else {
+            } else if (root.returnAfterChoosing) {
                 root.visible = true;
             }
             root.selectedWallpaper = "";
+            root.returnAfterChoosing = false;
         }
     }
 

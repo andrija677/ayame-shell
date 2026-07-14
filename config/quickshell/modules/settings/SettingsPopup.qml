@@ -192,15 +192,36 @@ PopupWindow {
                         }
                     }
                     Rectangle {
-                        implicitWidth: 66
+                        implicitWidth: 82
                         implicitHeight: 28
                         radius: Theme.radiusPill
-                        color: palettePointer.containsMouse ? Theme.primary : Theme.primaryContainer
+                        color: wallpaperPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "CHANGE"
-                            color: palettePointer.containsMouse
+                            text: "WALLPAPER"
+                            color: wallpaperPointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: wallpaperPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: paletteSetup.chooseWallpaper(false)
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 62
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: palettePointer.containsMouse ? Theme.primary : Theme.outlineVariant
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "COLORS"
+                            color: palettePointer.containsMouse
+                                ? Theme.foregroundPrimary : Theme.foregroundSurfaceVariant
                             font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
                         }
