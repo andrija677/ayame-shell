@@ -127,6 +127,20 @@ that service is inactive, the tile remains absent by design.
 
 Press `Ctrl+C` in the terminal that started it.
 
+## Persistent settings
+
+Settings are stored in Quickshell's private Ayame data directory as
+`settings.json`. To test persistence, change a `ShellConfig` property through a
+future settings UI or a temporary development binding, restart Ayame, and confirm
+the value remains. External valid JSON edits should reload while Ayame runs.
+
+Do not delete or hand-edit the file during normal testing without first backing
+it up; `ShellConfig.resetDefaults()` intentionally restores all defaults.
+
+The initial Quick Settings preferences toggle the active-window title and passive
+tray visibility. Change one, wait briefly for the debounced write, restart Ayame,
+and confirm both the visual state and toggle selection persist.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

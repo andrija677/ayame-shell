@@ -6,6 +6,7 @@ import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import "../../components"
+import "../../settings"
 import "../../theme"
 
 PopupWindow {
@@ -296,6 +297,27 @@ PopupWindow {
                             }
                         }
                     }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Window title"
+                    subtitle: checked ? "Visible in bar" : "Hidden from bar"
+                    checked: ShellConfig.activeWindowEnabled
+                    onActivated: ShellConfig.activeWindowEnabled = !checked
+                }
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Passive tray"
+                    subtitle: checked ? "Icons included" : "Active icons only"
+                    checked: ShellConfig.showPassiveTrayItems
+                    onActivated: ShellConfig.showPassiveTrayItems = !checked
                 }
             }
 
