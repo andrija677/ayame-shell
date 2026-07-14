@@ -310,6 +310,8 @@ On SDDM, logout must switch to its configured `MinimumVT` (VT3 by default) and
 reveal the greeter instead of leaving the display on Hyprland's dead VT. Verify
 the installed sudoers entry permits only the detected `/usr/bin/chvt N`, and
 confirm uninstall removes that entry.
+Confirm the Hyprland logind session disappears after logout and SDDM creates a
+fresh greeter session; a display containing only a cursor is a failure.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the

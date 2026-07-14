@@ -206,6 +206,9 @@ Logout requests SDDM's configured `MinimumVT`, defaulting to VT3 when SDDM has n
 override. `--sddm-vt=N` handles unusual display-manager layouts. The installer
 grants only that exact passwordless `/usr/bin/chvt N` command and the uninstaller
 removes the narrowly scoped sudoers entry.
+After Hyprland exits, the logout helper terminates its own logind session. This
+ensures SDDM receives a completed-session event and recreates the greeter instead
+of leaving only its display server and cursor visible.
 
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power
