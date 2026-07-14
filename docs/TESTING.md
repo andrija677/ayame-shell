@@ -14,6 +14,13 @@ Click each workspace indicator as part of the test. Ayame Shell targets
 Hyprland 0.55's Lua dispatcher syntax; legacy `workspace N` dispatch strings do
 not work when Hyprland is running a Lua configuration.
 
+For system tray testing:
+
+1. Confirm icons appear on the right when tray applications are running.
+2. Left-click an icon and confirm its normal action occurs.
+3. Right-click an icon and confirm its native menu opens near the bar.
+4. Middle-click or scroll only when the application normally supports it.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

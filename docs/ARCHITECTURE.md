@@ -5,6 +5,7 @@ Ayame Shell keeps presentation, system integration, and theme values separate.
 - `config/quickshell/components`: small reusable visual components
 - `config/quickshell/modules`: complete areas of the shell, such as the bar
 - `config/quickshell/services`: system and compositor data sources
+- `config/quickshell/settings`: user-facing feature defaults and settings data
 - `config/quickshell/theme`: shared colors, dimensions, and animation values
 - `config/hypr`: future optional Hyprland integration
 - `config/hyprlock`: future lock-screen configuration
@@ -16,3 +17,7 @@ Ayame Shell keeps presentation, system integration, and theme values separate.
 The root `shell.qml` is deliberately small. It assembles modules but does not
 contain their implementation details.
 
+Settings are separate from components. Components read typed feature flags from
+`ShellConfig`, allowing modules to be disabled without editing their internal
+layout or behavior. Persistent overrides and a graphical settings panel are
+planned later.

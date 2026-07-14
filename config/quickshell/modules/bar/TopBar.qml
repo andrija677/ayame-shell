@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import "../../components"
+import "../../settings"
 import "../../theme"
 
 PanelWindow {
@@ -16,6 +17,7 @@ PanelWindow {
     }
 
     implicitHeight: Theme.barHeight + Theme.outerMargin
+    visible: ShellConfig.barEnabled
     color: "transparent"
     exclusiveZone: implicitHeight
 
@@ -41,9 +43,10 @@ PanelWindow {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: Theme.sideAreaWidth
                 spacing: Theme.space6
+                visible: ShellConfig.workspacesEnabled
 
                 Repeater {
-                    model: 5
+                    model: ShellConfig.workspaceCount
 
                     WorkspaceButton {
                         required property int index
@@ -66,6 +69,7 @@ PanelWindow {
                 implicitHeight: Theme.itemHeight
                 radius: Theme.radiusPill
                 color: Theme.surfaceContainerHigh
+                visible: ShellConfig.clockEnabled
 
                 SystemClock {
                     id: clock
@@ -83,20 +87,37 @@ PanelWindow {
 
             Item { Layout.fillWidth: true }
 
-            Surface {
+            Item {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: Theme.sideAreaWidth
                 implicitHeight: Theme.itemHeight
-                radius: Theme.radiusPill
-                color: Theme.surfaceContainer
+                visible: ShellConfig.trayEnabled
 
-                StyledText {
-                    anchors.centerIn: parent
-                    text: SystemTray.items.values.length === 1
-                        ? "1 tray item"
-                        : SystemTray.items.values.length + " tray items"
-                    color: Theme.foregroundSurfaceVariant
-                    font.pixelSize: Theme.fontSmall
+                Surface {
+                    anchors.right: parent.right
+                    implicitWidth: Math.max(
+                        Theme.itemHeight,
+                        trayRow.implicitWidth + Theme.space8
+                    )
+                    implicitHeight: Theme.itemHeight
+                    radius: Theme.radiusPill
+                    color: Theme.surfaceContainer
+
+                    Row {
+                        id: trayRow
+                        anchors.centerIn: parent
+                        spacing: Theme.space2
+
+                        Repeater {
+                            model: SystemTray.items
+
+                            TrayItemButton {
+                                required property var modelData
+                                trayItem: modelData
+                                hostWindow: bar
+                            }
+                        }
+                    }
                 }
             }
         }
