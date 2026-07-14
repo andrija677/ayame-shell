@@ -74,11 +74,14 @@ For dashboard testing:
 1. Confirm the calendar highlights today and includes adjacent-month days.
 2. Start an MPRIS-compatible player and confirm title and artist update.
 3. Test previous, play/pause, and next when the player supports each action.
-4. Confirm no notification popup behavior changes while Ayame is running.
-5. Confirm opening unfolds downward from the clock with a top-center origin.
-6. Confirm closing reverses fully before the popup window disappears.
-7. Toggle repeatedly and confirm no half-open or invisible state remains.
-8. Confirm the first closing click both reverses the animation and compacts the
+4. Confirm artwork loads when supplied and the fallback note appears otherwise.
+5. Confirm playback time advances once per second and clicking the progress track
+   seeks only when the player supports seeking.
+6. Confirm no notification popup behavior changes while Ayame is running.
+7. Confirm opening unfolds downward from the clock with a top-center origin.
+8. Confirm closing reverses fully before the popup window disappears.
+9. Toggle repeatedly and confirm no half-open or invisible state remains.
+10. Confirm the first closing click both reverses the animation and compacts the
    clock date; a second cleanup click must never be necessary.
 
 For Quick Settings testing:
