@@ -62,6 +62,12 @@ The battery indicator follows UPower's display device and removes itself from
 the layout when no laptop battery is present. Audio, battery, and tray feature
 flags are independent.
 
+System tray items live in a collapsible group so background applications do not
+consume the whole right side of the bar. The group remains instantiated while
+closed, allowing status changes to continue, but clips and disables its visual
+footprint until the three-dot control is expanded. Native item activation, menus,
+and scrolling remain delegated to each tray item.
+
 Network status uses Quickshell's read-only NetworkManager backend. It reports
 global connectivity for wired and fallback states, and adds signal strength
 when a connected Wi-Fi network is available. A compact Canvas icon avoids icon

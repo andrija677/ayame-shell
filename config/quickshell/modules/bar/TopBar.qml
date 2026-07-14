@@ -14,6 +14,7 @@ PanelWindow {
     id: bar
 
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
+    property bool trayExpanded: false
 
     anchors {
         top: true
@@ -162,13 +163,78 @@ PanelWindow {
                             }
                         }
 
-                        Repeater {
-                            model: ShellConfig.trayEnabled ? SystemTray.items : null
+                        Rectangle {
+                            visible: ShellConfig.trayEnabled
+                                && SystemTray.items.values.length > 0
+                            implicitWidth: Theme.itemHeight
+                            implicitHeight: Theme.itemHeight
+                            radius: Theme.radiusPill
+                            color: trayTogglePointer.containsMouse
+                                ? Theme.surfaceContainerHigh : "transparent"
+                            scale: trayTogglePointer.pressed ? 0.9 : 1
 
-                            TrayItemButton {
-                                required property var modelData
-                                trayItem: modelData
-                                hostWindow: bar
+                            Behavior on color {
+                                ColorAnimation { duration: Theme.motionFast }
+                            }
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: Theme.motionFast
+                                    easing.type: Theme.easeEnter
+                                }
+                            }
+
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: bar.trayExpanded ? "⌃" : "•••"
+                                color: bar.trayExpanded
+                                    ? Theme.primary : Theme.foregroundSurfaceVariant
+                                font.pixelSize: bar.trayExpanded ? 15 : 10
+                                font.weight: Theme.fontWeightTitle
+                            }
+
+                            MouseArea {
+                                id: trayTogglePointer
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: bar.trayExpanded = !bar.trayExpanded
+                            }
+                        }
+
+                        Item {
+                            visible: ShellConfig.trayEnabled
+                                && SystemTray.items.values.length > 0
+                            width: bar.trayExpanded ? trayItemsRow.implicitWidth : 0
+                            height: Theme.itemHeight
+                            opacity: bar.trayExpanded ? 1 : 0
+                            clip: true
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: Theme.motionNormal
+                                    easing.type: bar.trayExpanded
+                                        ? Theme.easeEnter : Theme.easeExit
+                                }
+                            }
+                            Behavior on opacity {
+                                NumberAnimation { duration: Theme.motionFast }
+                            }
+
+                            Row {
+                                id: trayItemsRow
+                                height: parent.height
+                                spacing: Theme.space2
+
+                                Repeater {
+                                    model: ShellConfig.trayEnabled
+                                        ? SystemTray.items : null
+
+                                    TrayItemButton {
+                                        required property var modelData
+                                        trayItem: modelData
+                                        hostWindow: bar
+                                    }
+                                }
                             }
                         }
                     }

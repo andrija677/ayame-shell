@@ -221,6 +221,9 @@ left or right click on an item that publishes a menu must open its own actions a
 the tray icon, including application-provided quit and status entries. A tray
 item without a menu must retain normal primary activation, middle-click must
 retain secondary activation, and wheel events must continue reaching the item.
+Collapse the tray with its upward arrow and confirm the application icons animate
+into a compact three-dot control without shifting the centered clock. Expand it
+again and confirm every icon and native menu still works.
 
 Right-click a running application in the dock and confirm it remains as a
 favorite after the window closes. Left-click the favorite to launch it, then
