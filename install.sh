@@ -25,6 +25,7 @@ kitty_main="$kitty_dir/kitty.conf"
 kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
+sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
 required=(qs hyprctl hyprlock hyprpaper hyprshutdown grim slurp wl-copy kitty)
 declare -A command_packages=(
@@ -103,6 +104,14 @@ if [[ "$assume_yes" != true ]]; then
     read -r -p "Continue? [y/N] " answer
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
+
+sudoers_temporary="$(mktemp)"
+printf '%s ALL=(root) NOPASSWD: /usr/bin/chvt 2\n' "$USER" > "$sudoers_temporary"
+if ! sudo cmp -s "$sudoers_temporary" "$sudoers_file" 2>/dev/null; then
+    echo "Configuring the SDDM VT2 handoff used by Ayame Log Out."
+    sudo install -o root -g root -m 0440 "$sudoers_temporary" "$sudoers_file"
+fi
+rm -f "$sudoers_temporary"
 
 if [[ "$replace_desktop" == true ]]; then
     config_home="${XDG_CONFIG_HOME:-$HOME/.config}"

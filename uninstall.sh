@@ -16,6 +16,7 @@ hypr_main="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"
 hypr_fragment="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ayame-shell.lua"
 kitty_main="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 kitty_fragment="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/ayame-shell.conf"
+sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
 echo "This removes Ayame's installed files and generated Hyprland Lua loader."
 if [[ "$assume_yes" != true ]]; then
@@ -55,4 +56,8 @@ fi
 rm -f "$bin_path" "$hypr_fragment" "$kitty_fragment" \
     "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/ayame-colors.conf"
 rm -rf -- "$prefix"
+if [[ -f "$sudoers_file" ]] \
+        && sudo grep -Fxq "$USER ALL=(root) NOPASSWD: /usr/bin/chvt 2" "$sudoers_file"; then
+    sudo rm -f "$sudoers_file"
+fi
 echo "Ayame Shell was removed. Existing pre-install backups were left untouched."

@@ -306,6 +306,9 @@ After saving work, confirm Log Out starts Hyprshutdown and returns to the displa
 manager rather than invoking the removed legacy `hyprctl dispatch exit` syntax.
 Hyprshutdown must run in its default forked mode so closing Quickshell cannot
 terminate the logout before Hyprland exits.
+On SDDM, logout must switch to VT2 and reveal the greeter instead of leaving the
+display on Hyprland's dead VT. Verify the installed sudoers entry permits only
+`/usr/bin/chvt 2`, and confirm uninstall removes that entry.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the
