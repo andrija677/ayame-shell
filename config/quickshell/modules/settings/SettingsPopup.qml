@@ -32,6 +32,13 @@ PopupWindow {
     grabFocus: false
     visible: false
 
+    onVisibleChanged: {
+        if (!visible) {
+            closeTimer.stop();
+            panelOpen = false;
+        }
+    }
+
     Timer {
         id: closeTimer
         interval: Theme.motionNormal

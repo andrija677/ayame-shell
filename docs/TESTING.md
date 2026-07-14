@@ -211,6 +211,11 @@ Gaming Mode must reflect ML4W's marker, remain disabled while its script runs,
 and update after the script completes. Brightness must be omitted when no display
 backlight is available.
 
+While Ayame Settings is open, the top-bar Quick Settings trigger must remain in
+its active state. Clicking it must close Settings rather than stacking Quick
+Settings above it. Opening the clock dashboard must also close either right-side
+surface before the dashboard appears.
+
 Launch tray applications with different menus, such as Discord and Steam. A
 left or right click on an item that publishes a menu must open its own actions at
 the tray icon, including application-provided quit and status entries. A tray

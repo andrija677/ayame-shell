@@ -16,7 +16,7 @@ PopupWindow {
     id: root
 
     required property var hostWindow
-    readonly property bool open: panelOpen
+    readonly property bool open: panelOpen || settingsPanel.panelOpen
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property var audio: sink?.audio ?? null
     readonly property var battery: UPower.displayDevice
@@ -44,13 +44,15 @@ PopupWindow {
     property bool keepAwake: false
 
     function toggle() {
-        if (panelOpen)
+        if (open)
             closePanel();
         else
             openPanel();
     }
 
     function openPanel() {
+        if (settingsPanel.panelOpen)
+            settingsPanel.closePanel();
         closeTimer.stop();
         visible = true;
         panelOpen = true;
@@ -59,6 +61,8 @@ PopupWindow {
     function closePanel() {
         panelOpen = false;
         closeTimer.restart();
+        if (settingsPanel.panelOpen)
+            settingsPanel.closePanel();
     }
 
     function setVolumeFromX(position) {
