@@ -14,6 +14,8 @@ wallpaper-following palettes generated locally by Matugen, with a manual image
 override and the original Ayame Violet fallback. A dedicated Settings surface
 owns persistent light/dark appearance, tint, blur, motion, density, and layout,
 while Quick Settings focuses on live device and session controls.
+The searchable application launcher can be opened from the dock and exposes a
+compositor-safe IPC toggle for an optional keyboard binding.
 
 ## Test without installing
 

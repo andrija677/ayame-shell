@@ -29,11 +29,19 @@ launch through the desktop entry when closed, and merge with their running windo
 instead of creating a duplicate icon. The dock overlays windows without reserving
 a permanent bottom work area.
 
-The dock's Ayame button owns a screen-local application launcher. It indexes
-freedesktop desktop entries in memory, excludes entries marked `NoDisplay`, and
-filters names, generic names, and keywords as the user types. Launching delegates
-to the desktop entry rather than parsing its command in QML, preserving terminal,
-working-directory, and field-code behavior.
+The dock's Ayame button owns a screen-local application launcher. Unlike small
+bar popups, the launcher is a layer-shell overlay: this gives it reliable keyboard
+focus whether it was opened by pointer input or compositor IPC, and lets a click
+on the dimmed background dismiss it. It indexes freedesktop desktop entries in
+memory, excludes entries marked `NoDisplay`, and filters names, generic names,
+and keywords as the user types. Launching delegates to the desktop entry rather
+than parsing its command in QML, preserving terminal, working-directory, and
+field-code behavior.
+
+The root exposes `launcher toggle`, `launcher open`, and `launcher close` through
+Quickshell IPC. Requests target the dock on Hyprland's focused monitor. This gives
+optional compositor bindings a stable interface without allowing Ayame's
+development configuration to modify the user's live Hyprland files.
 
 Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
 the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecasts,

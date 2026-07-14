@@ -1,14 +1,14 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import Quickshell.Widgets
 import "../../components"
 import "../../theme"
 
-PopupWindow {
+PanelWindow {
     id: root
 
-    required property var hostWindow
     property bool panelOpen: false
     readonly property var filteredApps: {
         DesktopEntries.applications.values;
@@ -52,14 +52,14 @@ PopupWindow {
         closePanel();
     }
 
-    anchor.window: hostWindow
-    anchor.rect.x: Math.round((hostWindow.width - width) / 2)
-    anchor.rect.y: -height
-    implicitWidth: 420
-    implicitHeight: launcherSurface.implicitHeight + Theme.space8
+    anchors { top: true; bottom: true; left: true; right: true }
+    exclusiveZone: 0
     color: "transparent"
-    grabFocus: true
     visible: false
+    WlrLayershell.namespace: "ayame-shell-launcher"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: panelOpen
+        ? WlrLayershell.OnDemand : WlrLayershell.None
 
     Shortcut {
         sequence: "Escape"
@@ -80,11 +80,32 @@ PopupWindow {
         onTriggered: root.visible = false
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: Theme.background
+        opacity: root.panelOpen ? 0.34 : 0
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionNormal }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.closePanel()
+    }
+
     Surface {
         id: launcherSurface
-        width: parent.width
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+            bottomMargin: root.panelOpen
+                ? Theme.dockHeight + Theme.outerMargin * 3
+                : Theme.dockHeight
+        }
+        width: Math.min(420, root.width - Theme.space24)
         implicitHeight: launcherContent.implicitHeight + Theme.space24
-        y: root.panelOpen ? -Theme.space8 : Theme.space8
         opacity: root.panelOpen ? 1 : 0
         radius: Theme.radiusLarge
         color: Theme.surface
@@ -108,7 +129,7 @@ PopupWindow {
             }
         }
 
-        Behavior on y {
+        Behavior on anchors.bottomMargin {
             NumberAnimation {
                 duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit

@@ -240,6 +240,17 @@ Press Up from the first result to return to Search, then type while a result has
 focus and confirm the text is forwarded into Search. Press Escape and confirm the
 launcher reverses its animation before disappearing.
 
+Exercise the launcher's compositor-safe interface while Ayame is running:
+
+```bash
+qs --path "$HOME/Projects/ayame-shell/config/quickshell" ipc call launcher toggle
+qs --path "$HOME/Projects/ayame-shell/config/quickshell" ipc call launcher close
+```
+
+Confirm the overlay opens on the focused monitor, Search receives keyboard input,
+and the terminal reports no popup-parent or input-serial warnings. The optional
+Hyprland binding in `config/hypr/README.md` must call the same interface.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

@@ -10,6 +10,7 @@ import "../launcher"
 PanelWindow {
     id: dock
 
+    required property var shellController
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
     readonly property var favorites: ShellConfig.dockFavorites()
 
@@ -26,6 +27,24 @@ PanelWindow {
                 return candidate;
         }
         return null;
+    }
+
+    Connections {
+        target: dock.shellController
+
+        function onLauncherRequested(action) {
+            if (action === "close") {
+                if (launcher.panelOpen)
+                    launcher.closePanel();
+                return;
+            }
+            if (Hyprland.focusedMonitor !== dock.hyprlandMonitor)
+                return;
+            if (action === "open")
+                launcher.openPanel();
+            else
+                launcher.toggle();
+        }
     }
 
     anchors.bottom: true
@@ -119,6 +138,6 @@ PanelWindow {
 
     AppLauncherPopup {
         id: launcher
-        hostWindow: dock
+        screen: dock.screen
     }
 }
