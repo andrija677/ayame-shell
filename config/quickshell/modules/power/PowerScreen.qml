@@ -104,15 +104,19 @@ PanelWindow {
         stderr: StdioCollector {
             onStreamFinished: root.error = text.trim()
         }
-        onRunningChanged: {
-            if (running || root.executingAction.length === 0)
+        onExited: (exitCode, exitStatus) => {
+            if (root.executingAction.length === 0)
                 return;
             Qt.callLater(() => {
-                const failure = root.error;
+                const failed = exitCode !== 0;
+                const failure = root.error.length > 0
+                    ? root.error : "The system action could not be completed.";
                 root.executingAction = "";
-                if (failure.length > 0) {
+                if (failed) {
                     root.openPanel();
                     root.error = failure;
+                } else {
+                    root.error = "";
                 }
             });
         }

@@ -274,6 +274,10 @@ Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the
 wallpaper, clock, date, username greeting, and password field, reject an incorrect
 password visibly, and return to the same session after correct authentication.
+After a successful unlock, the power surface must remain completely absent rather
+than flashing behind Hyprlock or replaying a close transition. Normal Hyprlock
+stderr output must not be presented as an error; a nonzero exit may reopen the
+surface with its diagnostic text.
 Inspect the project lock configuration directly rather than copying it over the
 user's live Hyprlock configuration.
 

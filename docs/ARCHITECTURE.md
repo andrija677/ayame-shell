@@ -150,6 +150,9 @@ to Hyprland, while Restart and Shut Down delegate to systemd-logind through
 `systemctl`. Lock is immediate, but every session-ending or machine-ending action
 requires a separate confirmation state and warns about unsaved work. Commands are
 never exercised by automated preview testing.
+Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
+code—not stderr presence—to detect failure. A successful unlock leaves the power
+surface unmapped; only a nonzero exit reopens it with diagnostic text.
 
 The Hyprlock configuration is self-contained and currently reads ML4W's local
 blurred-wallpaper cache, matching Ayame's development environment. It provides a
