@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Bluetooth
 import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
@@ -17,6 +18,24 @@ PopupWindow {
     readonly property var battery: UPower.displayDevice
     readonly property bool batteryAvailable: battery?.isPresent
         && battery?.isLaptopBattery
+    readonly property var bluetoothAdapter: Bluetooth.defaultAdapter
+    readonly property int connectedBluetoothCount: {
+        let count = 0;
+        for (let device of Bluetooth.devices.values) {
+            if (device.connected)
+                count++;
+        }
+        return count;
+    }
+    readonly property var powerProfileOptions: {
+        const options = [
+            { label: "SAVER", value: PowerProfile.PowerSaver },
+            { label: "BALANCED", value: PowerProfile.Balanced }
+        ];
+        if (PowerProfiles.hasPerformanceProfile)
+            options.push({ label: "PERFORMANCE", value: PowerProfile.Performance });
+        return options;
+    }
     property bool panelOpen: false
 
     function toggle() {
@@ -204,6 +223,75 @@ PopupWindow {
                                 onPositionChanged: event => {
                                     if (pressed)
                                         root.setVolumeFromX(event.x);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            QuickToggleTile {
+                Layout.fillWidth: true
+                visible: root.bluetoothAdapter !== null
+                title: "Bluetooth"
+                subtitle: !root.bluetoothAdapter?.enabled ? "Off"
+                    : root.connectedBluetoothCount === 0 ? "No devices connected"
+                    : root.connectedBluetoothCount === 1 ? "1 device connected"
+                    : root.connectedBluetoothCount + " devices connected"
+                checked: root.bluetoothAdapter?.enabled ?? false
+                interactive: root.bluetoothAdapter !== null
+                onActivated: root.bluetoothAdapter.enabled
+                    = !root.bluetoothAdapter.enabled
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 78
+                color: Theme.surfaceContainer
+
+                ColumnLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+
+                    StyledText {
+                        text: "Power profile"
+                        font.weight: Font.DemiBold
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: Theme.space4
+
+                        Repeater {
+                            model: root.powerProfileOptions
+
+                            Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                implicitHeight: 26
+                                radius: Theme.radiusPill
+                                color: PowerProfiles.profile === modelData.value
+                                    ? Theme.primary : profilePointer.containsMouse
+                                        ? Theme.surfaceContainerHigh
+                                        : Theme.outlineVariant
+
+                                StyledText {
+                                    anchors.centerIn: parent
+                                    text: parent.modelData.label
+                                    color: PowerProfiles.profile === parent.modelData.value
+                                        ? Theme.foregroundPrimary
+                                        : Theme.foregroundSurfaceVariant
+                                    font.pixelSize: 9
+                                    font.weight: Font.Bold
+                                }
+
+                                MouseArea {
+                                    id: profilePointer
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: PowerProfiles.profile
+                                        = parent.modelData.value
                                 }
                             }
                         }

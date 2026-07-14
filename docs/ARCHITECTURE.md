@@ -59,3 +59,7 @@ Quick Settings is a separate screen-local popup owned by the bar's right-side
 trigger. It tracks PipeWire, NetworkManager connectivity, and UPower directly.
 Opening it closes the center dashboard and vice versa, so major surfaces never
 overlap.
+
+Quick Settings device tiles are capability-driven. Bluetooth is omitted when
+BlueZ exposes no adapter, connected counts come from its live device model, and
+the performance profile is offered only when UPower reports support for it.

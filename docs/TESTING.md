@@ -91,6 +91,14 @@ For Quick Settings testing:
 5. Open the clock dashboard, then Quick Settings, and confirm only one remains
    open; repeat in the opposite order.
 6. Click the sliders icon again and confirm the reverse animation completes.
+7. If Bluetooth hardware exists, toggle its tile and confirm adapter power and
+   connected-device count update; otherwise confirm no empty tile remains.
+8. Switch between available power profiles and confirm the selected pill and
+   system profile agree. Performance must appear only when supported.
+
+Bluetooth hardware alone is not sufficient: BlueZ must expose an adapter over
+D-Bus. Ayame does not start or enable the privileged `bluetooth.service`; when
+that service is inactive, the tile remains absent by design.
 
 ## Stop the development shell
 
