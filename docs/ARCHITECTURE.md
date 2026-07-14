@@ -59,6 +59,10 @@ The root exposes `launcher toggle`, `launcher open`, and `launcher close` throug
 Quickshell IPC. Requests target the dock on Hyprland's focused monitor. This gives
 optional compositor bindings a stable interface without allowing Ayame's
 development configuration to modify the user's live Hyprland files.
+Launcher searches remain desktop-entry-only unless input begins with `/`. Command
+mode strips that prefix and deliberately executes the remaining text through the
+user's shell, making the explicit prefix the safety boundary against accidental
+execution during ordinary app searches.
 The generated default uses Hyprland's release-only modifier binding for
 `SUPER_L`, opening the launcher when bare Super is released while preserving
 Super combinations and Super-drag window controls.

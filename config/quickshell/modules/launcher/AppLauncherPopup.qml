@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 import "../../components"
@@ -10,8 +11,13 @@ PanelWindow {
     id: root
 
     property bool panelOpen: false
+    readonly property bool commandMode: search.text.startsWith("/")
+    readonly property string commandText: commandMode
+        ? search.text.slice(1).trim() : ""
     readonly property var filteredApps: {
         DesktopEntries.applications.values;
+        if (commandMode)
+            return [];
         const needle = search.text.trim().toLowerCase();
         const apps = DesktopEntries.applications.values.filter(entry => {
             if (entry.noDisplay)
@@ -53,6 +59,14 @@ PanelWindow {
         closePanel();
     }
 
+    function runCommand() {
+        if (commandText.length === 0 || commandProcess.running)
+            return;
+        commandProcess.command = ["sh", "-lc", commandText];
+        commandProcess.running = true;
+        closePanel();
+    }
+
     anchors { top: true; bottom: true; left: true; right: true }
     exclusiveZone: 0
     color: "transparent"
@@ -89,6 +103,8 @@ PanelWindow {
         interval: Theme.motionNormal + Theme.motionUnmapGrace
         onTriggered: root.visible = false
     }
+
+    Process { id: commandProcess }
 
     Rectangle {
         anchors.fill: parent
@@ -196,15 +212,67 @@ PanelWindow {
                         appList.currentIndex = 0;
                         appList.forceActiveFocus();
                     }
-                    onAccepted: root.launch(root.filteredApps[0])
+                    onAccepted: {
+                        if (root.commandMode)
+                            root.runCommand();
+                        else
+                            root.launch(root.filteredApps[0]);
+                    }
 
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
                         visible: parent.text.length === 0
-                        text: "Search apps…"
+                        text: "Search apps or type /command…"
                         color: Theme.outline
                         font.weight: Theme.fontWeightBody
                     }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 52
+                visible: root.commandMode
+                radius: Theme.radiusMedium
+                color: commandPointer.containsMouse
+                    ? Theme.primaryContainer : Theme.surfaceContainerHigh
+
+                RowLayout {
+                    anchors { fill: parent; leftMargin: Theme.space12; rightMargin: Theme.space12 }
+                    spacing: Theme.space12
+                    StyledText {
+                        text: ">_"
+                        color: Theme.primary
+                        font.family: Theme.fontFamilyNumeric
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 0
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: root.commandText.length > 0
+                                ? root.commandText : "Type a command after /"
+                            font.family: Theme.fontFamilyNumeric
+                            font.weight: Theme.fontWeightLabel
+                            elide: Text.ElideRight
+                        }
+                        StyledText {
+                            text: root.commandText.length > 0
+                                ? "Run Command • Enter" : "The / prefix is not executed"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                        }
+                    }
+                }
+
+                MouseArea {
+                    id: commandPointer
+                    anchors.fill: parent
+                    enabled: root.commandText.length > 0 && !commandProcess.running
+                    hoverEnabled: true
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: root.runCommand()
                 }
             }
 
@@ -215,6 +283,7 @@ PanelWindow {
                 clip: true
                 spacing: Theme.space4
                 model: root.filteredApps
+                visible: !root.commandMode
                 currentIndex: count > 0 ? 0 : -1
                 keyNavigationWraps: true
                 Keys.onEscapePressed: root.closePanel()
@@ -309,7 +378,7 @@ PanelWindow {
 
             StyledText {
                 Layout.fillWidth: true
-                visible: root.filteredApps.length === 0
+                visible: !root.commandMode && root.filteredApps.length === 0
                 text: "No applications found"
                 color: Theme.foregroundSurfaceVariant
                 horizontalAlignment: Text.AlignHCenter
