@@ -23,6 +23,9 @@ The Utilities surface documents recovery-friendly window keybinds and captures
 the desktop, active monitor, or selected area instantly or after a countdown.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
+Fresh installations start with Ayame's bundled CC0 anime wallpaper; existing
+wallpaper choices are preserved. Press `Super + .` to open the emoji picker,
+then paste the copied emoji normally.
 Prefix launcher input with `/` to run a shell command; the prefix is a launcher
 cue and is not passed to the command. Desktop-entry metadata keeps graphical apps
 such as Firefox direct, while terminal programs such as `btop` open in Kitty.

@@ -148,19 +148,19 @@ Surface {
                 spacing: Theme.space6
 
                 MediaControlButton {
-                    label: "‹"
+                    label: "󰒮"
                     available: root.player?.canGoPrevious ?? false
                     onActivated: root.player?.previous()
                 }
 
                 MediaControlButton {
-                    label: root.player?.isPlaying ? "Pause" : "Play"
+                    label: root.player?.isPlaying ? "󰏤" : "󰐊"
                     available: root.player?.canTogglePlaying ?? false
                     onActivated: root.player?.togglePlaying()
                 }
 
                 MediaControlButton {
-                    label: "›"
+                    label: "󰒭"
                     available: root.player?.canGoNext ?? false
                     onActivated: root.player?.next()
                 }

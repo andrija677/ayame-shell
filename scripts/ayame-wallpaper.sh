@@ -4,6 +4,8 @@ set -euo pipefail
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/ayame-shell"
 wallpaper_file="$state_dir/wallpaper.path"
 hyprpaper_config="$state_dir/hyprpaper.conf"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+default_wallpaper="$script_dir/../assets/wallpapers/ayame-default.jpg"
 
 write_config() {
     local wallpaper="$1"
@@ -32,6 +34,12 @@ case "${1:-}" in
                 write_config "$wallpaper"
                 exec hyprpaper --config "$hyprpaper_config"
             fi
+        fi
+        if [[ -f "$default_wallpaper" ]]; then
+            wallpaper="$(readlink -f -- "$default_wallpaper")"
+            printf '%s\n' "$wallpaper" > "$wallpaper_file"
+            write_config "$wallpaper"
+            exec hyprpaper --config "$hyprpaper_config"
         fi
         printf 'splash = false\nipc = true\n' > "$hyprpaper_config"
         exec hyprpaper --config "$hyprpaper_config"

@@ -29,7 +29,7 @@ timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty matugen)
+required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty matugen rofi rofimoji)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
@@ -40,6 +40,8 @@ declare -A command_packages=(
     [wl-copy]=wl-clipboard
     [kitty]=kitty
     [matugen]=matugen
+    [rofi]=rofi
+    [rofimoji]=rofimoji
 )
 missing=()
 for command_name in "${required[@]}"; do
@@ -190,6 +192,7 @@ cp -a "$source_dir/assets" "$source_dir/config" "$source_dir/docs" \
 chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-kitty-colors.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
+    "$prefix/scripts/ayame-emoji-picker.sh" \
     "$prefix/scripts/ayame-logout.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 
@@ -226,6 +229,7 @@ cat > "$hypr_fragment" <<EOF
 local ayame = "$bin_dir/ayame-shell"
 local screenshot = "$prefix/scripts/ayame-screenshot.sh"
 local wallpaper = "$prefix/scripts/ayame-wallpaper.sh"
+local emoji_picker = "$prefix/scripts/ayame-emoji-picker.sh"
 
 hl.config({
     misc = {
@@ -242,6 +246,7 @@ end)
 
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(ayame .. " ipc call launcher toggle"), { release = true, description = "Open Ayame launcher" })
 hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("kitty"), { description = "Open Kitty terminal" })
+hl.bind("SUPER + PERIOD", hl.dsp.exec_cmd(emoji_picker), { description = "Open emoji picker" })
 hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("kitty"), { description = "Open Kitty terminal (VM fallback)" })
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }), { description = "Toggle fullscreen" })
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })

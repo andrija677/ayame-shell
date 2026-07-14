@@ -8,7 +8,7 @@ Rectangle {
     property bool available: true
     signal activated()
 
-    implicitWidth: label.length > 1 ? 42 : 32
+    implicitWidth: 32
     implicitHeight: 26
     radius: Theme.radiusPill
     visible: available
@@ -19,7 +19,8 @@ Rectangle {
         text: root.label
         color: pointer.containsMouse
             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
-        font.pixelSize: root.label.length > 1 ? 9 : 14
+        font.family: Theme.fontFamilyNumeric
+        font.pixelSize: 14
         font.weight: Theme.fontWeightTitle
     }
 

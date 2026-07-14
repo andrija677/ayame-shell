@@ -9,6 +9,8 @@ QtObject {
     id: root
     property string error: ""
     property bool applying: false
+    readonly property string defaultWallpaper:
+        Quickshell.shellDir + "/../../assets/wallpapers/ayame-default.jpg"
 
     function apply(path) {
         const clean = (path || "").trim();
@@ -32,7 +34,8 @@ QtObject {
 
     property Timer restoreTimer: Timer {
         interval: 1400
-        running: ShellConfig.dynamicColorWallpaper.length > 0
-        onTriggered: root.apply(ShellConfig.dynamicColorWallpaper)
+        running: true
+        onTriggered: root.apply(ShellConfig.dynamicColorWallpaper.length > 0
+            ? ShellConfig.dynamicColorWallpaper : root.defaultWallpaper)
     }
 }
