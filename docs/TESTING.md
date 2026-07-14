@@ -246,6 +246,17 @@ Left-click the active icon to minimize and click it again to restore/focus it.
 Restart Ayame and confirm the favorite remains. Right-click it again to unpin it;
 once its window closes, the icon must leave the dock.
 
+Enable Intelligent dock hide in Ayame Settings. Maximize or fullscreen a window
+on one monitor and confirm that monitor's dock slides completely below the bottom
+edge. Move the pointer into the dock's usual bottom-center region and confirm it
+slides back smoothly, remains present while hovered, then hides after a short
+leave delay. Restore or unmaximize the window and confirm the dock stays visible.
+Also test one large tiled window (which Hyprland reports as non-fullscreen) and a
+split layout; the former must hide the dock while the latter keeps it visible.
+Opening the launcher must hold the dock open. On multiple monitors, obstruction
+and reveal behavior must remain monitor-local. Disable the option and confirm the
+dock returns to always-visible behavior.
+
 Click the nine-dot application grid at the start of the dock. Confirm the launcher unfolds above
 the dock and places keyboard focus in Search. Search using an application's name,
 generic name, and keyword; hidden desktop entries must not appear. Press Enter to

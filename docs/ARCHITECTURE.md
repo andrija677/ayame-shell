@@ -29,6 +29,18 @@ launch through the desktop entry when closed, and merge with their running windo
 instead of creating a duplicate icon. The dock overlays windows without reserving
 a permanent bottom work area.
 
+Optional intelligent hiding observes the active Hyprland workspace's fullscreen
+state and live toplevel geometry directly. Hyprland reports a single tiled window
+as non-fullscreen even when it fills nearly the entire usable monitor, so Ayame
+also treats a window occupying at least 78% of the monitor width and 65% of its
+height as obstructing. Split and smaller layouts remain below that threshold.
+When an obstructing window would sit behind the dock,
+the surface slides below the bottom edge without destroying its window or app
+model. A passive hover handler keeps a transparent bottom-edge sensor alive,
+reveals the dock as the pointer approaches, and delays hiding briefly after the
+pointer leaves to avoid oscillation. Non-obstructing window layouts keep the dock
+visible, and opening the launcher temporarily holds it open.
+
 The dock's Ayame button owns a screen-local application launcher. Unlike small
 bar popups, the launcher is a layer-shell overlay: this gives it reliable keyboard
 focus whether it was opened by pointer input or compositor IPC, and lets a click

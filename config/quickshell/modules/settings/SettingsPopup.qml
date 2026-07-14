@@ -262,6 +262,15 @@ PopupWindow {
 
             QuickToggleTile {
                 Layout.fillWidth: true
+                title: "Intelligent dock hide"
+                subtitle: checked ? "Reveal at the bottom edge" : "Dock stays visible"
+                checked: ShellConfig.dockAutoHide
+                interactive: ShellConfig.dockEnabled
+                onActivated: ShellConfig.dockAutoHide = !checked
+            }
+
+            QuickToggleTile {
+                Layout.fillWidth: true
                 title: "Passive tray icons"
                 subtitle: checked ? "Included in system tray" : "Active icons only"
                 checked: ShellConfig.showPassiveTrayItems

@@ -9,6 +9,7 @@ QtObject {
 
     property alias barEnabled: values.barEnabled
     property alias dockEnabled: values.dockEnabled
+    property alias dockAutoHide: values.dockAutoHide
     property alias pinnedDockApps: values.pinnedDockApps
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
@@ -66,6 +67,7 @@ QtObject {
     function resetDefaults() {
         values.barEnabled = true;
         values.dockEnabled = true;
+        values.dockAutoHide = false;
         values.pinnedDockApps = "";
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
@@ -115,6 +117,7 @@ QtObject {
 
             property bool barEnabled: true
             property bool dockEnabled: true
+            property bool dockAutoHide: false
             property string pinnedDockApps: ""
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true

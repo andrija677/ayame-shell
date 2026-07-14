@@ -13,6 +13,28 @@ PanelWindow {
     required property var shellController
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
     readonly property var favorites: ShellConfig.dockFavorites()
+    readonly property bool workspaceObstructed: {
+        const workspace = hyprlandMonitor?.activeWorkspace;
+        if (!workspace)
+            return false;
+        if (workspace.hasFullscreen)
+            return true;
+
+        const windows = workspace.toplevels.values;
+        for (let i = 0; i < windows.length; ++i) {
+            const geometry = windows[i].lastIpcObject?.size;
+            if (!geometry || geometry.length < 2)
+                continue;
+            const fillsWidth = geometry[0] >= screen.width * 0.78;
+            const fillsHeight = geometry[1] >= screen.height * 0.65;
+            if (fillsWidth && fillsHeight)
+                return true;
+        }
+        return false;
+    }
+    readonly property bool dockHidden: ShellConfig.dockAutoHide
+        && workspaceObstructed && !pointerReveal && !launcher.panelOpen
+    property bool pointerReveal: false
 
     function desktopIdFor(toplevel) {
         const appId = toplevel?.wayland?.appId
@@ -55,12 +77,31 @@ PanelWindow {
     color: "transparent"
     WlrLayershell.namespace: "ayame-shell-dock"
 
+    HoverHandler {
+        id: dockHover
+        onHoveredChanged: {
+            if (hovered) {
+                hideDelay.stop();
+                dock.pointerReveal = true;
+            } else {
+                hideDelay.restart();
+            }
+        }
+    }
+
+    Timer {
+        id: hideDelay
+        interval: 420
+        onTriggered: dock.pointerReveal = false
+    }
+
     Surface {
         id: dockSurface
         anchors {
             horizontalCenter: parent.horizontalCenter
             bottom: parent.bottom
-            bottomMargin: Theme.outerMargin
+            bottomMargin: dock.dockHidden
+                ? -Theme.dockHeight : Theme.outerMargin
         }
         implicitWidth: Math.max(
             Theme.dockHeight,
@@ -69,6 +110,15 @@ PanelWindow {
         implicitHeight: Theme.dockHeight
         radius: Theme.radiusLarge
         color: Theme.surface
+
+        Behavior on anchors.bottomMargin {
+            NumberAnimation {
+                duration: dock.dockHidden
+                    ? Theme.motionNormal : Theme.motionSlow
+                easing.type: dock.dockHidden
+                    ? Theme.easeExit : Theme.easeEnter
+            }
+        }
 
         Row {
             id: dockRow
