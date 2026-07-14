@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import "../../components"
 import "../../settings"
 import "../../theme"
@@ -38,10 +39,16 @@ PopupWindow {
     implicitWidth: 420
     implicitHeight: dashboard.implicitHeight + Theme.space8
     color: "transparent"
-    // Keeping focus with the bar lets a second clock click reach toggle().
-    // If the popup grabs focus, Quickshell dismisses it as an outside click
-    // before Ayame can play the closing transition.
-    grabFocus: false
+    grabFocus: true
+
+    HyprlandFocusGrab {
+        windows: [root, root.hostWindow]
+        active: root.visible
+        onCleared: {
+            if (root.panelOpen)
+                root.closePanel();
+        }
+    }
 
     Shortcut {
         sequence: "Escape"

@@ -31,7 +31,7 @@ PopupWindow {
     implicitWidth: 460
     implicitHeight: settingsSurface.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: false
+    grabFocus: true
     visible: false
 
     Shortcut {

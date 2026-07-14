@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Bluetooth
 import Quickshell.Networking
 import Quickshell.Services.Pipewire
@@ -82,7 +83,16 @@ PopupWindow {
     implicitWidth: 340
     implicitHeight: panel.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: false
+    grabFocus: true
+
+    HyprlandFocusGrab {
+        windows: [root, settingsPanel, root.hostWindow]
+        active: root.visible || settingsPanel.visible
+        onCleared: {
+            if (root.open)
+                root.closePanel();
+        }
+    }
 
     Shortcut {
         sequence: "Escape"
