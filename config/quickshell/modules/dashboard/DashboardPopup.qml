@@ -12,6 +12,7 @@ PopupWindow {
     required property var hostWindow
     readonly property bool open: panelOpen
     property bool panelOpen: false
+    property bool intentionalHide: false
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -56,6 +57,11 @@ PopupWindow {
 
     onVisibleChanged: {
         if (!visible) {
+            if (!intentionalHide && panelOpen) {
+                visible = true;
+                closePanel();
+                return;
+            }
             closeTimer.stop();
             panelOpen = false;
         }
@@ -70,7 +76,11 @@ PopupWindow {
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + Theme.motionUnmapGrace
-        onTriggered: root.visible = false
+        onTriggered: {
+            root.intentionalHide = true;
+            root.visible = false;
+            root.intentionalHide = false;
+        }
     }
 
     Surface {
