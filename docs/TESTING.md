@@ -357,6 +357,9 @@ file is explicitly sourced.
 With the optional bindings enabled, tap and release bare Super to toggle the
 launcher. Holding Super for another shortcut or window drag must retain its normal
 behavior rather than opening the launcher prematurely.
+Immediately type after releasing Super without moving the pointer. Every character
+must reach launcher search; Wayland focus acquisition may retry internally but
+must not require mouse motion.
 Type `/btop` and press Enter. Confirm the launcher closes, Kitty opens with btop,
 and quitting btop leaves an interactive shell plus its exit status. No leading
 slash may reach the shell. Normal app searches must never enter command mode

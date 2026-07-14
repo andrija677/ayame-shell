@@ -80,8 +80,7 @@ PopupWindow {
 
             Behavior on xScale {
                 NumberAnimation {
-                    duration: root.panelOpen
-                        ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen
                         ? Theme.easeEnter : Theme.easeExit
                 }
@@ -89,8 +88,7 @@ PopupWindow {
 
             Behavior on yScale {
                 NumberAnimation {
-                    duration: root.panelOpen
-                        ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen
                         ? Theme.easeEnter : Theme.easeExit
                 }
@@ -99,8 +97,7 @@ PopupWindow {
 
         Behavior on y {
             NumberAnimation {
-                duration: root.panelOpen
-                    ? Theme.motionSlow : Theme.motionNormal
+                duration: Theme.motionNormal
                 easing.type: root.panelOpen
                     ? Theme.easeEnter : Theme.easeExit
             }

@@ -42,11 +42,13 @@ PanelWindow {
         closeTimer.stop();
         panelOpen = false;
         visible = true;
+        focusRetry.start();
         openTimer.restart();
     }
 
     function closePanel() {
         openTimer.stop();
+        focusRetry.stop();
         panelOpen = false;
         search.text = "";
         closeTimer.restart();
@@ -76,7 +78,7 @@ PanelWindow {
     visible: false
     WlrLayershell.namespace: "ayame-shell-launcher"
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: panelOpen
+    WlrLayershell.keyboardFocus: visible
         ? WlrLayershell.OnDemand : WlrLayershell.None
 
     Shortcut {
@@ -86,6 +88,7 @@ PanelWindow {
 
     onVisibleChanged: {
         if (!visible) {
+            focusRetry.stop();
             closeTimer.stop();
             panelOpen = false;
             search.text = "";
@@ -97,7 +100,18 @@ PanelWindow {
         interval: Theme.motionMapGrace
         onTriggered: {
             root.panelOpen = true;
+            focusRetry.start();
+        }
+    }
+
+    Timer {
+        id: focusRetry
+        interval: 8
+        repeat: true
+        onTriggered: {
             search.forceActiveFocus();
+            if (search.activeFocus)
+                stop();
         }
     }
 
@@ -146,13 +160,13 @@ PanelWindow {
             yScale: root.panelOpen ? 1 : 0.86
             Behavior on xScale {
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on yScale {
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
@@ -160,7 +174,7 @@ PanelWindow {
 
         Behavior on anchors.bottomMargin {
             NumberAnimation {
-                duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                duration: Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
