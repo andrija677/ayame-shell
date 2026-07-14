@@ -3,9 +3,11 @@ set -euo pipefail
 
 prefix="${XDG_DATA_HOME:-$HOME/.local/share}/ayame-shell"
 assume_yes=false
+install_dependencies=true
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
+        --no-install-deps) install_dependencies=false ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
     esac
@@ -18,15 +20,58 @@ hypr_main="$hypr_dir/hyprland.conf"
 hypr_fragment="$hypr_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 
-required=(qs hyprctl hyprlock grim slurp wl-copy)
+required=(qs hyprctl hyprlock grim slurp wl-copy kitty)
+declare -A command_packages=(
+    [qs]=quickshell
+    [hyprctl]=hyprland
+    [hyprlock]=hyprlock
+    [grim]=grim
+    [slurp]=slurp
+    [wl-copy]=wl-clipboard
+    [kitty]=kitty
+)
 missing=()
 for command_name in "${required[@]}"; do
     command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")
 done
 if ((${#missing[@]})); then
-    printf 'Missing required commands: %s\n' "${missing[*]}" >&2
-    echo "Install the matching EndeavourOS/Arch packages, then run this installer again." >&2
-    exit 1
+    printf 'Missing required commands: %s\n' "${missing[*]}"
+    missing_packages=()
+    for command_name in "${missing[@]}"; do
+        package_name="${command_packages[$command_name]}"
+        [[ " ${missing_packages[*]} " == *" $package_name "* ]] \
+            || missing_packages+=("$package_name")
+    done
+    printf 'Packages needed: %s\n' "${missing_packages[*]}"
+
+    if [[ "$install_dependencies" != true ]]; then
+        echo "Dependency installation was disabled with --no-install-deps." >&2
+        exit 1
+    fi
+    if ! command -v pacman >/dev/null 2>&1; then
+        echo "Automatic dependencies currently require Arch Linux or EndeavourOS with pacman." >&2
+        exit 1
+    fi
+    if [[ "$assume_yes" == true ]]; then
+        dependency_answer=y
+    else
+        read -r -p "Install the missing packages with pacman now? [y/N] " dependency_answer
+    fi
+    if [[ ! "$dependency_answer" =~ ^[Yy]$ ]]; then
+        echo "Install the listed packages, then run this installer again." >&2
+        exit 1
+    fi
+    sudo pacman -S --needed "${missing_packages[@]}"
+
+    still_missing=()
+    for command_name in "${required[@]}"; do
+        command -v "$command_name" >/dev/null 2>&1 || still_missing+=("$command_name")
+    done
+    if ((${#still_missing[@]})); then
+        printf 'Commands still missing after package installation: %s\n' \
+            "${still_missing[*]}" >&2
+        exit 1
+    fi
 fi
 
 echo "Ayame Shell installer"

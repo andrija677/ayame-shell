@@ -48,6 +48,9 @@ The installer checks dependencies, previews its destination, backs up an existin
 Ayame installation, installs under `~/.local/share/ayame-shell`, creates the
 `~/.local/bin/ayame-shell` launcher, and optionally adds one backed-up Hyprland
 source line. It never replaces existing Quickshell, Hyprlock, or Hypridle files.
+On EndeavourOS and Arch Linux it offers to install missing core packages with
+`pacman`, including Hyprland, Quickshell, Hyprlock, the screenshot tools, and
+Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
 Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
 source line; pre-install backups are retained.
 
