@@ -299,10 +299,10 @@ PanelWindow {
 
         Rectangle {
             visible: root.selectionDragging
-            x: Math.min(root.selectionStartX, root.selectionCurrentX)
-            y: Math.min(root.selectionStartY, root.selectionCurrentY)
-            width: Math.abs(root.selectionCurrentX - root.selectionStartX)
-            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            x: Math.min(root.selectionStartX, selectionPointer.mouseX)
+            y: Math.min(root.selectionStartY, selectionPointer.mouseY)
+            width: Math.abs(selectionPointer.mouseX - root.selectionStartX)
+            height: Math.abs(selectionPointer.mouseY - root.selectionStartY)
             color: "#596d4c8e"
             border.color: Theme.primary
             border.width: 4
@@ -311,8 +311,8 @@ PanelWindow {
         StyledText {
             anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin: Theme.space24 }
             text: root.selectionDragging
-                ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
-                    + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
+                ? Math.round(Math.abs(selectionPointer.mouseX - root.selectionStartX))
+                    + " × " + Math.round(Math.abs(selectionPointer.mouseY - root.selectionStartY))
                 : "Drag to select an area • Esc to cancel"
             color: Theme.foregroundPrimary
             font.weight: Theme.fontWeightLabel
@@ -321,6 +321,9 @@ PanelWindow {
         MouseArea {
             id: selectionPointer
             anchors.fill: parent
+            hoverEnabled: true
+            preventStealing: true
+            acceptedButtons: Qt.LeftButton
             cursorShape: Qt.CrossCursor
             onPressed: mouse => {
                 root.selectionDragging = true;
@@ -329,13 +332,9 @@ PanelWindow {
                 root.selectionCurrentX = mouse.x;
                 root.selectionCurrentY = mouse.y;
             }
-            onMouseXChanged: {
-                if (pressed)
-                    root.selectionCurrentX = mouseX;
-            }
-            onMouseYChanged: {
-                if (pressed)
-                    root.selectionCurrentY = mouseY;
+            onPositionChanged: mouse => {
+                root.selectionCurrentX = mouse.x;
+                root.selectionCurrentY = mouse.y;
             }
             onReleased: mouse => {
                 root.selectionCurrentX = mouse.x;
