@@ -51,6 +51,9 @@ source line. It never replaces existing Quickshell, Hyprlock, or Hypridle files.
 On EndeavourOS and Arch Linux it offers to install missing core packages with
 `pacman`, including Hyprland, Quickshell, Hyprlock, the screenshot tools, and
 Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
+When Hyprland has no user configuration yet, the installer can create a minimal
+profile that sources Ayame and starts it only for Hyprland logins. It does not
+autostart Ayame in KDE Plasma or other desktop sessions.
 Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
 source line; pre-install backups are retained.
 

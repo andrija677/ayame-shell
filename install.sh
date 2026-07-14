@@ -118,7 +118,22 @@ bind = SHIFT, PRINT, exec, $prefix/scripts/ayame-screenshot.sh area 0
 bind = SUPER, PRINT, exec, $prefix/scripts/ayame-screenshot.sh monitor 0 ${monitor:-AUTO}
 EOF
 
-if [[ -f "$hypr_main" ]] && ! grep -Fq "source = $hypr_fragment" "$hypr_main"; then
+if [[ ! -f "$hypr_main" ]]; then
+    if [[ "$assume_yes" == true ]]; then
+        link_answer=y
+    else
+        read -r -p "Create a new Hyprland profile and start Ayame on Hyprland login? [y/N] " link_answer
+    fi
+    if [[ "$link_answer" =~ ^[Yy]$ ]]; then
+        cat > "$hypr_main" <<EOF
+# Created by Ayame Shell for a new Hyprland profile.
+
+# Ayame Shell
+source = $hypr_fragment
+EOF
+        echo "Created $hypr_main and enabled Ayame for Hyprland logins."
+    fi
+elif ! grep -Fq "source = $hypr_fragment" "$hypr_main"; then
     if [[ "$assume_yes" == true ]]; then
         link_answer=y
     else

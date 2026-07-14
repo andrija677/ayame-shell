@@ -24,10 +24,15 @@ fi
 if [[ -f "$hypr_main" ]]; then
     temporary="$(mktemp)"
     awk -v fragment="$hypr_fragment" \
-        '$0 != "# Ayame Shell" && $0 != "source = " fragment' \
+        '$0 != "# Created by Ayame Shell for a new Hyprland profile." &&
+         $0 != "# Ayame Shell" && $0 != "source = " fragment' \
         "$hypr_main" > "$temporary"
     cp -a "$hypr_main" "$hypr_main.ayame-uninstall-backup-$(date +%Y%m%d-%H%M%S)"
-    install -m 0644 "$temporary" "$hypr_main"
+    if grep -q '[^[:space:]]' "$temporary"; then
+        install -m 0644 "$temporary" "$hypr_main"
+    else
+        rm -f "$hypr_main"
+    fi
     rm -f "$temporary"
 fi
 
