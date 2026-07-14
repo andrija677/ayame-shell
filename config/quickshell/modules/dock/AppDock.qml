@@ -13,6 +13,18 @@ PanelWindow {
     required property var shellController
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
     readonly property var favorites: ShellConfig.dockFavorites()
+    readonly property bool hasAppItems: {
+        if (favorites.length > 0)
+            return true;
+        const windows = Hyprland.toplevels.values;
+        for (let i = 0; i < windows.length; ++i) {
+            const candidate = windows[i];
+            if (candidate.monitor === hyprlandMonitor
+                    && favorites.indexOf(desktopIdFor(candidate)) < 0)
+                return true;
+        }
+        return false;
+    }
     readonly property bool workspaceObstructed: {
         const workspace = hyprlandMonitor?.activeWorkspace;
         if (!workspace)
@@ -195,6 +207,7 @@ PanelWindow {
                 width: 1
                 height: 26
                 anchors.verticalCenter: parent.verticalCenter
+                visible: dock.hasAppItems
                 color: Theme.outlineVariant
             }
 
