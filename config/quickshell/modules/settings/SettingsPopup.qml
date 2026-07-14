@@ -209,7 +209,7 @@ PopupWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: paletteSetup.chooseWallpaper(false)
+                            onClicked: wallpaperPicker.open()
                         }
                     }
                     Rectangle {
@@ -401,6 +401,11 @@ PopupWindow {
         }
     }
 
-    PaletteSetupPopup { id: paletteSetup; hostWindow: root.hostWindow }
+    WallpaperPickerPopup { id: wallpaperPicker; hostWindow: root.hostWindow }
+    PaletteSetupPopup {
+        id: paletteSetup
+        hostWindow: root.hostWindow
+        wallpaperPicker: wallpaperPicker
+    }
     WeatherSetupPopup { id: weatherSetup; hostWindow: root.hostWindow }
 }

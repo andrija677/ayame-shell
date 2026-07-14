@@ -86,13 +86,14 @@ For weather testing:
 7. Forget the location and confirm widgets disappear, settings clear, and no
    further scheduled forecast request occurs.
 
-For standalone wallpaper testing, open Wallpaper colors, choose Manual, use the
-Browse button to select a PNG, JPEG, or WebP, and Apply. Hyprpaper must update all
+For standalone wallpaper testing, use WALLPAPER beside Wallpaper colors and pick
+a PNG, JPEG, or WebP from the in-shell Pictures and Downloads list. The Browse
+button inside COLORS must open the same picker. Hyprpaper must update all
 untargeted monitors, the chosen absolute path must persist, and Ayame plus Kitty
 must receive the generated palette. Restart the Hyprland session and confirm the
 wallpaper is restored without ML4W being installed.
-Cancel the Zenity chooser and confirm Ayame Settings returns without changing the
-wallpaper or terminating Quickshell.
+Close the picker and confirm the wallpaper stays unchanged and Quickshell remains
+running.
 
 For clock testing:
 

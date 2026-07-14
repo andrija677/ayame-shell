@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import "../services"
 import "../settings"
 import "../theme"
@@ -9,8 +8,7 @@ import "../theme"
 PopupWindow {
     id: root
     required property var hostWindow
-    property string selectedWallpaper: ""
-    property bool returnAfterChoosing: false
+    required property var wallpaperPicker
 
     function open() {
         pathInput.text = ShellConfig.dynamicColorWallpaper;
@@ -25,10 +23,9 @@ PopupWindow {
         DynamicPalette.generate(ShellConfig.dynamicColorWallpaper);
     }
 
-    function chooseWallpaper(returnToPalette) {
-        returnAfterChoosing = returnToPalette;
+    function chooseWallpaper() {
         visible = false;
-        wallpaperChooser.running = true;
+        wallpaperPicker.open();
     }
 
     anchor.window: hostWindow
@@ -165,7 +162,7 @@ PopupWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.chooseWallpaper(true)
+                    onClicked: root.chooseWallpaper()
                 }
             }
 
@@ -275,29 +272,6 @@ PopupWindow {
                     }
                 }
             }
-        }
-    }
-
-    Process {
-        id: wallpaperChooser
-        command: [
-            "zenity", "--file-selection",
-            "--title=Choose an Ayame wallpaper",
-            "--file-filter=Wallpaper images | *.png *.jpg *.jpeg *.webp",
-            "--file-filter=All files | *"
-        ]
-        stdout: StdioCollector {
-            onStreamFinished: root.selectedWallpaper = text.trim()
-        }
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0 && root.selectedWallpaper.length > 0) {
-                pathInput.text = root.selectedWallpaper;
-                root.generatePalette();
-            } else if (root.returnAfterChoosing) {
-                root.visible = true;
-            }
-            root.selectedWallpaper = "";
-            root.returnAfterChoosing = false;
         }
     }
 

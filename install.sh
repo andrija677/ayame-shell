@@ -26,7 +26,7 @@ kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 
-required=(qs hyprctl hyprlock hyprpaper hyprshutdown grim slurp wl-copy kitty zenity)
+required=(qs hyprctl hyprlock hyprpaper hyprshutdown grim slurp wl-copy kitty)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
@@ -37,7 +37,6 @@ declare -A command_packages=(
     [slurp]=slurp
     [wl-copy]=wl-clipboard
     [kitty]=kitty
-    [zenity]=zenity
 )
 missing=()
 for command_name in "${required[@]}"; do
