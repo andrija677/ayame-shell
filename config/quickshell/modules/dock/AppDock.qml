@@ -13,18 +13,43 @@ PanelWindow {
     required property var shellController
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
     readonly property var favorites: ShellConfig.dockFavorites()
-    readonly property bool hasAppItems: {
-        if (favorites.length > 0)
-            return true;
+    readonly property var appEntries: {
+        const entries = {};
+        const encountered = [];
+        for (let id of favorites) {
+            entries[id] = { id: id, toplevel: null };
+            encountered.push(id);
+        }
         const windows = Hyprland.toplevels.values;
         for (let i = 0; i < windows.length; ++i) {
             const candidate = windows[i];
-            if (candidate.monitor === hyprlandMonitor
-                    && favorites.indexOf(desktopIdFor(candidate)) < 0)
-                return true;
+            if (candidate.monitor !== hyprlandMonitor)
+                continue;
+            const id = desktopIdFor(candidate);
+            if (!id)
+                continue;
+            if (!entries[id]) {
+                entries[id] = { id: id, toplevel: candidate };
+                encountered.push(id);
+            } else if (!entries[id].toplevel || candidate.activated) {
+                entries[id] = { id: id, toplevel: candidate };
+            }
         }
-        return false;
+        const order = ShellConfig.dockOrder();
+        encountered.sort((a, b) => {
+            const ai = order.indexOf(a);
+            const bi = order.indexOf(b);
+            if (ai < 0 && bi < 0)
+                return 0;
+            if (ai < 0)
+                return 1;
+            if (bi < 0)
+                return -1;
+            return ai - bi;
+        });
+        return encountered.map(id => entries[id]);
     }
+    readonly property bool hasAppItems: appEntries.length > 0
     readonly property bool workspaceObstructed: {
         const workspace = hyprlandMonitor?.activeWorkspace;
         if (!workspace)
@@ -96,6 +121,28 @@ PanelWindow {
                 return candidate;
         }
         return null;
+    }
+
+    function reorderDockApp(sourceId, sceneX) {
+        const local = dockRow.mapFromItem(null, sceneX, 0).x;
+        let targetId = "";
+        let afterTarget = false;
+        let nearestDistance = Number.MAX_VALUE;
+        for (let i = 0; i < dockRepeater.count; ++i) {
+            const item = dockRepeater.itemAt(i);
+            if (!item || item.favoriteId === sourceId)
+                continue;
+            const center = item.x + item.width / 2;
+            const distance = Math.abs(local - center);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                targetId = item.favoriteId;
+                afterTarget = local > center;
+            }
+        }
+        if (targetId)
+            ShellConfig.reorderDockApp(sourceId, targetId,
+                appEntries.map(entry => entry.id), afterTarget);
     }
 
     Connections {
@@ -281,23 +328,17 @@ PanelWindow {
             }
 
             Repeater {
-                model: dock.favorites
-
-                DockItem {
-                    required property string modelData
-                    desktopId: modelData
-                    toplevel: dock.toplevelFor(modelData)
+                id: dockRepeater
+                model: ScriptModel {
+                    values: dock.appEntries
+                    objectProp: "id"
                 }
-            }
-
-            Repeater {
-                model: Hyprland.toplevels
 
                 DockItem {
                     required property var modelData
-                    toplevel: modelData
-                    visible: modelData.monitor === dock.hyprlandMonitor
-                        && dock.favorites.indexOf(dock.desktopIdFor(modelData)) < 0
+                    desktopId: modelData.id
+                    toplevel: modelData.toplevel
+                    dockController: dock
                 }
             }
         }

@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property var toplevel: null
+    property var dockController: null
     property string desktopId: ""
     readonly property string appId: desktopId.length > 0 ? desktopId
         : toplevel?.wayland?.appId || toplevel?.lastIpcObject?.class || ""
@@ -19,6 +20,7 @@ Rectangle {
     readonly property bool urgent: toplevel?.urgent || false
     readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
     property bool pinChanging: false
+    property real dragOffset: 0
 
     implicitWidth: 42
     implicitHeight: 42
@@ -29,7 +31,10 @@ Rectangle {
     y: pointer.containsMouse ? -Theme.space4 : 0
     opacity: 0
 
-    transform: Translate { id: pinSlide; x: 14 }
+    transform: [
+        Translate { id: pinSlide; x: 14 },
+        Translate { x: root.dragOffset }
+    ]
 
     function playEntryAnimation() {
         enterAnimation.stop();
@@ -76,7 +81,44 @@ Rectangle {
             }
         }
         ScriptAction {
-            script: ShellConfig.toggleDockFavorite(root.favoriteId)
+            script: {
+                ShellConfig.toggleDockFavorite(root.favoriteId);
+                Qt.callLater(root.playEntryAnimation);
+            }
+        }
+    }
+
+    NumberAnimation {
+        id: dragReturn
+        target: root
+        property: "dragOffset"
+        to: 0
+        duration: Theme.motionNormal
+        easing.type: Theme.easeEnter
+    }
+
+    DragHandler {
+        id: reorderDrag
+        target: null
+        acceptedButtons: Qt.LeftButton
+        yAxis.enabled: false
+        cursorShape: active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+        xAxis.onActiveValueChanged: delta => root.dragOffset += delta
+        onActiveChanged: {
+            if (active) {
+                dragReturn.stop();
+                root.z = 100;
+            } else {
+                root.z = 0;
+                if (Math.abs(root.dragOffset) >= dragThreshold
+                        && root.dockController) {
+                    const scenePoint = root.mapToItem(null,
+                        root.width / 2, root.height / 2);
+                    root.dockController.reorderDockApp(
+                        root.favoriteId, scenePoint.x);
+                }
+                dragReturn.restart();
+            }
         }
     }
 

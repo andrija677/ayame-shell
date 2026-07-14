@@ -11,6 +11,7 @@ QtObject {
     property alias dockEnabled: values.dockEnabled
     property alias dockAutoHide: values.dockAutoHide
     property alias pinnedDockApps: values.pinnedDockApps
+    property alias dockAppOrder: values.dockAppOrder
     property alias dockPinHintShown: values.dockPinHintShown
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
@@ -54,6 +55,30 @@ QtObject {
         return desktopId.length > 0 && dockFavorites().indexOf(desktopId) >= 0;
     }
 
+    function dockOrder() {
+        return values.dockAppOrder.length > 0
+            ? values.dockAppOrder.split("|").filter(id => id.length > 0)
+            : [];
+    }
+
+    function reorderDockApp(sourceId, targetId, visibleIds, afterTarget) {
+        if (!sourceId || !targetId || sourceId === targetId)
+            return;
+        const order = dockOrder();
+        for (let id of visibleIds) {
+            if (order.indexOf(id) < 0)
+                order.push(id);
+        }
+        const sourceIndex = order.indexOf(sourceId);
+        const targetIndex = order.indexOf(targetId);
+        if (sourceIndex < 0 || targetIndex < 0)
+            return;
+        order.splice(sourceIndex, 1);
+        const insertion = order.indexOf(targetId) + (afterTarget ? 1 : 0);
+        order.splice(insertion, 0, sourceId);
+        values.dockAppOrder = order.join("|");
+    }
+
     function toggleDockFavorite(desktopId) {
         if (desktopId.length === 0)
             return;
@@ -72,6 +97,7 @@ QtObject {
         values.dockEnabled = true;
         values.dockAutoHide = false;
         values.pinnedDockApps = "";
+        values.dockAppOrder = "";
         values.dockPinHintShown = false;
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
@@ -125,6 +151,7 @@ QtObject {
             property bool dockEnabled: true
             property bool dockAutoHide: false
             property string pinnedDockApps: ""
+            property string dockAppOrder: ""
             property bool dockPinHintShown: false
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true
