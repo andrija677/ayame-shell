@@ -85,7 +85,7 @@ PopupWindow {
     implicitWidth: 340
     implicitHeight: panel.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: false
+    grabFocus: true
 
     HyprlandFocusGrab {
         windows: [root, settingsPanel, root.hostWindow]

@@ -41,7 +41,7 @@ PopupWindow {
     implicitWidth: 390
     implicitHeight: dashboard.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: false
+    grabFocus: true
 
     HyprlandFocusGrab {
         windows: [root, root.hostWindow]

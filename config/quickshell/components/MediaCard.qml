@@ -143,43 +143,22 @@ Surface {
                 Layout.alignment: Qt.AlignRight
                 spacing: Theme.space6
 
-                Repeater {
-                    model: [
-                        { label: "‹", enabled: root.player?.canGoPrevious ?? false,
-                            action: () => root.player.previous() },
-                        { label: root.player?.isPlaying ? "PAUSE" : "PLAY",
-                            enabled: root.player?.canTogglePlaying ?? false,
-                            action: () => root.player.togglePlaying() },
-                        { label: "›", enabled: root.player?.canGoNext ?? false,
-                            action: () => root.player.next() }
-                    ]
+                MediaControlButton {
+                    label: "‹"
+                    available: root.player?.canGoPrevious ?? false
+                    onActivated: root.player?.previous()
+                }
 
-                    Rectangle {
-                        required property var modelData
-                        implicitWidth: modelData.label.length > 1 ? 42 : 32
-                        implicitHeight: 26
-                        radius: Theme.radiusPill
-                        color: controlPointer.containsMouse
-                            ? Theme.primary : Theme.primaryContainer
-                        visible: modelData.enabled
+                MediaControlButton {
+                    label: root.player?.isPlaying ? "Pause" : "Play"
+                    available: root.player?.canTogglePlaying ?? false
+                    onActivated: root.player?.togglePlaying()
+                }
 
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: parent.modelData.label
-                            color: controlPointer.containsMouse
-                                ? Theme.foregroundPrimary
-                                : Theme.foregroundPrimaryContainer
-                            font.pixelSize: parent.modelData.label.length > 1 ? 9 : 14
-                            font.weight: Theme.fontWeightTitle
-                        }
-                        MouseArea {
-                            id: controlPointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: parent.modelData.action()
-                        }
-                    }
+                MediaControlButton {
+                    label: "›"
+                    available: root.player?.canGoNext ?? false
+                    onActivated: root.player?.next()
                 }
             }
         }
