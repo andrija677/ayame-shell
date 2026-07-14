@@ -8,6 +8,7 @@ QtObject {
     id: root
 
     property alias barEnabled: values.barEnabled
+    property alias dockEnabled: values.dockEnabled
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
     property alias clockEnabled: values.clockEnabled
@@ -28,6 +29,7 @@ QtObject {
 
     function resetDefaults() {
         values.barEnabled = true;
+        values.dockEnabled = true;
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
         values.clockEnabled = true;
@@ -63,6 +65,7 @@ QtObject {
             id: values
 
             property bool barEnabled: true
+            property bool dockEnabled: true
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true
             property bool clockEnabled: true

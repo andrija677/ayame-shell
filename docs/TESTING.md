@@ -62,6 +62,16 @@ For multi-monitor testing:
    focused monitor.
 4. Disconnect and reconnect a screen and confirm its bar follows it.
 
+For dock testing:
+
+1. Confirm one centered dock appears on each screen containing windows.
+2. Open and close applications and confirm items enter and leave live.
+3. Click an inactive item and confirm its window activates.
+4. Click the active item and confirm its window minimizes.
+5. Confirm active and urgent indicators update, icons resolve where desktop
+   entries exist, and hover motion does not clip.
+6. Move a window between monitors and confirm its item follows the window.
+
 For clock testing:
 
 1. Click the clock and confirm the centered dashboard opens below the bar.

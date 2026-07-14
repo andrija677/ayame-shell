@@ -24,6 +24,7 @@ QtObject {
     readonly property color error: "#FFFFB4AB"
 
     readonly property int barHeight: 42
+    readonly property int dockHeight: 50
     readonly property int outerMargin: 8
     readonly property int itemHeight: 28
     readonly property int sideAreaWidth: 240

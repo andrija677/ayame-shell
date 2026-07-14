@@ -1,0 +1,51 @@
+import QtQuick
+import Quickshell
+import Quickshell.Hyprland
+import "../../components"
+import "../../settings"
+import "../../theme"
+
+PanelWindow {
+    id: dock
+
+    readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
+
+    anchors.bottom: true
+    implicitWidth: dockSurface.implicitWidth + Theme.outerMargin * 2
+    implicitHeight: Theme.dockHeight + Theme.outerMargin
+    exclusiveZone: 0
+    visible: ShellConfig.dockEnabled
+    color: "transparent"
+
+    Surface {
+        id: dockSurface
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: parent.bottom
+            bottomMargin: Theme.outerMargin
+        }
+        implicitWidth: Math.max(
+            Theme.dockHeight,
+            dockRow.implicitWidth + Theme.space12
+        )
+        implicitHeight: Theme.dockHeight
+        radius: Theme.radiusLarge
+        color: Theme.surface
+
+        Row {
+            id: dockRow
+            anchors.centerIn: parent
+            spacing: Theme.space4
+
+            Repeater {
+                model: Hyprland.toplevels
+
+                DockItem {
+                    required property var modelData
+                    toplevel: modelData
+                    visible: modelData.monitor === dock.hyprlandMonitor
+                }
+            }
+        }
+    }
+}
