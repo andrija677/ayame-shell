@@ -27,8 +27,23 @@ case "$mode" in
         grim -o "$monitor" "$output"
         ;;
     area)
-        geometry="$(slurp)" || exit 0
-        [[ -n "$geometry" ]] || exit 0
+        selector_error="$(mktemp)"
+        if ! geometry="$(slurp -d -b '#00000099' -c '#c6a0ffff' -s '#6d4c8e66' -w 3 \
+                2>"$selector_error")"; then
+            error="$(<"$selector_error")"
+            rm -f "$selector_error"
+            if [[ -n "$error" ]]; then
+                echo "$error" >&2
+            else
+                echo "Area selector exited before a region was chosen" >&2
+            fi
+            exit 1
+        fi
+        rm -f "$selector_error"
+        [[ -n "$geometry" ]] || {
+            echo "Area selector returned an empty region" >&2
+            exit 1
+        }
         grim -g "$geometry" "$output"
         ;;
     *)
