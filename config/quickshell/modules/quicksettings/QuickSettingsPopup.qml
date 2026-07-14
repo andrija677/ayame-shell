@@ -90,10 +90,6 @@ PopupWindow {
     HyprlandFocusGrab {
         windows: [root, settingsPanel, root.hostWindow]
         active: root.visible || settingsPanel.visible
-        onCleared: {
-            if (root.open)
-                root.closePanel();
-        }
     }
 
     Shortcut {
