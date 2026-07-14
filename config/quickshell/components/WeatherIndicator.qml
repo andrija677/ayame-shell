@@ -39,9 +39,15 @@ Rectangle {
     MouseArea {
         id: pointer
         anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: details.toggle()
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton)
+                WeatherService.refresh();
+            else
+                details.toggle();
+        }
     }
 
     PopupWindow {

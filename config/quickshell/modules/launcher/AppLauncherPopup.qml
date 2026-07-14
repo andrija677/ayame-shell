@@ -231,7 +231,6 @@ PanelWindow {
                     verticalAlignment: TextInput.AlignVCenter
                     selectByMouse: true
                     clip: true
-                    Keys.onEscapePressed: root.closePanel()
                     Keys.onDownPressed: {
                         appList.currentIndex = 0;
                         appList.forceActiveFocus();
@@ -310,7 +309,6 @@ PanelWindow {
                 visible: !root.commandMode
                 currentIndex: count > 0 ? 0 : -1
                 keyNavigationWraps: true
-                Keys.onEscapePressed: root.closePanel()
                 Keys.onUpPressed: event => {
                     if (currentIndex === 0) {
                         search.forceActiveFocus();
