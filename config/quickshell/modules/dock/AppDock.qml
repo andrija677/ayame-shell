@@ -21,13 +21,28 @@ PanelWindow {
             return true;
 
         const windows = workspace.toplevels.values;
+        const monitorLeft = hyprlandMonitor.x;
+        const monitorBottom = hyprlandMonitor.y + hyprlandMonitor.height;
+        const dockLeft = monitorLeft
+            + (hyprlandMonitor.width - dockSurface.implicitWidth) / 2;
+        const dockRight = dockLeft + dockSurface.implicitWidth;
+        const dockTop = monitorBottom
+            - Theme.dockHeight - Theme.outerMargin * 2;
         for (let i = 0; i < windows.length; ++i) {
             const geometry = windows[i].lastIpcObject?.size;
-            if (!geometry || geometry.length < 2)
+            const position = windows[i].lastIpcObject?.at;
+            if (!geometry || geometry.length < 2
+                    || !position || position.length < 2)
                 continue;
-            const fillsWidth = geometry[0] >= screen.width * 0.78;
-            const fillsHeight = geometry[1] >= screen.height * 0.65;
-            if (fillsWidth && fillsHeight)
+            const windowRight = position[0] + geometry[0];
+            const windowBottom = position[1] + geometry[1];
+            const fillsWidth = geometry[0] >= hyprlandMonitor.width * 0.78;
+            const fillsHeight = geometry[1] >= hyprlandMonitor.height * 0.65;
+            const overlapsDock = windowRight > dockLeft
+                && position[0] < dockRight
+                && windowBottom > dockTop
+                && position[1] < monitorBottom;
+            if (fillsWidth && fillsHeight && overlapsDock)
                 return true;
         }
         return false;
