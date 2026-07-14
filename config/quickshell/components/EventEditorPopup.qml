@@ -100,8 +100,8 @@ PopupWindow {
                     Repeater {
                         model: [
                             { label: "Same Day", days: 0 },
-                            { label: "1 DAY BEFORE", days: 1 },
-                            { label: "1 WEEK BEFORE", days: 7 }
+                            { label: "1 Day Before", days: 1 },
+                            { label: "1 Week Before", days: 7 }
                         ]
 
                         Rectangle {

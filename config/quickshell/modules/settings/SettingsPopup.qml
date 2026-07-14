@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import "../../components"
 import "../../services"
@@ -14,8 +15,27 @@ PanelWindow {
 
     required property var hostWindow
     property bool panelOpen: false
+    property bool otherQuickshellDetected: false
 
     MotionProgress { id: motion; open: root.panelOpen }
+
+    Component.onCompleted: quickshellDetector.running = true
+
+    Process {
+        id: quickshellDetector
+        command: [
+            "sh", "-c",
+            "pgrep -x qs | grep -vx " + Quickshell.processId
+                + " | grep -q . && echo 1 || echo 0"
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.otherQuickshellDetected = text.trim() === "1";
+                if (!root.otherQuickshellDetected)
+                    ShellConfig.notificationServerEnabled = true;
+            }
+        }
+    }
 
     function openPanel() {
         closeTimer.stop();
@@ -324,6 +344,7 @@ PanelWindow {
 
                 QuickToggleTile {
                     Layout.fillWidth: true
+                    visible: root.otherQuickshellDetected
                     title: "Ayame notifications"
                     subtitle: checked ? "Owns notification popups" : "Safe preview mode"
                     checked: ShellConfig.notificationServerEnabled

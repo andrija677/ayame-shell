@@ -500,7 +500,7 @@ PanelWindow {
         id: settingsPanel
         hostWindow: root.hostWindow
         onDismissed: {
-            root.closeTimer.stop();
+            closeTimer.stop();
             root.visible = false;
         }
     }
