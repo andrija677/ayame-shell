@@ -19,28 +19,28 @@ PanelWindow {
     color: "transparent"
     exclusiveZone: implicitHeight
 
-    Rectangle {
+    Surface {
         anchors {
             fill: parent
             leftMargin: Theme.outerMargin
             rightMargin: Theme.outerMargin
             topMargin: Theme.outerMargin
         }
-        radius: 12
+        radius: Theme.radiusLarge
         color: Theme.surface
 
         RowLayout {
             anchors {
                 fill: parent
-                leftMargin: Theme.horizontalPadding
-                rightMargin: Theme.horizontalPadding
+                leftMargin: Theme.space12
+                rightMargin: Theme.space12
             }
-            spacing: Theme.itemSpacing
+            spacing: Theme.space6
 
             Row {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: 240
-                spacing: Theme.itemSpacing
+                Layout.preferredWidth: Theme.sideAreaWidth
+                spacing: Theme.space6
 
                 Repeater {
                     model: 5
@@ -56,24 +56,22 @@ PanelWindow {
 
             Item { Layout.fillWidth: true }
 
-            Rectangle {
+            Surface {
                 Layout.alignment: Qt.AlignCenter
-                implicitWidth: clockText.implicitWidth + Theme.horizontalPadding * 2
+                implicitWidth: clockText.implicitWidth + Theme.space24
                 implicitHeight: Theme.itemHeight
-                radius: Theme.itemRadius
-                color: Theme.surfaceRaised
+                radius: Theme.radiusPill
+                color: Theme.surfaceContainerHigh
 
                 SystemClock {
                     id: clock
                     precision: SystemClock.Seconds
                 }
 
-                Text {
+                StyledText {
                     id: clockText
                     anchors.centerIn: parent
                     text: Qt.formatDateTime(clock.date, "HH:mm")
-                    color: Theme.textPrimary
-                    font.family: "Noto Sans"
                     font.pixelSize: Theme.fontNormal
                     font.weight: Font.DemiBold
                 }
@@ -81,22 +79,22 @@ PanelWindow {
 
             Item { Layout.fillWidth: true }
 
-            Rectangle {
+            Surface {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: 240
+                Layout.preferredWidth: Theme.sideAreaWidth
                 implicitHeight: Theme.itemHeight
-                radius: Theme.itemRadius
-                color: Theme.surfaceRaised
+                radius: Theme.radiusPill
+                color: Theme.surfaceContainer
 
-                Text {
+                StyledText {
                     anchors.centerIn: parent
-                    text: SystemTray.items.values.length + " tray"
-                    color: Theme.textMuted
-                    font.family: "Noto Sans"
+                    text: SystemTray.items.values.length === 1
+                        ? "1 tray item"
+                        : SystemTray.items.values.length + " tray items"
+                    color: Theme.onSurfaceVariant
                     font.pixelSize: Theme.fontSmall
                 }
             }
         }
     }
 }
-
