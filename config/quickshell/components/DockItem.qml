@@ -128,6 +128,7 @@ Rectangle {
         }
         width: root.active ? 16 : 5
         height: 3
+        visible: root.toplevel !== null && root.toplevel !== undefined
         radius: 2
         color: root.urgent ? Theme.error
             : root.active ? Theme.primary : Theme.outline

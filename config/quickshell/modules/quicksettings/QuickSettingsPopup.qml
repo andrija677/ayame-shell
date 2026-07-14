@@ -410,86 +410,48 @@ PanelWindow {
                 }
             }
 
-            RowLayout {
+            GridLayout {
                 Layout.fillWidth: true
-                spacing: Theme.space8
+                columns: 2
+                rowSpacing: Theme.space8
+                columnSpacing: Theme.space8
 
-                Rectangle {
+                QuickActionButton {
                     Layout.fillWidth: true
-                    implicitHeight: 34
-                    radius: Theme.radiusPill
-                    color: keysPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
-                    StyledText { anchors.centerIn: parent; text: "Keybinds"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
-                    MouseArea {
-                        id: keysPointer
-                        anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                        onClicked: { root.closePanel(); root.utilityRequested("keys"); }
+                    icon: "󰌌"
+                    label: "Keybinds"
+                    onActivated: {
+                        root.closePanel();
+                        root.utilityRequested("keys");
                     }
                 }
 
-                Rectangle {
+                QuickActionButton {
                     Layout.fillWidth: true
-                    implicitHeight: 34
-                    radius: Theme.radiusPill
-                    color: captureUtilityPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
-                    StyledText { anchors.centerIn: parent; text: "Screenshot"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
-                    MouseArea {
-                        id: captureUtilityPointer
-                        anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                        onClicked: { root.closePanel(); root.utilityRequested("capture"); }
-                    }
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Theme.space8
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: 38
-                    radius: Theme.radiusPill
-                    color: settingsPointer.containsMouse
-                        ? Theme.primary : Theme.primaryContainer
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: "Ayame Settings"
-                        color: settingsPointer.containsMouse
-                            ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
-                        font.pixelSize: 10
-                        font.weight: Theme.fontWeightTitle
-                    }
-                    MouseArea {
-                        id: settingsPointer
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.openSettings()
+                    icon: "󰄀"
+                    label: "Screenshot"
+                    onActivated: {
+                        root.closePanel();
+                        root.utilityRequested("capture");
                     }
                 }
 
-                Rectangle {
-                    implicitWidth: 88
-                    implicitHeight: 38
-                    radius: Theme.radiusPill
-                    color: powerPointer.containsMouse ? Theme.error : Theme.surfaceContainerHigh
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: "Power"
-                        color: powerPointer.containsMouse
-                            ? Theme.foregroundPrimary : Theme.foregroundSurface
-                        font.pixelSize: 10
-                        font.weight: Theme.fontWeightTitle
-                    }
-                    MouseArea {
-                        id: powerPointer
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.closePanel();
-                            root.powerRequested();
-                        }
+                QuickActionButton {
+                    Layout.fillWidth: true
+                    icon: "󰒓"
+                    label: "Ayame Settings"
+                    primary: true
+                    onActivated: root.openSettings()
+                }
+
+                QuickActionButton {
+                    Layout.fillWidth: true
+                    icon: "󰐥"
+                    label: "Power"
+                    danger: true
+                    onActivated: {
+                        root.closePanel();
+                        root.powerRequested();
                     }
                 }
             }
