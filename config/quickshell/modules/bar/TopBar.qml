@@ -91,7 +91,7 @@ PanelWindow {
                     text: SystemTray.items.values.length === 1
                         ? "1 tray item"
                         : SystemTray.items.values.length + " tray items"
-                    color: Theme.onSurfaceVariant
+                    color: Theme.foregroundSurfaceVariant
                     font.pixelSize: Theme.fontSmall
                 }
             }

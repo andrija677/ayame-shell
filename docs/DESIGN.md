@@ -9,7 +9,7 @@ Ayame Shell combines three influences without copying an existing shell:
 ## Principles
 
 1. The interface should look like one system rather than unrelated widgets.
-2. Color names describe purpose (`primary`, `surface`, `onSurface`) so a
+2. Color names describe purpose (`primary`, `surface`, `foregroundSurface`) so a
    wallpaper-generated palette can replace the default palette safely.
 3. Spacing and corner radii come from shared scales.
 4. Motion communicates state. Hover, press, selection, opening, and closing
@@ -27,4 +27,3 @@ Ayame Shell combines three influences without copying an existing shell:
 
 The initial palette is a hand-authored dark violet theme. A later milestone will
 generate the semantic values from wallpapers using Matugen.
-
