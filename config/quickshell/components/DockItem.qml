@@ -23,10 +23,10 @@ Rectangle {
 
     Behavior on color { ColorAnimation { duration: Theme.motionFast } }
     Behavior on scale {
-        NumberAnimation { duration: Theme.motionFast; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
     }
     Behavior on y {
-        NumberAnimation { duration: Theme.motionFast; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
     }
 
     IconImage {
@@ -53,7 +53,7 @@ Rectangle {
             : root.active ? Theme.primary : Theme.outline
 
         Behavior on width {
-            NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
         }
         Behavior on color { ColorAnimation { duration: Theme.motionFast } }
     }

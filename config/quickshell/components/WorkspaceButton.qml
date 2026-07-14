@@ -23,7 +23,7 @@ Rectangle {
     Behavior on implicitWidth {
         NumberAnimation {
             duration: Theme.motionNormal
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 
@@ -34,7 +34,7 @@ Rectangle {
     Behavior on scale {
         NumberAnimation {
             duration: Theme.motionFast
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 

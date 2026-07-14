@@ -8,8 +8,7 @@ Rectangle {
     Behavior on color {
         ColorAnimation {
             duration: Theme.motionNormal
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 }
-

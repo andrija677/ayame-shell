@@ -20,14 +20,14 @@ Surface {
     Behavior on implicitWidth {
         NumberAnimation {
             duration: Theme.motionNormal
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 
     Behavior on scale {
         NumberAnimation {
             duration: Theme.motionFast
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 
@@ -49,8 +49,8 @@ Surface {
         font.weight: Theme.fontWeightLabel
 
         Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
-        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
+        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter } }
+        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter } }
     }
 
     StyledText {
@@ -65,8 +65,8 @@ Surface {
         font.weight: Theme.fontWeightLabel
 
         Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
-        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
-        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
+        Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter } }
+        Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter } }
     }
 
     MouseArea {

@@ -275,14 +275,14 @@ Surface {
                 property: "x"
                 to: -root.navigationDirection * 44
                 duration: Theme.motionFast
-                easing.type: Easing.InCubic
+                easing.type: Theme.easeExit
             }
             NumberAnimation {
                 target: calendarGrid
                 property: "opacity"
                 to: 0
                 duration: Theme.motionFast
-                easing.type: Easing.InCubic
+                easing.type: Theme.easeExit
             }
         }
         ScriptAction { script: root.shownMonth = root.pendingMonth }
@@ -297,14 +297,14 @@ Surface {
                 property: "x"
                 to: 0
                 duration: Theme.motionNormal
-                easing.type: Easing.OutCubic
+                easing.type: Theme.easeEnter
             }
             NumberAnimation {
                 target: calendarGrid
                 property: "opacity"
                 to: 1
                 duration: Theme.motionNormal
-                easing.type: Easing.OutCubic
+                easing.type: Theme.easeEnter
             }
         }
     }

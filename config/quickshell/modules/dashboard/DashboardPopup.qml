@@ -74,7 +74,7 @@ PopupWindow {
                     duration: root.panelOpen
                         ? Theme.motionSlow : Theme.motionNormal
                     easing.type: root.panelOpen
-                        ? Easing.OutCubic : Easing.InCubic
+                        ? Theme.easeEnter : Theme.easeExit
                 }
             }
 
@@ -83,7 +83,7 @@ PopupWindow {
                     duration: root.panelOpen
                         ? Theme.motionSlow : Theme.motionNormal
                     easing.type: root.panelOpen
-                        ? Easing.OutCubic : Easing.InCubic
+                        ? Theme.easeEnter : Theme.easeExit
                 }
             }
         }
@@ -93,7 +93,7 @@ PopupWindow {
                 duration: root.panelOpen
                     ? Theme.motionSlow : Theme.motionNormal
                 easing.type: root.panelOpen
-                    ? Easing.OutCubic : Easing.InCubic
+                    ? Theme.easeEnter : Theme.easeExit
             }
         }
 
@@ -101,7 +101,7 @@ PopupWindow {
             NumberAnimation {
                 duration: Theme.motionNormal
                 easing.type: root.panelOpen
-                    ? Easing.OutCubic : Easing.InCubic
+                    ? Theme.easeEnter : Theme.easeExit
             }
         }
 

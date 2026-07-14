@@ -18,7 +18,7 @@ Surface {
     Behavior on scale {
         NumberAnimation {
             duration: Theme.motionFast
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 
@@ -70,7 +70,7 @@ Surface {
                 Behavior on x {
                     NumberAnimation {
                         duration: Theme.motionNormal
-                        easing.type: Easing.OutCubic
+                        easing.type: Theme.easeEnter
                     }
                 }
             }

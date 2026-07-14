@@ -44,7 +44,7 @@ Rectangle {
     Behavior on scale {
         NumberAnimation {
             duration: Theme.motionFast
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeEnter
         }
     }
 

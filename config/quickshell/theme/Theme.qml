@@ -53,7 +53,11 @@ QtObject {
     readonly property int fontWeightTitle: Font.Bold
     readonly property int fontWeightDisplay: Font.ExtraBold
 
-    readonly property int motionFast: ShellConfig.animationsEnabled ? 120 : 0
-    readonly property int motionNormal: ShellConfig.animationsEnabled ? 220 : 0
-    readonly property int motionSlow: ShellConfig.animationsEnabled ? 360 : 0
+    // Motion is deliberately asymmetric: interactions react quickly, while
+    // larger surfaces get enough time to settle into place without snapping.
+    readonly property int motionFast: ShellConfig.animationsEnabled ? 140 : 0
+    readonly property int motionNormal: ShellConfig.animationsEnabled ? 250 : 0
+    readonly property int motionSlow: ShellConfig.animationsEnabled ? 400 : 0
+    readonly property int easeEnter: Easing.OutQuint
+    readonly property int easeExit: Easing.InQuart
 }

@@ -106,13 +106,13 @@ PopupWindow {
             Behavior on xScale {
                 NumberAnimation {
                     duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
-                    easing.type: root.panelOpen ? Easing.OutCubic : Easing.InCubic
+                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on yScale {
                 NumberAnimation {
                     duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
-                    easing.type: root.panelOpen ? Easing.OutCubic : Easing.InCubic
+                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
         }
@@ -120,13 +120,13 @@ PopupWindow {
         Behavior on y {
             NumberAnimation {
                 duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
-                easing.type: root.panelOpen ? Easing.OutCubic : Easing.InCubic
+                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
         Behavior on opacity {
             NumberAnimation {
                 duration: Theme.motionNormal
-                easing.type: root.panelOpen ? Easing.OutCubic : Easing.InCubic
+                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
 
