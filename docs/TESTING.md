@@ -357,9 +357,11 @@ Super+Shift+1 through Super+Shift+5 move the active window there. Neither action
 may trigger the bare-Super launcher after the combination is released.
 
 Open Screenshot and test desktop, monitor, and area modes with instant, 3-second,
-and 5-second timing. Area cancellation must create no file. Successful captures
-must appear under `Pictures/Screenshots`, enter the image clipboard, and notify the
-user. Never place unsanitized user text into a shell command.
+and 5-second timing. Area cancellation must create no file. Capture must begin
+only after the Ayame overlay has released input focus. Successful images must
+appear under `Pictures/Screenshots`, enter the image clipboard, and notify the
+user. A failed capture must reopen the Screenshot page with its diagnostic
+instead of failing silently. Never place unsanitized user text into a shell command.
 
 ## Roll back project changes
 

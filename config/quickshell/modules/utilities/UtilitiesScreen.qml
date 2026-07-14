@@ -47,7 +47,7 @@ PanelWindow {
     }
 
     function capture() {
-        if (captureProcess.running)
+        if (captureProcess.running || captureStartTimer.running)
             return;
         status = captureDelay > 0 ? "Capturing in " + captureDelay + " seconds…" : "Capturing…";
         panelOpen = false;
@@ -56,7 +56,7 @@ PanelWindow {
             Quickshell.shellDir + "/../../scripts/ayame-screenshot.sh",
             captureMode, captureDelay.toString(), screen.name
         ];
-        captureProcess.running = true;
+        captureStartTimer.restart();
     }
 
     anchors { top: true; bottom: true; left: true; right: true }
@@ -69,6 +69,11 @@ PanelWindow {
 
     Shortcut { sequence: "Escape"; onActivated: root.closePanel() }
     Timer { id: closeTimer; interval: Theme.motionNormal; onTriggered: root.visible = false }
+    Timer {
+        id: captureStartTimer
+        interval: 220
+        onTriggered: captureProcess.running = true
+    }
 
     Process {
         id: captureProcess
@@ -80,6 +85,16 @@ PanelWindow {
             onStreamFinished: {
                 if (text.trim().length > 0)
                     root.status = text.trim();
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0) {
+                const failure = root.status.length > 0 && root.status !== "Capturing…"
+                    ? root.status : "Screenshot failed. Check that grim and slurp can access this session.";
+                Qt.callLater(() => {
+                    root.openPage("screenshot");
+                    root.status = failure;
+                });
             }
         }
     }
