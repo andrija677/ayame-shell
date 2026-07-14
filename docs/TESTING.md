@@ -362,8 +362,9 @@ only after the Ayame overlay has released input focus. Successful images must
 appear under `Pictures/Screenshots`, enter the image clipboard, and notify the
 user. A failed capture must reopen the Screenshot page with its diagnostic
 instead of failing silently. Never place unsanitized user text into a shell command.
-Area mode must visibly dim the desktop, draw an Ayame-violet selection border,
-show a clear cutout of the exact region, and update its dimensions while dragging.
+Area mode must visibly dim the desktop before selection. Once dragging begins,
+the dim layer must disappear and a filled Ayame-violet rectangle, bright border,
+and live dimensions must track the exact region without alpha-mask assumptions.
 
 ## Roll back project changes
 
