@@ -119,10 +119,14 @@ The clock is a reusable component rather than bar-owned markup. It emits its
 interaction to the bar, which owns a screen-local dashboard popup. The dashboard
 composes independent media and calendar cards.
 
-The dashboard reads existing MPRIS players but deliberately does not register a
-notification server during development. Notification ownership will be enabled
-only when Ayame can replace the current session shell without intercepting its
-popups unexpectedly.
+The dashboard reads existing MPRIS players and an optional Ayame notification
+server. Ownership defaults off during development so launching a preview beside
+SwayNotificationCenter, Dunst, or another shell never steals its D-Bus name.
+Once explicitly enabled for an Ayame-owned session, notifications are tracked for
+history, queued into focused-monitor toasts, and exposed with native actions.
+Do Not Disturb suppresses toasts but retains history. The dashboard shows the
+three newest entries and Clear All removes the complete tracked model, preventing
+an unbounded history from growing the popup beyond the screen.
 
 Calendar events are stored atomically in `Quickshell.dataDir/events.json` via a
 typed JSON adapter. One-time and yearly events share the same local model; the

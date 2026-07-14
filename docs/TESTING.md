@@ -305,6 +305,16 @@ qs list
 Do not use `qs kill` without checking the list: another Quickshell config may
 belong to the live desktop.
 
+Before enabling Ayame notifications, inspect the current owner with
+`busctl --user status org.freedesktop.Notifications`. Do not enable ownership in
+a development preview while another daemon is responsible for the live session.
+In an Ayame-owned test session, enable the service in Settings and send several
+notifications with bodies and actions. Confirm popups queue on the focused
+monitor, expire while retaining history, actions invoke, individual dismiss and
+Clear All remove tracked entries, and the dashboard shows at most the newest
+three. With Do Not Disturb enabled, new entries must reach history without a
+popup. Disable notification ownership before returning to another session shell.
+
 ## Roll back project changes
 
 Git records each working milestone. To inspect the history:

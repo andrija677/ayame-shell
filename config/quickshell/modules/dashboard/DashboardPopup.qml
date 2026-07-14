@@ -130,18 +130,7 @@ PopupWindow {
             }
             UpcomingEventsCard { Layout.fillWidth: true }
 
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: 54
-                color: Theme.surfaceContainer
-
-                StyledText {
-                    anchors.centerIn: parent
-                    text: "Notifications will join when Ayame owns the session"
-                    color: Theme.foregroundSurfaceVariant
-                    font.pixelSize: Theme.fontSmall
-                }
-            }
+            NotificationCenterCard { Layout.fillWidth: true }
         }
     }
 

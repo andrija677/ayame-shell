@@ -284,6 +284,37 @@ PopupWindow {
                 font.weight: Theme.fontWeightTitle
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Ayame notifications"
+                    subtitle: checked ? "Owns notification popups" : "Safe preview mode"
+                    checked: ShellConfig.notificationServerEnabled
+                    onActivated: ShellConfig.notificationServerEnabled = !checked
+                }
+
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Do Not Disturb"
+                    subtitle: checked ? "History only" : "Popups allowed"
+                    checked: ShellConfig.doNotDisturb
+                    interactive: ShellConfig.notificationServerEnabled
+                    onActivated: ShellConfig.doNotDisturb = !checked
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                visible: !ShellConfig.notificationServerEnabled
+                text: "Enable only when Ayame replaces your current notification service."
+                color: Theme.warning
+                font.pixelSize: 10
+                wrapMode: Text.WordWrap
+            }
+
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 66

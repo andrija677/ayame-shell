@@ -14,6 +14,9 @@ wallpaper-following palettes generated locally by Matugen, with a manual image
 override and the original Ayame Violet fallback. A dedicated Settings surface
 owns persistent light/dark appearance, tint, blur, motion, density, and layout,
 while Quick Settings focuses on live device and session controls.
+An opt-in notification server provides queued popups, native actions, dashboard
+history, dismiss/clear controls, and Do Not Disturb without taking ownership from
+the user's current notification daemon during previews.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
 Quick Settings also opens a full-screen power surface with safe Lock, Log Out,

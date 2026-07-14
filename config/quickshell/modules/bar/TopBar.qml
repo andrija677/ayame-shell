@@ -10,6 +10,7 @@ import "../../theme"
 import "../dashboard"
 import "../quicksettings"
 import "../power"
+import "../notifications"
 
 PanelWindow {
     id: bar
@@ -274,4 +275,6 @@ PanelWindow {
         id: powerScreen
         screen: bar.screen
     }
+
+    NotificationToasts { screen: bar.screen }
 }

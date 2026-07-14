@@ -36,6 +36,8 @@ QtObject {
     property alias weatherLatitude: values.weatherLatitude
     property alias weatherLongitude: values.weatherLongitude
     property alias weatherTemperatureUnit: values.weatherTemperatureUnit
+    property alias notificationServerEnabled: values.notificationServerEnabled
+    property alias doNotDisturb: values.doNotDisturb
 
     function save() {
         saveTimer.restart();
@@ -94,6 +96,8 @@ QtObject {
         values.weatherLatitude = 0;
         values.weatherLongitude = 0;
         values.weatherTemperatureUnit = "celsius";
+        values.notificationServerEnabled = false;
+        values.doNotDisturb = false;
         save();
     }
 
@@ -144,6 +148,8 @@ QtObject {
             property real weatherLatitude: 0
             property real weatherLongitude: 0
             property string weatherTemperatureUnit: "celsius"
+            property bool notificationServerEnabled: false
+            property bool doNotDisturb: false
         }
     }
 }
