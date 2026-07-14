@@ -128,6 +128,33 @@ PanelWindow {
         }
     }
     Timer { id: captureAfterSelection; interval: 140; onTriggered: captureProcess.running = true }
+    Timer {
+        interval: 40
+        repeat: true
+        running: root.selectionDragging
+        onTriggered: {
+            if (!cursorTracker.running)
+                cursorTracker.running = true;
+        }
+    }
+
+    Process {
+        id: cursorTracker
+        command: ["hyprctl", "cursorpos"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const match = text.match(/(-?\d+)\s*,\s*(-?\d+)/);
+                if (match && root.selectionDragging) {
+                    const offsetX = root.screen && root.screen.x !== undefined
+                        ? root.screen.x : 0;
+                    const offsetY = root.screen && root.screen.y !== undefined
+                        ? root.screen.y : 0;
+                    root.selectionCurrentX = Number(match[1]) - offsetX;
+                    root.selectionCurrentY = Number(match[2]) - offsetY;
+                }
+            }
+        }
+    }
 
     Process {
         id: captureProcess
@@ -299,10 +326,10 @@ PanelWindow {
 
         Rectangle {
             visible: root.selectionDragging
-            x: Math.min(root.selectionStartX, selectionPointer.mouseX)
-            y: Math.min(root.selectionStartY, selectionPointer.mouseY)
-            width: Math.abs(selectionPointer.mouseX - root.selectionStartX)
-            height: Math.abs(selectionPointer.mouseY - root.selectionStartY)
+            x: Math.min(root.selectionStartX, root.selectionCurrentX)
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: Math.abs(root.selectionCurrentX - root.selectionStartX)
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
             color: "#596d4c8e"
             border.color: Theme.primary
             border.width: 4
@@ -311,8 +338,8 @@ PanelWindow {
         StyledText {
             anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin: Theme.space24 }
             text: root.selectionDragging
-                ? Math.round(Math.abs(selectionPointer.mouseX - root.selectionStartX))
-                    + " × " + Math.round(Math.abs(selectionPointer.mouseY - root.selectionStartY))
+                ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
+                    + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
                 : "Drag to select an area • Esc to cancel"
             color: Theme.foregroundPrimary
             font.weight: Theme.fontWeightLabel
