@@ -66,7 +66,10 @@ QtObject {
     readonly property int dockHeight: compact ? 46 : 50
     readonly property int outerMargin: compact ? 6 : 8
     readonly property int itemHeight: compact ? 26 : 28
-    readonly property int sideAreaWidth: compact ? 220 : 240
+    // Both sides use the same width so the clock stays centered. The left side
+    // deliberately reserves enough space for workspaces plus a useful window
+    // title instead of reducing every title to a few characters.
+    readonly property int sideAreaWidth: compact ? 330 : 380
 
     readonly property int space2: 2
     readonly property int space4: 4

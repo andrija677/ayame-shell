@@ -68,6 +68,11 @@ keeps the default breathing room, while compact mode tightens shell margins,
 major gaps, bar and dock height, and wide bar regions without changing content
 or interaction targets unexpectedly.
 
+The bar reserves equal left and right regions to keep the clock geometrically
+centered. Those regions are wide enough for workspace paging and a useful amount
+of active-window context; marquee motion is a fallback for unusually long titles,
+not a substitute for adequate title space.
+
 Calendar month changes preserve spatial direction: later months travel left and
 enter from the right, while earlier months do the reverse. Clock text uses two
 layers so compact time and expanded date crossfade and settle instead of swapping
