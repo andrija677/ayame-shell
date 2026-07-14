@@ -25,10 +25,12 @@ ShellRoot {
     }
 
     // Hyprland does not emit continuously updated geometry during a pointer
-    // move. Refresh only while intelligent hiding is enabled so the dock can
-    // react during a live Win-drag rather than waiting for a later event.
+    // move. Keep a light fallback refresh while intelligent hiding is enabled
+    // so the dock still reacts during a live Win-drag. A 120 ms refresh caused
+    // full toplevel-model reconciliation several times during each popup
+    // animation, producing intermittent frame pacing depending on timer phase.
     Timer {
-        interval: 120
+        interval: 500
         repeat: true
         running: ShellConfig.dockEnabled && ShellConfig.dockAutoHide
         triggeredOnStart: true
