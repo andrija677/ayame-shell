@@ -1,2 +1,3 @@
 singleton EventStore 1.0 EventStore.qml
 singleton WeatherService 1.0 WeatherService.qml
+singleton DynamicPalette 1.0 DynamicPalette.qml

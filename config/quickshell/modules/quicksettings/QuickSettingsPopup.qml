@@ -348,6 +348,55 @@ PopupWindow {
 
             Surface {
                 Layout.fillWidth: true
+                implicitHeight: 68
+                color: Theme.surfaceContainer
+
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Theme.space2
+                        StyledText {
+                            text: "Wallpaper colors"
+                            font.weight: Theme.fontWeightLabel
+                        }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: DynamicPalette.active
+                                ? ShellConfig.dynamicColorStyle.toUpperCase() + " PALETTE"
+                                : "Ayame violet"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                            elide: Text.ElideRight
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 66
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: palettePointer.containsMouse ? Theme.primary : Theme.primaryContainer
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: DynamicPalette.active ? "CHANGE" : "SET UP"
+                            color: palettePointer.containsMouse
+                                ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: palettePointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: paletteSetup.open()
+                        }
+                    }
+                }
+            }
+
+            Surface {
+                Layout.fillWidth: true
                 implicitHeight: 72
                 color: Theme.surfaceContainer
 
@@ -481,6 +530,11 @@ PopupWindow {
 
     WeatherSetupPopup {
         id: weatherSetup
+        hostWindow: root.hostWindow
+    }
+
+    PaletteSetupPopup {
+        id: paletteSetup
         hostWindow: root.hostWindow
     }
 }

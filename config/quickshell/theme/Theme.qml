@@ -2,25 +2,38 @@ pragma Singleton
 
 import QtQuick
 import "../settings"
+import "../services"
 
 QtObject {
     readonly property bool compact: ShellConfig.densityMode === "compact"
 
     // Semantic colors: components describe a color's purpose, not its shade.
     // A generated wallpaper palette can replace these values later.
-    readonly property color background: "#FF121116"
-    readonly property color surface: "#F21C1B22"
-    readonly property color surfaceContainer: "#FF25232C"
-    readonly property color surfaceContainerHigh: "#FF302D39"
-    readonly property color foregroundSurface: "#FFF0ECF4"
-    readonly property color foregroundSurfaceVariant: "#FFC9C3CE"
-    readonly property color outline: "#FF958E9B"
-    readonly property color outlineVariant: "#FF49454F"
+    readonly property color background: DynamicPalette.active
+        ? DynamicPalette.darkColor("background", "#121116") : "#FF121116"
+    readonly property color surface: DynamicPalette.active
+        ? DynamicPalette.darkColor("surface", "#1C1B22") : "#F21C1B22"
+    readonly property color surfaceContainer: DynamicPalette.active
+        ? DynamicPalette.darkColor("surface_container", "#25232C") : "#FF25232C"
+    readonly property color surfaceContainerHigh: DynamicPalette.active
+        ? DynamicPalette.darkColor("surface_container_high", "#302D39") : "#FF302D39"
+    readonly property color foregroundSurface: DynamicPalette.active
+        ? DynamicPalette.darkColor("on_surface", "#F0ECF4") : "#FFF0ECF4"
+    readonly property color foregroundSurfaceVariant: DynamicPalette.active
+        ? DynamicPalette.darkColor("on_surface_variant", "#C9C3CE") : "#FFC9C3CE"
+    readonly property color outline: DynamicPalette.active
+        ? DynamicPalette.darkColor("outline", "#958E9B") : "#FF958E9B"
+    readonly property color outlineVariant: DynamicPalette.active
+        ? DynamicPalette.darkColor("outline_variant", "#49454F") : "#FF49454F"
 
-    readonly property color primary: "#FFD0BCFF"
-    readonly property color foregroundPrimary: "#FF381E72"
-    readonly property color primaryContainer: "#FF4F378B"
-    readonly property color foregroundPrimaryContainer: "#FFEADDFF"
+    readonly property color primary: DynamicPalette.active
+        ? DynamicPalette.darkColor("primary", "#D0BCFF") : "#FFD0BCFF"
+    readonly property color foregroundPrimary: DynamicPalette.active
+        ? DynamicPalette.darkColor("on_primary", "#381E72") : "#FF381E72"
+    readonly property color primaryContainer: DynamicPalette.active
+        ? DynamicPalette.darkColor("primary_container", "#4F378B") : "#FF4F378B"
+    readonly property color foregroundPrimaryContainer: DynamicPalette.active
+        ? DynamicPalette.darkColor("on_primary_container", "#EADDFF") : "#FFEADDFF"
 
     readonly property color success: "#FFA6D6A8"
     readonly property color warning: "#FFFFDDB3"

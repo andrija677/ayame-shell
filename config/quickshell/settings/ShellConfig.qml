@@ -21,6 +21,9 @@ QtObject {
     property alias showPassiveTrayItems: values.showPassiveTrayItems
     property alias animationsEnabled: values.animationsEnabled
     property alias densityMode: values.densityMode
+    property alias dynamicColorsEnabled: values.dynamicColorsEnabled
+    property alias dynamicColorWallpaper: values.dynamicColorWallpaper
+    property alias dynamicColorStyle: values.dynamicColorStyle
     property alias workspaceCount: values.workspaceCount
     property alias weatherEnabled: values.weatherEnabled
     property alias weatherLocationName: values.weatherLocationName
@@ -47,6 +50,9 @@ QtObject {
         values.showPassiveTrayItems = true;
         values.animationsEnabled = true;
         values.densityMode = "normal";
+        values.dynamicColorsEnabled = false;
+        values.dynamicColorWallpaper = "";
+        values.dynamicColorStyle = "tonal";
         values.workspaceCount = 5;
         values.weatherEnabled = false;
         values.weatherLocationName = "";
@@ -88,6 +94,9 @@ QtObject {
             property bool showPassiveTrayItems: true
             property bool animationsEnabled: true
             property string densityMode: "normal"
+            property bool dynamicColorsEnabled: false
+            property string dynamicColorWallpaper: ""
+            property string dynamicColorStyle: "tonal"
             property int workspaceCount: 5
             property bool weatherEnabled: false
             property string weatherLocationName: ""

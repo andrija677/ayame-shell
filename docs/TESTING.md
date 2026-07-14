@@ -175,6 +175,17 @@ reflow immediately with tighter spacing. Restart Ayame and confirm the selected
 density persists, then return to comfortable spacing and check that no text is
 clipped.
 
+Open Wallpaper colors in Quick Settings, enter an absolute path to a local PNG,
+JPEG, or WebP image, choose a palette style, and generate it. Confirm the shell
+recolors without a restart, text remains readable, and the selected palette
+persists after restarting Ayame. Change the style and regenerate, then choose
+Use Ayame Violet and confirm the original palette returns immediately. Invalid
+and missing paths must show an error without replacing the last valid palette.
+
+Dynamic palette output is stored under Quickshell's private cache directory as
+`dynamic-palette.json`. The wallpaper itself must not be copied into Ayame's data
+or cache directories.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

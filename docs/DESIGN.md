@@ -25,8 +25,11 @@ Ayame Shell combines three influences without copying an existing shell:
 - Normal, 220 ms: selection and small shape changes
 - Slow, 360 ms: future panels entering or changing layout
 
-The initial palette is a hand-authored dark violet theme. A later milestone will
-generate the semantic values from wallpapers using Matugen.
+The fallback palette is a hand-authored dark violet theme. Optional wallpaper
+colors use Matugen to replace the same semantic values with a dark tonal,
+vibrant, or expressive scheme. Surfaces remain restrained while active states,
+controls, highlights, and readable foregrounds follow the wallpaper palette.
+Returning to Ayame Violet never requires regenerating or deleting the cache.
 
 ## Typography
 
