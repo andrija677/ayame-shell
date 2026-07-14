@@ -196,6 +196,10 @@ to Hyprshutdown for graceful application closure, while Restart and Shut Down de
 `systemctl`. Lock is immediate, but every session-ending or machine-ending action
 requires a separate confirmation state and warns about unsaved work. Commands are
 never exercised by automated preview testing.
+Hyprshutdown is allowed to fork for logout. It must outlive Quickshell because
+closing desktop clients includes closing the process that launched it; foreground
+mode would otherwise terminate the logout before Hyprland exits.
+
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power
 surface unmapped; only a nonzero exit reopens it with diagnostic text.

@@ -55,7 +55,7 @@ PanelWindow {
             ];
         } else if (action.id === "logout") {
             actionProcess.command = [
-                "hyprshutdown", "--no-fork", "--top-label",
+                "hyprshutdown", "--top-label",
                 "Logging out of Ayame…"
             ];
         } else if (action.id === "restart") {

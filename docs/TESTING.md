@@ -301,6 +301,8 @@ the matching confirmation state and an unsaved-work warning; Cancel must return
 without executing anything. Escape and a background click must close the surface.
 After saving work, confirm Log Out starts Hyprshutdown and returns to the display
 manager rather than invoking the removed legacy `hyprctl dispatch exit` syntax.
+Hyprshutdown must run in its default forked mode so closing Quickshell cannot
+terminate the logout before Hyprland exits.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the
