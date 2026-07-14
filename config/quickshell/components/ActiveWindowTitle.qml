@@ -11,7 +11,7 @@ StyledText {
     visible: windowTitle.length > 0
     color: Theme.foregroundSurfaceVariant
     font.pixelSize: Theme.fontSmall
-    font.weight: Font.Medium
+    font.weight: Theme.fontWeightBody
     elide: Text.ElideRight
     maximumLineCount: 1
     verticalAlignment: Text.AlignVCenter

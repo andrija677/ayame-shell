@@ -142,7 +142,7 @@ PopupWindow {
             StyledText {
                 text: "Quick Settings"
                 font.pixelSize: Theme.fontTitle
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
             }
 
             Surface {
@@ -163,7 +163,7 @@ PopupWindow {
                             color: root.audio?.muted
                                 ? Theme.error : Theme.foregroundSurfaceVariant
                             font.pixelSize: Theme.fontSmall
-                            font.weight: Font.DemiBold
+                            font.weight: Theme.fontWeightLabel
                         }
                     }
 
@@ -181,7 +181,7 @@ PopupWindow {
                                 anchors.centerIn: parent
                                 text: root.audio?.muted ? "ON" : "MUTE"
                                 font.pixelSize: 9
-                                font.weight: Font.Bold
+                                font.weight: Theme.fontWeightTitle
                             }
                             MouseArea {
                                 id: mutePointer
@@ -256,7 +256,7 @@ PopupWindow {
 
                     StyledText {
                         text: "Power profile"
-                        font.weight: Font.DemiBold
+                        font.weight: Theme.fontWeightLabel
                     }
 
                     RowLayout {
@@ -283,7 +283,7 @@ PopupWindow {
                                         ? Theme.foregroundPrimary
                                         : Theme.foregroundSurfaceVariant
                                     font.pixelSize: 9
-                                    font.weight: Font.Bold
+                                    font.weight: Theme.fontWeightTitle
                                 }
 
                                 MouseArea {
@@ -339,7 +339,7 @@ PopupWindow {
                             : Networking.connectivity === NetworkConnectivity.None
                                 ? Theme.error : Theme.warning
                         font.pixelSize: Theme.fontSmall
-                        font.weight: Font.DemiBold
+                        font.weight: Theme.fontWeightLabel
                     }
                 }
             }
@@ -356,7 +356,7 @@ PopupWindow {
                         text: Math.round(root.battery?.percentage ?? 0) + "%"
                         color: Theme.foregroundSurfaceVariant
                         font.pixelSize: Theme.fontSmall
-                        font.weight: Font.DemiBold
+                        font.weight: Theme.fontWeightLabel
                     }
                 }
             }

@@ -40,12 +40,13 @@ Surface {
         id: timeText
         anchors.centerIn: parent
         text: Qt.formatDateTime(clock.date, "HH:mm")
+        font.family: Theme.fontFamilyNumeric
         color: Theme.foregroundSurface
         opacity: root.expanded ? 0 : 1
         y: root.expanded ? Theme.space4 : 0
         scale: root.expanded ? 0.92 : 1
         font.pixelSize: Theme.fontNormal
-        font.weight: Font.DemiBold
+        font.weight: Theme.fontWeightLabel
 
         Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
         Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }
@@ -61,7 +62,7 @@ Surface {
         y: root.expanded ? 0 : -Theme.space4
         scale: root.expanded ? 1 : 0.92
         font.pixelSize: Theme.fontNormal
-        font.weight: Font.DemiBold
+        font.weight: Theme.fontWeightLabel
 
         Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
         Behavior on y { NumberAnimation { duration: Theme.motionNormal; easing.type: Easing.OutCubic } }

@@ -84,7 +84,7 @@ Surface {
                 Layout.fillWidth: true
                 text: root.player?.trackTitle || "Nothing playing"
                 font.pixelSize: Theme.fontTitle
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
                 elide: Text.ElideRight
             }
 
@@ -104,6 +104,7 @@ Surface {
 
                 StyledText {
                     text: root.formatTime(root.player?.position ?? -1)
+                    font.family: Theme.fontFamilyNumeric
                     color: Theme.outline
                     font.pixelSize: 9
                 }
@@ -132,6 +133,7 @@ Surface {
 
                 StyledText {
                     text: root.formatTime(root.player?.length ?? -1)
+                    font.family: Theme.fontFamilyNumeric
                     color: Theme.outline
                     font.pixelSize: 9
                 }
@@ -168,7 +170,7 @@ Surface {
                                 ? Theme.foregroundPrimary
                                 : Theme.foregroundPrimaryContainer
                             font.pixelSize: parent.modelData.label.length > 1 ? 9 : 14
-                            font.weight: Font.Bold
+                            font.weight: Theme.fontWeightTitle
                         }
                         MouseArea {
                             id: controlPointer

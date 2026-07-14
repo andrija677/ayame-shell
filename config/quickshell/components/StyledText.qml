@@ -5,6 +5,6 @@ Text {
     color: Theme.foregroundSurface
     font.family: Theme.fontFamily
     font.pixelSize: Theme.fontNormal
-    font.weight: Font.Medium
+    font.weight: Theme.fontWeightBody
     renderType: Text.NativeRendering
 }

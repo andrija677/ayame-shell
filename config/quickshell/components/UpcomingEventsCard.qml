@@ -26,7 +26,7 @@ Surface {
         StyledText {
             id: heading
             text: "Upcoming"
-            font.weight: Font.DemiBold
+            font.weight: Theme.fontWeightLabel
         }
 
         Repeater {
@@ -47,11 +47,12 @@ Surface {
                     StyledText {
                         anchors.centerIn: parent
                         text: parent.parent.modelData.occurrence.getDate()
+                        font.family: Theme.fontFamilyNumeric
                         color: parent.parent.modelData.daysUntil
                                 <= parent.parent.modelData.reminderDays
                             ? Theme.foregroundPrimary
                             : Theme.foregroundSurface
-                        font.weight: Font.Bold
+                        font.weight: Theme.fontWeightTitle
                     }
                 }
 
@@ -61,7 +62,7 @@ Surface {
                     StyledText {
                         Layout.fillWidth: true
                         text: parent.parent.modelData.title
-                        font.weight: Font.DemiBold
+                        font.weight: Theme.fontWeightLabel
                         elide: Text.ElideRight
                     }
                     StyledText {

@@ -118,7 +118,7 @@ PopupWindow {
             StyledText {
                 text: Qt.formatDateTime(new Date(), "dddd, d MMMM")
                 font.pixelSize: Theme.fontTitle
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
             }
 
             MediaCard { Layout.fillWidth: true }

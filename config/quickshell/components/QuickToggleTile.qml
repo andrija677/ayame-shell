@@ -36,7 +36,7 @@ Surface {
                 color: root.checked
                     ? Theme.foregroundPrimaryContainer
                     : Theme.foregroundSurface
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
                 elide: Text.ElideRight
             }
             StyledText {

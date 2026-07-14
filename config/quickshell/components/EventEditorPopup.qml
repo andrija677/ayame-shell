@@ -43,7 +43,7 @@ PopupWindow {
             StyledText {
                 text: "Add event  •  " + Qt.formatDate(root.eventDate, "d MMM yyyy")
                 font.pixelSize: Theme.fontTitle
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
             }
 
             Rectangle {
@@ -90,7 +90,7 @@ PopupWindow {
 
                 StyledText {
                     text: "Remind me"
-                    font.weight: Font.DemiBold
+                    font.weight: Theme.fontWeightLabel
                 }
 
                 RowLayout {
@@ -120,7 +120,7 @@ PopupWindow {
                                     ? Theme.foregroundPrimary
                                     : Theme.foregroundSurfaceVariant
                                 font.pixelSize: 8
-                                font.weight: Font.Bold
+                                font.weight: Theme.fontWeightTitle
                             }
                             MouseArea {
                                 id: reminderPointer
@@ -173,7 +173,7 @@ PopupWindow {
                         color: savePointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 9
-                        font.weight: Font.Bold
+                        font.weight: Theme.fontWeightTitle
                     }
                     MouseArea {
                         id: savePointer

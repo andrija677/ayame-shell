@@ -23,12 +23,13 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: (root.charging ? "+" : "") + root.percentage + "%"
+        font.family: Theme.fontFamilyNumeric
         color: root.charging || root.full ? Theme.success
             : root.percentage <= 10 ? Theme.error
             : root.percentage <= 20 ? Theme.warning
             : Theme.foregroundSurfaceVariant
         font.pixelSize: Theme.fontSmall
-        font.weight: Font.DemiBold
+        font.weight: Theme.fontWeightLabel
 
         Behavior on color {
             ColorAnimation { duration: Theme.motionNormal }

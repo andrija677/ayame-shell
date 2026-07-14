@@ -38,9 +38,11 @@ Rectangle {
         text: !root.audio ? "AUDIO"
             : root.muted ? "MUTE"
             : root.volumePercent + "%"
+        font.family: root.audio && !root.muted
+            ? Theme.fontFamilyNumeric : Theme.fontFamily
         color: root.muted ? Theme.error : Theme.foregroundSurfaceVariant
         font.pixelSize: Theme.fontSmall
-        font.weight: Font.DemiBold
+        font.weight: Theme.fontWeightLabel
 
         Behavior on color {
             ColorAnimation { duration: Theme.motionFast }

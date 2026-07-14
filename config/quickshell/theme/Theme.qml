@@ -44,7 +44,12 @@ QtObject {
     readonly property int fontSmall: 12
     readonly property int fontNormal: 13
     readonly property int fontTitle: 15
-    readonly property string fontFamily: "Noto Sans"
+    readonly property string fontFamily: "Fira Sans"
+    readonly property string fontFamilyNumeric: "JetBrainsMono Nerd Font"
+    readonly property int fontWeightBody: Font.Medium
+    readonly property int fontWeightLabel: Font.DemiBold
+    readonly property int fontWeightTitle: Font.Bold
+    readonly property int fontWeightDisplay: Font.ExtraBold
 
     readonly property int motionFast: 120
     readonly property int motionNormal: 220

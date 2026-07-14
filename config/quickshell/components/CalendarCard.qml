@@ -50,7 +50,7 @@ Surface {
                 Layout.fillWidth: true
                 text: Qt.formatDate(root.shownMonth, "MMMM yyyy")
                 font.pixelSize: Theme.fontTitle
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
             }
 
             Repeater {
@@ -74,7 +74,7 @@ Surface {
                         color: navigationPointer.containsMouse
                             ? Theme.primary : Theme.foregroundSurfaceVariant
                         font.pixelSize: parent.modelData.label === "TODAY" ? 9 : 16
-                        font.weight: Font.Bold
+                        font.weight: Theme.fontWeightTitle
                     }
 
                     MouseArea {
@@ -106,7 +106,7 @@ Surface {
                     text: modelData
                     color: Theme.outline
                     font.pixelSize: 9
-                    font.weight: Font.Bold
+                    font.weight: Theme.fontWeightTitle
                     horizontalAlignment: Text.AlignHCenter
                 }
             }
@@ -140,11 +140,12 @@ Surface {
                     StyledText {
                         anchors.centerIn: parent
                         text: parent.cellDate.getDate()
+                        font.family: Theme.fontFamilyNumeric
                         color: parent.isToday ? Theme.foregroundPrimary
                             : parent.inMonth ? Theme.foregroundSurface
                             : Theme.outline
                         font.pixelSize: Theme.fontSmall
-                        font.weight: parent.isToday ? Font.Bold : Font.Medium
+                        font.weight: parent.isToday ? Theme.fontWeightTitle : Theme.fontWeightBody
                     }
 
                     Rectangle {
@@ -182,7 +183,7 @@ Surface {
             StyledText {
                 Layout.fillWidth: true
                 text: Qt.formatDate(root.selectedDate, "dddd, d MMMM")
-                font.weight: Font.DemiBold
+                font.weight: Theme.fontWeightLabel
                 elide: Text.ElideRight
             }
 
@@ -199,7 +200,7 @@ Surface {
                     color: addPointer.containsMouse
                         ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                     font.pixelSize: 9
-                    font.weight: Font.Bold
+                    font.weight: Theme.fontWeightTitle
                 }
                 MouseArea {
                     id: addPointer

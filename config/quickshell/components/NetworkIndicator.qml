@@ -155,7 +155,7 @@ Rectangle {
                     text: root.connectedWifi?.name
                         || (root.online ? "Network" : "No connection")
                     font.pixelSize: Theme.fontTitle
-                    font.weight: Font.DemiBold
+                    font.weight: Theme.fontWeightLabel
                     elide: Text.ElideRight
                 }
                 StyledText {

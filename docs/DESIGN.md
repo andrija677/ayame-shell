@@ -28,6 +28,14 @@ Ayame Shell combines three influences without copying an existing shell:
 The initial palette is a hand-authored dark violet theme. A later milestone will
 generate the semantic values from wallpapers using Matugen.
 
+## Typography
+
+Ayame uses Fira Sans for interface text, with Medium body copy, SemiBold labels,
+Bold titles, and ExtraBold reserved for rare display emphasis. JetBrains Mono is
+limited to compact numeric readouts such as time, percentages, workspace numbers,
+calendar dates, and playback position. This keeps the interface warm and readable
+without making every surface visually loud.
+
 ## Panel motion
 
 Clock-owned panels use the clock's bottom center as their visual origin. They

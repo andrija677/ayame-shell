@@ -41,11 +41,12 @@ Rectangle {
     StyledText {
         anchors.centerIn: parent
         text: root.workspaceId
+        font.family: Theme.fontFamilyNumeric
         color: root.active
             ? Theme.foregroundPrimary
             : Theme.foregroundSurfaceVariant
         font.pixelSize: Theme.fontSmall
-        font.weight: root.active ? Font.DemiBold : Font.Medium
+        font.weight: root.active ? Theme.fontWeightLabel : Theme.fontWeightBody
 
         Behavior on color {
             ColorAnimation { duration: Theme.motionFast }
