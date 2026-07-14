@@ -38,7 +38,7 @@ PopupWindow {
     anchor.window: hostWindow
     anchor.rect.x: Math.round((hostWindow.width - width) / 2)
     anchor.rect.y: hostWindow.height
-    implicitWidth: 420
+    implicitWidth: 390
     implicitHeight: dashboard.implicitHeight + Theme.space8
     color: "transparent"
     grabFocus: false
