@@ -315,6 +315,17 @@ Clear All remove tracked entries, and the dashboard shows at most the newest
 three. With Do Not Disturb enabled, new entries must reach history without a
 popup. Disable notification ownership before returning to another session shell.
 
+Open Quick Settings → Keybinds and confirm all launcher, window recovery, and
+screenshot shortcuts fit without clipping. Verify Super+F toggles fullscreen,
+Super+Shift+F returns a window to floating, and Super+left-drag can move it from
+any visible point. These bindings remain documentation until the optional Hyprland
+file is explicitly sourced.
+
+Open Screenshot and test desktop, monitor, and area modes with instant, 3-second,
+and 5-second timing. Area cancellation must create no file. Successful captures
+must appear under `Pictures/Screenshots`, enter the image clipboard, and notify the
+user. Never place unsanitized user text into a shell command.
+
 ## Roll back project changes
 
 Git records each working milestone. To inspect the history:
@@ -325,3 +336,11 @@ git -C "$HOME/Projects/ayame-shell" log --oneline
 
 No rollback command should be run until its effect has been explained, because
 some Git rollback commands can discard uncommitted work.
+
+## Installer sandbox test
+
+Never point installer tests at the live configuration. Use a temporary HOME and
+stub required commands, then verify the generated prefix, launcher, Hyprland
+fragment, source-line backup, and uninstall behavior. A real install must preview
+its paths and ask before changing `hyprland.conf`; reinstall must move the previous
+Ayame prefix to a timestamped backup rather than overwriting it.

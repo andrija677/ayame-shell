@@ -62,6 +62,14 @@ Quickshell IPC. Requests target the dock on Hyprland's focused monitor. This giv
 optional compositor bindings a stable interface without allowing Ayame's
 development configuration to modify the user's live Hyprland files.
 
+Quick Settings opens a compositor-level Utilities surface with Keybinds and
+Screenshot pages. Keybinds documents recovery-critical window controls including
+fullscreen toggle, floating toggle, and Super-drag move/resize. Screenshot capture
+delegates to a project script using `grim`, `slurp`, and `wl-copy`; it supports the
+whole desktop, the current monitor, or an interactively selected region after
+zero, three, or five seconds. Output goes to `Pictures/Screenshots`, is copied to
+the clipboard, and is announced through the current notification service.
+
 Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
 the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecasts,
 and keeps the last response in Quickshell's cache directory for offline display.

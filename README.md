@@ -17,6 +17,8 @@ while Quick Settings focuses on live device and session controls.
 An opt-in notification server provides queued popups, native actions, dashboard
 history, dismiss/clear controls, and Do Not Disturb without taking ownership from
 the user's current notification daemon during previews.
+The Utilities surface documents recovery-friendly window keybinds and captures
+the desktop, active monitor, or selected area instantly or after a countdown.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
 Quick Settings also opens a full-screen power surface with safe Lock, Log Out,
@@ -33,5 +35,20 @@ qs --path "$HOME/Projects/ayame-shell/config/quickshell"
 
 Stop it with `Ctrl+C` in the same terminal. This command does not modify the
 live Hyprland or Quickshell configuration.
+
+## Install
+
+Inspect the scripts, then run:
+
+```bash
+./install.sh
+```
+
+The installer checks dependencies, previews its destination, backs up an existing
+Ayame installation, installs under `~/.local/share/ayame-shell`, creates the
+`~/.local/bin/ayame-shell` launcher, and optionally adds one backed-up Hyprland
+source line. It never replaces existing Quickshell, Hyprlock, or Hypridle files.
+Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
+source line; pre-install backups are retained.
 
 See [docs/TESTING.md](docs/TESTING.md) for troubleshooting and rollback steps.

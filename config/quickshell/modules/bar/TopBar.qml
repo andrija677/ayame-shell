@@ -11,6 +11,7 @@ import "../dashboard"
 import "../quicksettings"
 import "../power"
 import "../notifications"
+import "../utilities"
 
 PanelWindow {
     id: bar
@@ -269,6 +270,7 @@ PanelWindow {
         hostWindow: bar
         visible: false
         onPowerRequested: powerScreen.openPanel()
+        onUtilityRequested: page => utilities.openPage(page)
     }
 
     PowerScreen {
@@ -277,4 +279,9 @@ PanelWindow {
     }
 
     NotificationToasts { screen: bar.screen }
+
+    UtilitiesScreen {
+        id: utilities
+        screen: bar.screen
+    }
 }

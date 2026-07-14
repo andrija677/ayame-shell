@@ -50,8 +50,7 @@ PanelWindow {
         if (action.id === "lock") {
             actionProcess.command = [
                 "hyprlock", "--config",
-                Quickshell.env("HOME")
-                    + "/Projects/ayame-shell/config/hyprlock/hyprlock.conf",
+                Quickshell.shellDir + "/../hyprlock/hyprlock.conf",
                 "--grace", "0", "--immediate-render"
             ];
         } else if (action.id === "logout") {

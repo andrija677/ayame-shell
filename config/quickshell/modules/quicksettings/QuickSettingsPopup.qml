@@ -16,6 +16,7 @@ PopupWindow {
     id: root
 
     signal powerRequested()
+    signal utilityRequested(string page)
 
     required property var hostWindow
     readonly property bool open: panelOpen || settingsPanel.panelOpen
@@ -393,6 +394,37 @@ PopupWindow {
                         color: Theme.foregroundSurfaceVariant
                         font.pixelSize: Theme.fontSmall
                         font.weight: Theme.fontWeightLabel
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: 34
+                    radius: Theme.radiusPill
+                    color: keysPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
+                    StyledText { anchors.centerIn: parent; text: "KEYBINDS"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                    MouseArea {
+                        id: keysPointer
+                        anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                        onClicked: { root.closePanel(); root.utilityRequested("keys"); }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: 34
+                    radius: Theme.radiusPill
+                    color: captureUtilityPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
+                    StyledText { anchors.centerIn: parent; text: "SCREENSHOT"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                    MouseArea {
+                        id: captureUtilityPointer
+                        anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                        onClicked: { root.closePanel(); root.utilityRequested("capture"); }
                     }
                 }
             }
