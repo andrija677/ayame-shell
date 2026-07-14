@@ -28,6 +28,14 @@ For audio testing:
 3. Scroll over it and confirm volume changes in five-percent steps.
 4. Confirm the control follows a newly selected default output device.
 
+For battery testing on a laptop:
+
+1. Confirm the percentage follows UPower's displayed battery percentage.
+2. Connect power and confirm a `+` appears and the text uses the success color.
+3. Disconnect power and confirm the `+` disappears.
+
+The battery indicator should not reserve space on a desktop without a battery.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

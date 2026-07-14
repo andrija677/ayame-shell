@@ -91,7 +91,9 @@ PanelWindow {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: Theme.sideAreaWidth
                 implicitHeight: Theme.itemHeight
-                visible: ShellConfig.trayEnabled
+                visible: ShellConfig.audioEnabled
+                    || ShellConfig.batteryEnabled
+                    || ShellConfig.trayEnabled
 
                 Surface {
                     anchors.right: parent.right
@@ -112,8 +114,12 @@ PanelWindow {
                             visible: ShellConfig.audioEnabled
                         }
 
+                        BatteryIndicator {
+                            visible: ShellConfig.batteryEnabled && available
+                        }
+
                         Repeater {
-                            model: SystemTray.items
+                            model: ShellConfig.trayEnabled ? SystemTray.items : null
 
                             TrayItemButton {
                                 required property var modelData

@@ -24,3 +24,6 @@ planned later.
 
 The bar's audio control tracks PipeWire's current default sink. Audio state and
 actions stay in the reusable component; the bar only decides where it appears.
+The battery indicator follows UPower's display device and removes itself from
+the layout when no laptop battery is present. Audio, battery, and tray feature
+flags are independent.

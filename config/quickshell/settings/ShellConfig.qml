@@ -9,6 +9,7 @@ QtObject {
     readonly property bool workspacesEnabled: true
     readonly property bool clockEnabled: true
     readonly property bool audioEnabled: true
+    readonly property bool batteryEnabled: true
     readonly property bool trayEnabled: true
     readonly property bool showPassiveTrayItems: true
 
