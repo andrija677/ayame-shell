@@ -217,6 +217,13 @@ five forecast days, rain probabilities, and cached/fresh state. Click it again
 to verify the reverse animation. Opening the dashboard or Quick Settings must
 close the weather popup, while the dashboard's own forecast remains available.
 
+Switch from workspace 1–5 to workspace 6 and confirm the bar changes to 6–11.
+Workspace 12 must change the page to 12–17, and larger IDs must continue the same
+six-workspace pattern. Return to workspace 1 and confirm the original 1–5 page.
+Open a window with a title wider than the remaining left-side space. The title
+must pause, scroll smoothly until its ending is readable, pause, then return to
+the beginning without moving the centered clock.
+
 While Ayame Settings is open, the top-bar Quick Settings trigger must remain in
 its active state. Clicking it must close Settings rather than stacking Quick
 Settings above it. Opening the clock dashboard must also close either right-side

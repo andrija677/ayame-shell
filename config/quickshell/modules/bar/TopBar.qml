@@ -14,6 +14,11 @@ PanelWindow {
     id: bar
 
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
+    readonly property int activeWorkspaceId:
+        Math.max(1, hyprlandMonitor?.activeWorkspace?.id || 1)
+    readonly property int workspacePageStart: activeWorkspaceId <= 5 ? 1
+        : 6 + Math.floor((activeWorkspaceId - 6) / 6) * 6
+    readonly property int workspacePageSize: workspacePageStart === 1 ? 5 : 6
     property bool trayExpanded: false
 
     anchors {
@@ -61,11 +66,11 @@ PanelWindow {
                     visible: ShellConfig.workspacesEnabled
 
                     Repeater {
-                        model: ShellConfig.workspaceCount
+                        model: bar.workspacePageSize
 
                         WorkspaceButton {
                             required property int index
-                            workspaceId: index + 1
+                            workspaceId: bar.workspacePageStart + index
                             active: bar.hyprlandMonitor?.activeWorkspace?.id
                                 === workspaceId
                             // Hyprland 0.55 Lua configs require a Lua dispatcher

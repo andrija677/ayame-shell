@@ -86,8 +86,14 @@ font dependencies, while its popup exposes passive connection details. Neither
 surface changes connections.
 
 The active-window label reads Hyprland's focused toplevel title directly. It is
-confined to the fixed-width left area and elides long text so the centered clock
-and right-side system area never shift.
+confined to the fixed-width left area so the centered clock and right-side system
+area never shift. Long titles pause, scroll through their full text, pause again,
+and return instead of being permanently truncated.
+
+Workspace buttons follow the active Hyprland workspace. The familiar first page
+shows 1–5; higher workspaces page in six-button groups (6–11, 12–17, and onward),
+so externally selected workspaces remain visible without allowing an unbounded
+row to push the active-window title or centered clock.
 
 The clock is a reusable component rather than bar-owned markup. It emits its
 interaction to the bar, which owns a screen-local dashboard popup. The dashboard
