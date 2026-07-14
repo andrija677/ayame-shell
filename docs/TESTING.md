@@ -316,7 +316,8 @@ three. With Do Not Disturb enabled, new entries must reach history without a
 popup. Disable notification ownership before returning to another session shell.
 
 Open Quick Settings → Keybinds and confirm all launcher, window recovery, and
-screenshot shortcuts fit without clipping. Verify Super+F toggles fullscreen,
+screenshot shortcuts fit without clipping. Verify Super+Enter opens Kitty,
+Super+F toggles fullscreen,
 Super+Shift+F returns a window to floating, and Super+left-drag can move it from
 any visible point. These bindings remain documentation until the optional Hyprland
 file is explicitly sourced.

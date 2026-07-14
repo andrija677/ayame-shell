@@ -65,7 +65,8 @@ Super combinations and Super-drag window controls.
 
 Quick Settings opens a compositor-level Utilities surface with Keybinds and
 Screenshot pages. Keybinds documents recovery-critical window controls including
-fullscreen toggle, floating toggle, and Super-drag move/resize. Screenshot capture
+the Super+Enter Kitty terminal, fullscreen toggle, floating toggle, and
+Super-drag move/resize. Screenshot capture
 delegates to a project script using `grim`, `slurp`, and `wl-copy`; it supports the
 whole desktop, the current monitor, or an interactively selected region after
 zero, three, or five seconds. Output goes to `Pictures/Screenshots`, is copied to
