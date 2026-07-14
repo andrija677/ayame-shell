@@ -50,7 +50,7 @@ PopupWindow {
 
     Timer {
         id: closeTimer
-        interval: Theme.motionNormal
+        interval: Theme.motionNormal + Theme.motionUnmapGrace
         onTriggered: root.visible = false
     }
 

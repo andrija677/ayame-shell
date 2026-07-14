@@ -88,7 +88,7 @@ Rectangle {
 
         Timer {
             id: closeTimer
-            interval: Theme.motionNormal
+            interval: Theme.motionNormal + Theme.motionUnmapGrace
             onTriggered: details.visible = false
         }
 

@@ -95,6 +95,7 @@ QtObject {
     readonly property int motionFast: ShellConfig.animationsEnabled ? 140 : 0
     readonly property int motionNormal: ShellConfig.animationsEnabled ? 250 : 0
     readonly property int motionSlow: ShellConfig.animationsEnabled ? 400 : 0
+    readonly property int motionUnmapGrace: ShellConfig.animationsEnabled ? 34 : 0
     readonly property int easeEnter: Easing.OutQuint
     readonly property int easeExit: Easing.InQuart
 }

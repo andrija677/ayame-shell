@@ -113,7 +113,11 @@ PanelWindow {
             }
         }
     }
-    Timer { id: closeTimer; interval: Theme.motionNormal; onTriggered: root.visible = false }
+    Timer {
+        id: closeTimer
+        interval: Theme.motionNormal + Theme.motionUnmapGrace
+        onTriggered: root.visible = false
+    }
     Timer {
         id: captureStartTimer
         interval: 220
