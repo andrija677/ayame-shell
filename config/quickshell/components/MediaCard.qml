@@ -22,6 +22,10 @@ Surface {
             return 0;
         return Math.max(0, Math.min(1, player.position / player.length));
     }
+    readonly property real displayedPosition: {
+        progressTimer.tick;
+        return player?.position ?? -1;
+    }
 
     function formatTime(seconds) {
         if (!Number.isFinite(seconds) || seconds < 0)
@@ -103,7 +107,7 @@ Surface {
                 spacing: Theme.space6
 
                 StyledText {
-                    text: root.formatTime(root.player?.position ?? -1)
+                    text: root.formatTime(root.displayedPosition)
                     font.family: Theme.fontFamilyNumeric
                     color: Theme.outline
                     font.pixelSize: 9
