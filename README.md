@@ -50,7 +50,22 @@ live Hyprland or Quickshell configuration.
 
 ## Install
 
-Inspect the scripts, then run:
+### Quick install
+
+Install the latest public version directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
+```
+
+The bootstrap downloads the complete repository into a temporary directory and
+runs the same interactive installer described below. Review
+[`bootstrap.sh`](bootstrap.sh) and [`install.sh`](install.sh) before piping them
+to a shell if you prefer to inspect remote scripts first.
+
+### Install from a clone
+
+From the cloned repository, run:
 
 ```bash
 ./install.sh
@@ -81,6 +96,12 @@ To deliberately replace an existing Hyprland and Quickshell desktop, use:
 
 ```bash
 ./install.sh --replace-desktop
+```
+
+Or perform the same replacement through the GitHub bootstrap:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash -s -- --replace-desktop
 ```
 
 This previews detected configs, moves the active `hypr` and `quickshell` roots
