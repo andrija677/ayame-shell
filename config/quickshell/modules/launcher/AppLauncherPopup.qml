@@ -129,6 +129,7 @@ PanelWindow {
         opacity: root.panelOpen ? 0.34 : 0
 
         Behavior on opacity {
+            enabled: root.visible
             NumberAnimation { duration: Theme.motionNormal }
         }
     }
@@ -159,12 +160,14 @@ PanelWindow {
             xScale: root.panelOpen ? 1 : 0.94
             yScale: root.panelOpen ? 1 : 0.86
             Behavior on xScale {
+                enabled: root.visible
                 NumberAnimation {
                     duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on yScale {
+                enabled: root.visible
                 NumberAnimation {
                     duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
@@ -173,12 +176,16 @@ PanelWindow {
         }
 
         Behavior on anchors.bottomMargin {
+            enabled: root.visible
             NumberAnimation {
                 duration: Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
-        Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
+        Behavior on opacity {
+            enabled: root.visible
+            NumberAnimation { duration: Theme.motionNormal }
+        }
 
         ColumnLayout {
             id: launcherContent

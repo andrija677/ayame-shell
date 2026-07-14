@@ -68,26 +68,32 @@ PopupWindow {
             xScale: root.panelOpen ? 1 : 0.94
             yScale: root.panelOpen ? 1 : 0.88
             Behavior on xScale {
+                enabled: root.visible
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on yScale {
+                enabled: root.visible
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
         }
 
         Behavior on y {
+            enabled: root.visible
             NumberAnimation {
-                duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                duration: Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
-        Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
+        Behavior on opacity {
+            enabled: root.visible
+            NumberAnimation { duration: Theme.motionNormal }
+        }
 
         ColumnLayout {
             id: content

@@ -112,17 +112,17 @@ Rectangle {
                 xScale: details.panelOpen ? 1 : 0.94
                 yScale: details.panelOpen ? 1 : 0.86
                 Behavior on xScale {
+                    enabled: details.visible
                     NumberAnimation {
-                        duration: details.panelOpen
-                            ? Theme.motionSlow : Theme.motionNormal
+                        duration: Theme.motionNormal
                         easing.type: details.panelOpen
                             ? Theme.easeEnter : Theme.easeExit
                     }
                 }
                 Behavior on yScale {
+                    enabled: details.visible
                     NumberAnimation {
-                        duration: details.panelOpen
-                            ? Theme.motionSlow : Theme.motionNormal
+                        duration: Theme.motionNormal
                         easing.type: details.panelOpen
                             ? Theme.easeEnter : Theme.easeExit
                     }
@@ -130,14 +130,15 @@ Rectangle {
             }
 
             Behavior on y {
+                enabled: details.visible
                 NumberAnimation {
-                    duration: details.panelOpen
-                        ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: details.panelOpen
                         ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on opacity {
+                enabled: details.visible
                 NumberAnimation { duration: Theme.motionNormal }
             }
         }

@@ -127,26 +127,30 @@ PopupWindow {
             yScale: root.panelOpen ? 1 : 0.84
 
             Behavior on xScale {
+                enabled: root.visible
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
             Behavior on yScale {
+                enabled: root.visible
                 NumberAnimation {
-                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    duration: Theme.motionNormal
                     easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
                 }
             }
         }
 
         Behavior on y {
+            enabled: root.visible
             NumberAnimation {
-                duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                duration: Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
             }
         }
         Behavior on opacity {
+            enabled: root.visible
             NumberAnimation {
                 duration: Theme.motionNormal
                 easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit

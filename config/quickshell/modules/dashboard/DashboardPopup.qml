@@ -79,6 +79,7 @@ PopupWindow {
             yScale: root.panelOpen ? 1 : 0.82
 
             Behavior on xScale {
+                enabled: root.visible
                 NumberAnimation {
                     duration: Theme.motionNormal
                     easing.type: root.panelOpen
@@ -87,6 +88,7 @@ PopupWindow {
             }
 
             Behavior on yScale {
+                enabled: root.visible
                 NumberAnimation {
                     duration: Theme.motionNormal
                     easing.type: root.panelOpen
@@ -96,6 +98,7 @@ PopupWindow {
         }
 
         Behavior on y {
+            enabled: root.visible
             NumberAnimation {
                 duration: Theme.motionNormal
                 easing.type: root.panelOpen
@@ -104,6 +107,7 @@ PopupWindow {
         }
 
         Behavior on opacity {
+            enabled: root.visible
             NumberAnimation {
                 duration: Theme.motionNormal
                 easing.type: root.panelOpen
