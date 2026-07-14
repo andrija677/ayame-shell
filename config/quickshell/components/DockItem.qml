@@ -21,6 +21,8 @@ Rectangle {
     readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
     property bool pinChanging: false
     property real dragOffset: 0
+    property real pressSceneX: 0
+    property bool dragInProgress: false
 
     implicitWidth: 42
     implicitHeight: 42
@@ -97,31 +99,6 @@ Rectangle {
         easing.type: Theme.easeEnter
     }
 
-    DragHandler {
-        id: reorderDrag
-        target: null
-        acceptedButtons: Qt.LeftButton
-        yAxis.enabled: false
-        cursorShape: active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-        xAxis.onActiveValueChanged: delta => root.dragOffset += delta
-        onActiveChanged: {
-            if (active) {
-                dragReturn.stop();
-                root.z = 100;
-            } else {
-                root.z = 0;
-                if (Math.abs(root.dragOffset) >= dragThreshold
-                        && root.dockController) {
-                    const scenePoint = root.mapToItem(null,
-                        root.width / 2, root.height / 2);
-                    root.dockController.reorderDockApp(
-                        root.favoriteId, scenePoint.x);
-                }
-                dragReturn.restart();
-            }
-        }
-    }
-
     Behavior on color { ColorAnimation { duration: Theme.motionFast } }
     Behavior on scale {
         NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
@@ -186,14 +163,49 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.dragInProgress
+            ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 
-        onClicked: event => {
-            if (event.button === Qt.RightButton) {
+        onPressed: event => {
+            dragReturn.stop();
+            root.dragOffset = 0;
+            root.dragInProgress = false;
+            root.pressSceneX = root.mapToItem(
+                null, event.x, event.y).x;
+        }
+
+        onPositionChanged: event => {
+            if (!pressed || !(event.buttons & Qt.LeftButton))
+                return;
+            const sceneX = root.mapToItem(null, event.x, event.y).x;
+            const distance = sceneX - root.pressSceneX;
+            if (!root.dragInProgress
+                    && Math.abs(distance) >= 8)
+                root.dragInProgress = true;
+            if (root.dragInProgress) {
+                root.z = 100;
+                root.dragOffset = distance;
+            }
+        }
+
+        onReleased: event => {
+            if (event.button === Qt.RightButton && !root.dragInProgress) {
                 if (!root.pinChanging) {
                     root.pinChanging = true;
                     pinAnimation.start();
                 }
+                return;
+            }
+
+            if (root.dragInProgress) {
+                const scenePoint = root.mapToItem(
+                    null, root.width / 2, root.height / 2);
+                if (root.dockController)
+                    root.dockController.reorderDockApp(
+                        root.favoriteId, scenePoint.x);
+                root.dragInProgress = false;
+                root.z = 0;
+                dragReturn.restart();
                 return;
             }
 
@@ -206,6 +218,12 @@ Rectangle {
             } else {
                 root.toplevel.wayland.activate();
             }
+        }
+
+        onCanceled: {
+            root.dragInProgress = false;
+            root.z = 0;
+            dragReturn.restart();
         }
     }
 }
