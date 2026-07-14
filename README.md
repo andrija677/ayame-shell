@@ -2,6 +2,8 @@
 
 An original, modular Hyprland and Quickshell desktop shell for EndeavourOS.
 
+Please keep in mind that this is in beta, changes will occur in future releases.
+
 The project is developed and tested outside `~/.config`. Nothing in this
 repository is installed automatically.
 
