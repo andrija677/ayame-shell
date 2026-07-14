@@ -1,0 +1,18 @@
+# Architecture
+
+Ayame Shell keeps presentation, system integration, and theme values separate.
+
+- `config/quickshell/components`: small reusable visual components
+- `config/quickshell/modules`: complete areas of the shell, such as the bar
+- `config/quickshell/services`: system and compositor data sources
+- `config/quickshell/theme`: shared colors, dimensions, and animation values
+- `config/hypr`: future optional Hyprland integration
+- `config/hyprlock`: future lock-screen configuration
+- `config/hypridle`: future idle configuration
+- `scripts`: future helper scripts
+- `assets`: project-owned artwork, icons, images, and wallpapers
+- `themes`: future theme presets
+
+The root `shell.qml` is deliberately small. It assembles modules but does not
+contain their implementation details.
+
