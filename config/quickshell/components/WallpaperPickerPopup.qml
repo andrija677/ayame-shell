@@ -18,10 +18,10 @@ PopupWindow {
     }
 
     function choose(path) {
-        ShellConfig.dynamicColorMode = "manual";
+        ShellConfig.dynamicColorMode = "automatic";
         ShellConfig.dynamicColorWallpaper = path;
         WallpaperService.apply(path);
-        DynamicPalette.generate(path);
+        DynamicPalette.followWallpaper(path);
         visible = false;
     }
 

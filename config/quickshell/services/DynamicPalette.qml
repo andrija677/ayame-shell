@@ -197,6 +197,8 @@ QtObject {
 
     Component.onCompleted: {
         syncKitty();
+        if (ShellConfig.dynamicColorWallpaper.length > 0)
+            followWallpaper(ShellConfig.dynamicColorWallpaper);
         if (ShellConfig.dynamicColorMode === "manual") {
             const cacheMatches = paletteCache.wallpaper
                     === ShellConfig.dynamicColorWallpaper
@@ -215,5 +217,9 @@ QtObject {
         }
         function onColorSchemeChanged() { root.syncKitty(); }
         function onDynamicColorsEnabledChanged() { root.syncKitty(); }
+        function onDynamicColorWallpaperChanged() {
+            if (ShellConfig.dynamicColorWallpaper.length > 0)
+                root.followWallpaper(ShellConfig.dynamicColorWallpaper);
+        }
     }
 }

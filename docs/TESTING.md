@@ -97,6 +97,8 @@ running.
 Confirm Matugen is installed, `~/.config/kitty/kitty.conf` includes Ayame's Kitty
 fragment, and a running Kitty reloads to the same wallpaper palette. Re-run with
 `--no-kitty` and confirm the installer leaves Kitty untouched.
+On a clean system without ML4W, Follow Wallpaper must use Ayame's persisted
+wallpaper path and must never remain at “Waiting for your wallpaper service”.
 Log out, restart, and shut down after selecting a wallpaper. The persisted image
 must be present as Hyprpaper starts, and Hyprland's default logo or wallpapers
 must never flash while Ayame starts or exits.

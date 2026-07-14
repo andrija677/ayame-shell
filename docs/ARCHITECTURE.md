@@ -84,18 +84,19 @@ wind, forecast days, cache state, and units stay consistent between both surface
 
 Ayame can choose and persist its own wallpaper through Hyprpaper, restore it at
 login, and pass the same local image to Matugen. The chooser is rendered inside
-Ayame and scans Pictures and Downloads, avoiding native-dialog layer-shell conflicts. Dynamic colors can also follow
-an existing session that publishes ML4W's `current_wallpaper` cache file.
+Ayame and scans Pictures and Downloads, avoiding native-dialog layer-shell conflicts.
+Ayame's persisted wallpaper is the primary dynamic-color source. Existing sessions
+that publish ML4W's `current_wallpaper` cache file are also supported.
 The wallpaper path is also written to Ayame's state directory. Hyprpaper starts
 from a generated Ayame-owned config before Quickshell, while Hyprland's built-in
 logo and wallpaper are disabled to prevent fallback flashes during login/logout.
-`DynamicPalette` watches that file, debounces changes, passes the image to Matugen,
+`DynamicPalette` watches both sources, debounces changes, passes the image to Matugen,
 and atomically swaps palettes after successful generation. A manual path remains
 available as an override. Only generated color data is cached in Quickshell's
 cache directory; the image is never uploaded or copied. Ayame Violet is a
 persistent off mode, and tonal, vibrant, and expressive schemes share the same
 semantic component API.
-The optional Kitty fragment consumes the same semantic palette through a small
+The default-enabled Kitty fragment consumes the same semantic palette through a small
 generated color include. Palette, light/dark, and Ayame Violet changes rewrite
 that include atomically and signal running Kitty windows to reload; layout and
 key mappings remain in a separate user-reviewable fragment.
