@@ -211,6 +211,12 @@ Gaming Mode must reflect ML4W's marker, remain disabled while its script runs,
 and update after the script completes. Brightness must be omitted when no display
 backlight is available.
 
+Launch tray applications with different menus, such as Discord and Steam. A
+left or right click on an item that publishes a menu must open its own actions at
+the tray icon, including application-provided quit and status entries. A tray
+item without a menu must retain normal primary activation, middle-click must
+retain secondary activation, and wheel events must continue reaching the item.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

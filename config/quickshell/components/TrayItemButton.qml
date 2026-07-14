@@ -48,7 +48,7 @@ Rectangle {
 
         onClicked: event => {
             if (event.button === Qt.RightButton
-                    || (event.button === Qt.LeftButton && root.trayItem.onlyMenu)) {
+                    || (event.button === Qt.LeftButton && root.trayItem.hasMenu)) {
                 root.trayItem.display(
                     root.hostWindow,
                     root.mapToItem(null, 0, root.height).x,

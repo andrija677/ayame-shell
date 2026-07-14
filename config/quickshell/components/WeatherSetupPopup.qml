@@ -85,6 +85,8 @@ PopupWindow {
             }
 
             Repeater {
+                id: resultRepeater
+                property var setupPopup: root
                 model: WeatherService.searchResults
                 Rectangle {
                     required property var modelData
@@ -108,7 +110,7 @@ PopupWindow {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             WeatherService.selectLocation(parent.modelData);
-                            root.visible = false;
+                            resultRepeater.setupPopup.visible = false;
                         }
                     }
                 }
