@@ -10,10 +10,24 @@ Surface {
     readonly property date today: new Date()
     property date shownMonth: new Date(today.getFullYear(), today.getMonth(), 1)
     property date selectedDate: today
+    property date pendingMonth: shownMonth
     readonly property int mondayOffset: (shownMonth.getDay() + 6) % 7
     readonly property date gridStart: new Date(
         shownMonth.getFullYear(), shownMonth.getMonth(), 1 - mondayOffset
     )
+
+    function navigateMonth(offset) {
+        pendingMonth = new Date(
+            shownMonth.getFullYear(), shownMonth.getMonth() + offset, 1
+        );
+        monthTransition.restart();
+    }
+
+    function returnToToday() {
+        pendingMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        selectedDate = today;
+        monthTransition.restart();
+    }
 
     implicitHeight: 374
     color: Theme.surfaceContainer
@@ -35,27 +49,43 @@ Surface {
                 font.weight: Font.DemiBold
             }
 
-            StyledText {
-                text: "TODAY"
-                color: monthPointer.containsMouse
-                    ? Theme.primary : Theme.foregroundSurfaceVariant
-                font.pixelSize: 10
-                font.weight: Font.Bold
+            Repeater {
+                model: [
+                    { label: "‹", action: () => root.navigateMonth(-1) },
+                    { label: "TODAY", action: () => root.returnToToday() },
+                    { label: "›", action: () => root.navigateMonth(1) }
+                ]
 
-                MouseArea {
-                    id: monthPointer
-                    anchors.fill: parent
-                    anchors.margins: -Theme.space8
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.shownMonth = new Date(
-                        root.today.getFullYear(), root.today.getMonth(), 1
-                    )
+                Rectangle {
+                    required property var modelData
+                    implicitWidth: modelData.label === "TODAY" ? 52 : 26
+                    implicitHeight: 24
+                    radius: Theme.radiusPill
+                    color: navigationPointer.containsMouse
+                        ? Theme.surfaceContainerHigh : "transparent"
+
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: parent.modelData.label
+                        color: navigationPointer.containsMouse
+                            ? Theme.primary : Theme.foregroundSurfaceVariant
+                        font.pixelSize: parent.modelData.label === "TODAY" ? 9 : 16
+                        font.weight: Font.Bold
+                    }
+
+                    MouseArea {
+                        id: navigationPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: parent.modelData.action()
+                    }
                 }
             }
         }
 
         GridLayout {
+            id: calendarGrid
             Layout.fillWidth: true
             columns: 7
             rowSpacing: Theme.space4
@@ -228,5 +258,25 @@ Surface {
     EventEditorPopup {
         id: eventEditor
         hostWindow: root.hostWindow
+    }
+
+    SequentialAnimation {
+        id: monthTransition
+
+        NumberAnimation {
+            target: calendarGrid
+            property: "opacity"
+            to: 0
+            duration: Theme.motionFast / 2
+            easing.type: Easing.InCubic
+        }
+        ScriptAction { script: root.shownMonth = root.pendingMonth }
+        NumberAnimation {
+            target: calendarGrid
+            property: "opacity"
+            to: 1
+            duration: Theme.motionFast
+            easing.type: Easing.OutCubic
+        }
     }
 }

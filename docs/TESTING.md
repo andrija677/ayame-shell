@@ -96,6 +96,10 @@ For calendar event testing:
 7. Confirm events in the next 30 days appear in Upcoming, ordered by date.
 8. Confirm yearly events use their next future occurrence rather than the year
    originally stored.
+9. Navigate to previous and next months and confirm event markers recompute.
+10. Press Today and confirm both the visible month and selected date return to
+    the current day.
+11. Repeatedly navigate and confirm the calendar fade never gets stuck invisible.
 
 For Quick Settings testing:
 
