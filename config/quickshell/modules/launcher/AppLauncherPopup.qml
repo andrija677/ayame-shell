@@ -184,11 +184,28 @@ PanelWindow {
                 color: Theme.surfaceContainer
                 border.color: search.activeFocus ? Theme.primary : Theme.outlineVariant
 
-                StyledText {
-                    anchors { left: parent.left; leftMargin: Theme.space12; verticalCenter: parent.verticalCenter }
-                    text: "⌕"
-                    color: Theme.primary
-                    font.pixelSize: 20
+                Canvas {
+                    anchors {
+                        left: parent.left
+                        leftMargin: Theme.space12
+                        verticalCenter: parent.verticalCenter
+                    }
+                    width: 18
+                    height: 18
+                    property color strokeColor: Theme.primary
+                    onStrokeColorChanged: requestPaint()
+                    onPaint: {
+                        const ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.strokeStyle = strokeColor;
+                        ctx.lineWidth = 2;
+                        ctx.lineCap = "round";
+                        ctx.beginPath();
+                        ctx.arc(7.25, 7.25, 5, 0, Math.PI * 2);
+                        ctx.moveTo(11, 11);
+                        ctx.lineTo(16, 16);
+                        ctx.stroke();
+                    }
                 }
 
                 TextInput {
