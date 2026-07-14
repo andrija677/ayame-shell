@@ -7,10 +7,11 @@ import "../theme"
 Surface {
     id: root
     visible: WeatherService.configured
-    implicitHeight: visible ? 142 : 0
+    implicitHeight: visible ? weatherContent.implicitHeight + Theme.space24 : 0
     color: Theme.surfaceContainer
 
     ColumnLayout {
+        id: weatherContent
         anchors { fill: parent; margins: Theme.space12 }
         spacing: Theme.space8
 
@@ -43,6 +44,41 @@ Surface {
                     : "--°"
                 font.family: Theme.fontFamilyNumeric
                 font.pixelSize: 28
+                font.weight: Theme.fontWeightTitle
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            visible: WeatherService.hasData
+            spacing: Theme.space12
+
+            StyledText {
+                text: WeatherService.hasData
+                    ? "FEELS " + Math.round(
+                        WeatherService.forecast.current.apparent_temperature) + "°"
+                    : ""
+                color: Theme.foregroundSurfaceVariant
+                font.family: Theme.fontFamilyNumeric
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightLabel
+            }
+            StyledText {
+                text: WeatherService.hasData
+                    ? "WIND " + Math.round(
+                        WeatherService.forecast.current.wind_speed_10m) + " "
+                        + (WeatherService.forecast.current_units?.wind_speed_10m || "km/h")
+                    : ""
+                color: Theme.foregroundSurfaceVariant
+                font.family: Theme.fontFamilyNumeric
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightLabel
+            }
+            Item { Layout.fillWidth: true }
+            StyledText {
+                text: WeatherService.stale ? "CACHED" : "UPDATED"
+                color: WeatherService.stale ? Theme.warning : Theme.success
+                font.pixelSize: 9
                 font.weight: Theme.fontWeightTitle
             }
         }

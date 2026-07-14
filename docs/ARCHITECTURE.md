@@ -48,6 +48,9 @@ the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecast
 and keeps the last response in Quickshell's cache directory for offline display.
 The top bar owns a compact reading while the dashboard presents five forecast
 days. Celsius is the default and no request occurs before setup.
+The compact top-bar temperature also owns a screen-local forecast popup. It
+reuses the dashboard's `WeatherCard`, so current conditions, apparent temperature,
+wind, forecast days, cache state, and units stay consistent between both surfaces.
 
 Dynamic colors follow the current wallpaper automatically when the session
 publishes it through ML4W's `current_wallpaper` cache file. `DynamicPalette`

@@ -84,7 +84,7 @@ QtObject {
     readonly property int fontSmall: 12
     readonly property int fontNormal: 13
     readonly property int fontTitle: 15
-    readonly property string fontFamily: "Fira Sans"
+    readonly property string fontFamily: "Adwaita Sans"
     readonly property string fontFamilyNumeric: "JetBrainsMono Nerd Font"
     readonly property int fontWeightBody: Font.Medium
     readonly property int fontWeightLabel: Font.DemiBold

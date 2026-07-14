@@ -46,7 +46,7 @@ device controls from being buried among long-lived personalization choices.
 
 ## Typography
 
-Ayame uses Fira Sans for interface text, with Medium body copy, SemiBold labels,
+Ayame uses Adwaita Sans for interface text, with Medium body copy, bold labels,
 Bold titles, and ExtraBold reserved for rare display emphasis. JetBrains Mono is
 limited to compact numeric readouts such as time, percentages, workspace numbers,
 calendar dates, and playback position. This keeps the interface warm and readable

@@ -103,6 +103,8 @@ PanelWindow {
                 onActivated: {
                     if (!ShellConfig.dashboardEnabled)
                         return;
+                    if (weatherIndicator.open)
+                        weatherIndicator.closePanel();
                     if (quickSettings.open)
                         quickSettings.closePanel();
                     dashboard.toggle();
@@ -146,7 +148,9 @@ PanelWindow {
                         }
 
                         WeatherIndicator {
+                            id: weatherIndicator
                             visible: ShellConfig.weatherEnabled
+                            hostWindow: bar
                         }
 
                         BatteryIndicator {
@@ -157,6 +161,8 @@ PanelWindow {
                             visible: ShellConfig.quickSettingsEnabled
                             active: quickSettings.open
                             onActivated: {
+                                if (weatherIndicator.open)
+                                    weatherIndicator.closePanel();
                                 if (dashboard.open)
                                     dashboard.closePanel();
                                 quickSettings.toggle();

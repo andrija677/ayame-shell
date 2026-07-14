@@ -211,6 +211,12 @@ Gaming Mode must reflect ML4W's marker, remain disabled while its script runs,
 and update after the script completes. Brightness must be omitted when no display
 backlight is available.
 
+Click the top-bar temperature and confirm a forecast unfolds beneath it with the
+configured city, current condition, temperature, apparent temperature, wind,
+five forecast days, rain probabilities, and cached/fresh state. Click it again
+to verify the reverse animation. Opening the dashboard or Quick Settings must
+close the weather popup, while the dashboard's own forecast remains available.
+
 While Ayame Settings is open, the top-bar Quick Settings trigger must remain in
 its active state. Clicking it must close Settings rather than stacking Quick
 Settings above it. Opening the clock dashboard must also close either right-side
