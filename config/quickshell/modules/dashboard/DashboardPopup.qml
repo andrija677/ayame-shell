@@ -122,7 +122,10 @@ PopupWindow {
             }
 
             MediaCard { Layout.fillWidth: true }
-            CalendarCard { Layout.fillWidth: true }
+            CalendarCard {
+                Layout.fillWidth: true
+                hostWindow: root.hostWindow
+            }
 
             Surface {
                 Layout.fillWidth: true

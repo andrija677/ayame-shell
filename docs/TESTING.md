@@ -84,6 +84,15 @@ For dashboard testing:
 10. Confirm the first closing click both reverses the animation and compacts the
    clock date; a second cleanup click must never be necessary.
 
+For calendar event testing:
+
+1. Select a day, add a titled event, save it, and confirm a day marker appears.
+2. Close and restart Ayame and confirm the event persists locally.
+3. Add a yearly event and confirm it appears on the same month/day in another
+   year.
+4. Remove an event and confirm its marker disappears when no events remain.
+5. Cancel the editor and confirm no file data changes.
+
 For Quick Settings testing:
 
 1. Click the sliders icon at the right and confirm the panel unfolds from its
