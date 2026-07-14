@@ -51,6 +51,15 @@ For active-window testing:
 2. Confirm long titles elide instead of overlapping the centered clock.
 3. Switch to an empty workspace and confirm no stale title remains.
 
+For multi-monitor testing:
+
+1. Confirm exactly one bar appears on each connected screen.
+2. Switch workspaces independently and confirm each bar highlights its monitor's
+   active workspace.
+3. Move focus between monitors and confirm the window title appears only on the
+   focused monitor.
+4. Disconnect and reconnect a screen and confirm its bar follows it.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

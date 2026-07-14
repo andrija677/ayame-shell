@@ -17,6 +17,10 @@ Ayame Shell keeps presentation, system integration, and theme values separate.
 The root `shell.qml` is deliberately small. It assembles modules but does not
 contain their implementation details.
 
+The root creates one `TopBar` per Quickshell screen. Each bar maps its screen to
+the corresponding Hyprland monitor, so workspace selection is monitor-local and
+the active-window title appears only on the currently focused monitor.
+
 Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal
 layout or behavior. Persistent overrides and a graphical settings panel are

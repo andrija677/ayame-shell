@@ -10,6 +10,8 @@ import "../../theme"
 PanelWindow {
     id: bar
 
+    readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
+
     anchors {
         top: true
         left: true
@@ -59,7 +61,8 @@ PanelWindow {
                         WorkspaceButton {
                             required property int index
                             workspaceId: index + 1
-                            active: Hyprland.focusedWorkspace?.id === workspaceId
+                            active: bar.hyprlandMonitor?.activeWorkspace?.id
+                                === workspaceId
                             // Hyprland 0.55 Lua configs require a Lua dispatcher
                             // expression instead of the legacy `workspace N` form.
                             onActivated: Hyprland.dispatch(
@@ -80,6 +83,7 @@ PanelWindow {
                         bottom: parent.bottom
                     }
                     visible: ShellConfig.activeWindowEnabled
+                        && Hyprland.focusedMonitor === bar.hyprlandMonitor
                         && windowTitle.length > 0
                 }
             }
