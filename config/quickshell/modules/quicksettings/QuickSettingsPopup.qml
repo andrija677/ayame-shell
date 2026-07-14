@@ -67,9 +67,20 @@ PanelWindow {
     function closePanel() {
         openTimer.stop();
         panelOpen = false;
-        closeTimer.restart();
-        if (settingsPanel.panelOpen)
+        if (settingsPanel.panelOpen) {
+            closeTimer.stop();
             settingsPanel.closePanel();
+        } else {
+            closeTimer.restart();
+        }
+    }
+
+    function openSettings() {
+        openTimer.stop();
+        closeTimer.stop();
+        panelOpen = false;
+        visible = true;
+        settingsPanel.openPanel();
     }
 
     function setVolumeFromX(position) {
@@ -453,10 +464,7 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.closePanel();
-                            settingsPanel.openPanel();
-                        }
+                        onClicked: root.openSettings()
                     }
                 }
 
@@ -491,5 +499,9 @@ PanelWindow {
     SettingsPopup {
         id: settingsPanel
         hostWindow: root.hostWindow
+        onDismissed: {
+            root.closeTimer.stop();
+            root.visible = false;
+        }
     }
 }

@@ -10,6 +10,8 @@ import "../../theme"
 PanelWindow {
     id: root
 
+    signal dismissed()
+
     required property var hostWindow
     property bool panelOpen: false
 
@@ -60,7 +62,10 @@ PanelWindow {
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + Theme.motionUnmapGrace
-        onTriggered: root.visible = false
+        onTriggered: {
+            root.visible = false;
+            root.dismissed();
+        }
     }
 
     MouseArea { anchors.fill: parent; onClicked: root.closePanel() }
