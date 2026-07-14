@@ -106,11 +106,6 @@ Rectangle {
     Behavior on y {
         NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
     }
-    Behavior on x {
-        enabled: !pinAnimation.running
-        NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
-    }
-
     readonly property string resolvedIcon: Quickshell.iconPath(
         root.desktopEntry?.icon || "", true)
 

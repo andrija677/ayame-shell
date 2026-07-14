@@ -266,6 +266,15 @@ PanelWindow {
             anchors.centerIn: parent
             spacing: Theme.space4
 
+            move: Transition {
+                NumberAnimation {
+                    properties: "x"
+                    duration: Theme.motionSlow
+                    easing.type: Easing.OutBack
+                    easing.overshoot: 0.75
+                }
+            }
+
             Rectangle {
                 implicitWidth: 42
                 implicitHeight: 42
