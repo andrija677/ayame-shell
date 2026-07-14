@@ -7,6 +7,7 @@ QtObject {
     // service and graphical settings panel will manage persistent overrides.
     readonly property bool barEnabled: true
     readonly property bool workspacesEnabled: true
+    readonly property bool activeWindowEnabled: true
     readonly property bool clockEnabled: true
     readonly property bool audioEnabled: true
     readonly property bool networkEnabled: true

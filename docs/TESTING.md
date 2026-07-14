@@ -45,6 +45,12 @@ For network testing:
 
 The indicator is passive and must not change NetworkManager state.
 
+For active-window testing:
+
+1. Focus windows with short and long titles and confirm the label follows them.
+2. Confirm long titles elide instead of overlapping the centered clock.
+3. Switch to an empty workspace and confirm no stale title remains.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

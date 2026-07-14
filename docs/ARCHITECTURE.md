@@ -31,3 +31,7 @@ flags are independent.
 Network status uses Quickshell's read-only NetworkManager backend. It reports
 global connectivity for wired and fallback states, and adds signal strength
 when a connected Wi-Fi network is available. It never changes connections.
+
+The active-window label reads Hyprland's focused toplevel title directly. It is
+confined to the fixed-width left area and elides long text so the centered clock
+and right-side system area never shift.

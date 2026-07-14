@@ -39,25 +39,48 @@ PanelWindow {
             }
             spacing: Theme.space6
 
-            Row {
+            Item {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: Theme.sideAreaWidth
-                spacing: Theme.space6
+                implicitHeight: Theme.itemHeight
                 visible: ShellConfig.workspacesEnabled
+                    || ShellConfig.activeWindowEnabled
 
-                Repeater {
-                    model: ShellConfig.workspaceCount
+                Row {
+                    id: workspaceRow
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Theme.space6
+                    visible: ShellConfig.workspacesEnabled
 
-                    WorkspaceButton {
-                        required property int index
-                        workspaceId: index + 1
-                        active: Hyprland.focusedWorkspace?.id === workspaceId
-                        // Hyprland 0.55 Lua configs require a Lua dispatcher
-                        // expression instead of the legacy `workspace N` form.
-                        onActivated: Hyprland.dispatch(
-                            "hl.dsp.focus({ workspace = " + workspaceId + " })"
-                        )
+                    Repeater {
+                        model: ShellConfig.workspaceCount
+
+                        WorkspaceButton {
+                            required property int index
+                            workspaceId: index + 1
+                            active: Hyprland.focusedWorkspace?.id === workspaceId
+                            // Hyprland 0.55 Lua configs require a Lua dispatcher
+                            // expression instead of the legacy `workspace N` form.
+                            onActivated: Hyprland.dispatch(
+                                "hl.dsp.focus({ workspace = " + workspaceId + " })"
+                            )
+                        }
                     }
+                }
+
+                ActiveWindowTitle {
+                    anchors {
+                        left: workspaceRow.visible
+                            ? workspaceRow.right
+                            : parent.left
+                        leftMargin: workspaceRow.visible ? Theme.space12 : 0
+                        right: parent.right
+                        top: parent.top
+                        bottom: parent.bottom
+                    }
+                    visible: ShellConfig.activeWindowEnabled
+                        && windowTitle.length > 0
                 }
             }
 
