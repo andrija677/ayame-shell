@@ -194,18 +194,15 @@ property. Brightness controls are capability-driven and remain absent when
 `brightnessctl` exposes no display-class backlight.
 
 Power actions live in a dedicated layer-shell overlay opened from Quick Settings.
-Lock starts Hyprlock with Ayame's project-local configuration; Log Out delegates
-to Hyprshutdown for graceful application closure, while Restart and Shut Down delegate to systemd-logind through
-`systemctl`. Lock is immediate, but every session-ending or machine-ending action
+Lock starts Hyprlock with Ayame's project-local configuration; Log Out terminates
+the current logind session, while Restart and Shut Down delegate to systemd-logind
+through `systemctl`. Lock is immediate, but every session-ending or machine-ending action
 requires a separate confirmation state and warns about unsaved work. Commands are
 never exercised by automated preview testing.
-Hyprshutdown is allowed to fork for logout. It must outlive Quickshell because
-closing desktop clients includes closing the process that launched it; foreground
-mode would otherwise terminate the logout before Hyprland exits.
-Logout asks Hyprshutdown to close applications without exiting Hyprland, then its
-post-command terminates the exact current logind session. SDDM receives a normal
-completed-session event and recreates the greeter without a dead compositor VT or
-passwordless VT-switch permission.
+Logout terminates the exact current logind session after Ayame's own confirmation.
+This avoids Hyprshutdown waiting indefinitely for a layer-shell or background
+client while its shutdown surface is the only thing left onscreen. Logind cleans
+up the session cgroup and SDDM receives the normal completed-session event.
 
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power

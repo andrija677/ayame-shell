@@ -302,14 +302,11 @@ Open Quick Settings and select Power. Confirm the full-screen surface offers Loc
 Log Out, Restart, and Shut Down. Clicking Log Out, Restart, or Shut Down must show
 the matching confirmation state and an unsaved-work warning; Cancel must return
 without executing anything. Escape and a background click must close the surface.
-After saving work, confirm Log Out starts Hyprshutdown and returns to the display
-manager rather than invoking the removed legacy `hyprctl dispatch exit` syntax.
-Hyprshutdown must run in its default forked mode so closing Quickshell cannot
-terminate the logout before Hyprland exits.
-On SDDM, logout must keep Hyprland alive while applications close, terminate the
-current logind session, and reveal a fresh greeter. A black display containing
-only a cursor is a failure. Upgrades from the old VT-switch approach must remove
-Ayame's obsolete sudoers entry.
+After saving work, confirm Log Out terminates the current logind session and
+returns to the display manager rather than invoking the removed legacy
+`hyprctl dispatch exit` syntax. On SDDM it must reveal a fresh greeter; a black
+shutdown surface containing only a cursor is a failure. Upgrades from the old
+VT-switch approach must remove Ayame's obsolete sudoers entry.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the

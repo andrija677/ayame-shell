@@ -11,6 +11,4 @@ fi
     exit 1
 }
 
-printf -v post_command 'loginctl terminate-session %q' "$session_id"
-exec hyprshutdown --no-exit --post-cmd "$post_command" \
-    --top-label "Logging out of Ayame…"
+exec loginctl terminate-session "$session_id"
