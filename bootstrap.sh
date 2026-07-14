@@ -11,4 +11,12 @@ mkdir -p "$temporary_dir/source"
 tar -xzf "$temporary_dir/ayame-shell.tar.gz" \
     --strip-components=1 -C "$temporary_dir/source"
 
-"$temporary_dir/source/install.sh" "$@"
+# `curl ... | bash` occupies standard input with the bootstrap source. Reopen
+# the controlling terminal so the real installer can ask its interactive
+# confirmation questions. Non-interactive callers still work with `--yes`.
+if { exec 3</dev/tty; } 2>/dev/null; then
+    "$temporary_dir/source/install.sh" "$@" <&3
+    exec 3<&-
+else
+    "$temporary_dir/source/install.sh" "$@"
+fi
