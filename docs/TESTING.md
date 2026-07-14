@@ -330,6 +330,9 @@ file is explicitly sourced.
 With the optional bindings enabled, tap and release bare Super to toggle the
 launcher. Holding Super for another shortcut or window drag must retain its normal
 behavior rather than opening the launcher prematurely.
+Verify Super+1 through Super+5 switch directly to the matching workspace and
+Super+Shift+1 through Super+Shift+5 move the active window there. Neither action
+may trigger the bare-Super launcher after the combination is released.
 
 Open Screenshot and test desktop, monitor, and area modes with instant, 3-second,
 and 5-second timing. Area cancellation must create no file. Successful captures

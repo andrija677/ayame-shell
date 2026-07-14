@@ -11,6 +11,10 @@ hl.bind("SUPER + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })
+for workspace = 1, 5 do
+    hl.bind("SUPER + " .. workspace, hl.dsp.focus({ workspace = workspace }))
+    hl.bind("SUPER + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace }))
+end
 hl.bind("Print", hl.dsp.exec_cmd(screenshot .. " desktop 0"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd(screenshot .. " area 0"))
 hl.bind("SUPER + Print", hl.dsp.exec_cmd(screenshot .. " monitor 0 AUTO"))
