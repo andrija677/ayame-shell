@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.Mpris
+import Quickshell.Widgets
 import "../theme"
 
 Surface {
@@ -49,13 +50,12 @@ Surface {
         }
         spacing: Theme.space12
 
-        Rectangle {
+        ClippingRectangle {
             Layout.alignment: Qt.AlignTop
             implicitWidth: 76
             implicitHeight: 76
             radius: Theme.radiusMedium
             color: Theme.surfaceContainerHigh
-            clip: true
 
             Image {
                 id: albumArt
