@@ -80,7 +80,7 @@ PopupWindow {
     Surface {
         id: dashboard
         width: parent.width
-        implicitHeight: content.implicitHeight + Theme.space24
+        implicitHeight: content.implicitHeight + Theme.space16
         y: -Theme.space4 + (Theme.space8 + Theme.space4) * motion.value
         opacity: motion.value
         radius: Theme.radiusLarge
@@ -100,9 +100,9 @@ PopupWindow {
                 left: parent.left
                 right: parent.right
                 top: parent.top
-                margins: Theme.space12
+                margins: Theme.space8
             }
-            spacing: Theme.space12
+            spacing: Theme.space8
 
             StyledText {
                 text: Qt.formatDateTime(new Date(), "dddd, d MMMM")

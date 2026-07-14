@@ -33,7 +33,7 @@ Surface {
         monthTransition.restart();
     }
 
-    implicitHeight: 374
+    implicitHeight: 350
     color: Theme.surfaceContainer
 
     ColumnLayout {
