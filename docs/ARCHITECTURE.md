@@ -21,3 +21,6 @@ Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal
 layout or behavior. Persistent overrides and a graphical settings panel are
 planned later.
+
+The bar's audio control tracks PipeWire's current default sink. Audio state and
+actions stay in the reusable component; the bar only decides where it appears.

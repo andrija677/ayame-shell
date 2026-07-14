@@ -21,6 +21,13 @@ For system tray testing:
 3. Right-click an icon and confirm its native menu opens near the bar.
 4. Middle-click or scroll only when the application normally supports it.
 
+For audio testing:
+
+1. Confirm the percentage follows the current default output volume.
+2. Click the percentage and confirm mute toggles and displays `MUTE`.
+3. Scroll over it and confirm volume changes in five-percent steps.
+4. Confirm the control follows a newly selected default output device.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

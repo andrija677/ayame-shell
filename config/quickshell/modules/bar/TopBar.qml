@@ -97,16 +97,20 @@ PanelWindow {
                     anchors.right: parent.right
                     implicitWidth: Math.max(
                         Theme.itemHeight,
-                        trayRow.implicitWidth + Theme.space8
+                        systemRow.implicitWidth + Theme.space8
                     )
                     implicitHeight: Theme.itemHeight
                     radius: Theme.radiusPill
                     color: Theme.surfaceContainer
 
                     Row {
-                        id: trayRow
+                        id: systemRow
                         anchors.centerIn: parent
                         spacing: Theme.space2
+
+                        AudioControl {
+                            visible: ShellConfig.audioEnabled
+                        }
 
                         Repeater {
                             model: SystemTray.items
