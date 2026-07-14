@@ -22,6 +22,7 @@ PanelWindow {
     property real selectionStartY: 0
     property real selectionCurrentX: 0
     property real selectionCurrentY: 0
+    property bool selectionDragging: false
     readonly property var bindings: [
         { keys: "SUPER", action: "Open launcher when released" },
         { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
@@ -104,6 +105,7 @@ PanelWindow {
         sequence: "Escape"
         onActivated: {
             if (root.selectionMode) {
+                root.selectionDragging = false;
                 root.selectionMode = false;
                 root.visible = false;
             } else {
@@ -117,6 +119,7 @@ PanelWindow {
         interval: 220
         onTriggered: {
             if (root.captureMode === "area") {
+                root.selectionDragging = false;
                 root.visible = true;
                 root.selectionMode = true;
             } else {
@@ -288,22 +291,57 @@ PanelWindow {
         visible: root.selectionMode
         z: 30
 
-        Rectangle { anchors.fill: parent; color: "#99000000" }
+        Rectangle {
+            anchors.fill: parent
+            visible: !root.selectionDragging
+            color: "#99000000"
+        }
 
         Rectangle {
-            visible: selectionPointer.pressed
+            visible: root.selectionDragging
+            x: 0; y: 0; width: parent.width
+            height: Math.min(root.selectionStartY, root.selectionCurrentY)
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: 0
+            y: Math.max(root.selectionStartY, root.selectionCurrentY)
+            width: parent.width
+            height: parent.height - y
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: 0
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: Math.min(root.selectionStartX, root.selectionCurrentX)
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: Math.max(root.selectionStartX, root.selectionCurrentX)
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: parent.width - x
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            color: "#99000000"
+        }
+
+        Rectangle {
+            visible: root.selectionDragging
             x: Math.min(root.selectionStartX, root.selectionCurrentX)
             y: Math.min(root.selectionStartY, root.selectionCurrentY)
             width: Math.abs(root.selectionCurrentX - root.selectionStartX)
             height: Math.abs(root.selectionCurrentY - root.selectionStartY)
-            color: "#336d4c8e"
+            color: "transparent"
             border.color: Theme.primary
             border.width: 3
         }
 
         StyledText {
             anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin: Theme.space24 }
-            text: selectionPointer.pressed
+            text: root.selectionDragging
                 ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
                     + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
                 : "Drag to select an area • Esc to cancel"
@@ -316,6 +354,7 @@ PanelWindow {
             anchors.fill: parent
             cursorShape: Qt.CrossCursor
             onPressed: mouse => {
+                root.selectionDragging = true;
                 root.selectionStartX = mouse.x;
                 root.selectionStartY = mouse.y;
                 root.selectionCurrentX = mouse.x;
@@ -330,6 +369,7 @@ PanelWindow {
             onReleased: mouse => {
                 root.selectionCurrentX = mouse.x;
                 root.selectionCurrentY = mouse.y;
+                root.selectionDragging = false;
                 root.finishSelection();
             }
         }

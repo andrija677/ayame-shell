@@ -363,7 +363,7 @@ appear under `Pictures/Screenshots`, enter the image clipboard, and notify the
 user. A failed capture must reopen the Screenshot page with its diagnostic
 instead of failing silently. Never place unsanitized user text into a shell command.
 Area mode must visibly dim the desktop, draw an Ayame-violet selection border,
-and show the selected dimensions while dragging.
+show a clear cutout of the exact region, and update its dimensions while dragging.
 
 ## Roll back project changes
 
