@@ -229,6 +229,12 @@ Left-click the active icon to minimize and click it again to restore/focus it.
 Restart Ayame and confirm the favorite remains. Right-click it again to unpin it;
 once its window closes, the icon must leave the dock.
 
+Click the Ayame `A` at the start of the dock. Confirm the launcher unfolds above
+the dock and places keyboard focus in Search. Search using an application's name,
+generic name, and keyword; hidden desktop entries must not appear. Press Enter to
+launch the first result, or use arrow keys and Enter to launch another result.
+Press Escape and confirm the launcher reverses its animation before disappearing.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

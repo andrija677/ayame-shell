@@ -29,6 +29,12 @@ launch through the desktop entry when closed, and merge with their running windo
 instead of creating a duplicate icon. The dock overlays windows without reserving
 a permanent bottom work area.
 
+The dock's Ayame button owns a screen-local application launcher. It indexes
+freedesktop desktop entries in memory, excludes entries marked `NoDisplay`, and
+filters names, generic names, and keywords as the user types. Launching delegates
+to the desktop entry rather than parsing its command in QML, preserving terminal,
+working-directory, and field-code behavior.
+
 Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
 the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecasts,
 and keeps the last response in Quickshell's cache directory for offline display.

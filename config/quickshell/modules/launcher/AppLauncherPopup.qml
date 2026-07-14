@@ -1,0 +1,245 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
+import "../../components"
+import "../../theme"
+
+PopupWindow {
+    id: root
+
+    required property var hostWindow
+    property bool panelOpen: false
+    readonly property var filteredApps: {
+        DesktopEntries.applications.values;
+        const needle = search.text.trim().toLowerCase();
+        const apps = DesktopEntries.applications.values.filter(entry => {
+            if (entry.noDisplay)
+                return false;
+            if (needle.length === 0)
+                return true;
+            return (entry.name + " " + entry.genericName + " "
+                + entry.keywords.join(" ")).toLowerCase().includes(needle);
+        });
+        apps.sort((a, b) => a.name.localeCompare(b.name));
+        return apps.slice(0, 10);
+    }
+
+    function toggle() {
+        if (panelOpen)
+            closePanel();
+        else
+            openPanel();
+    }
+
+    function openPanel() {
+        closeTimer.stop();
+        visible = true;
+        panelOpen = true;
+        Qt.callLater(() => search.forceActiveFocus());
+    }
+
+    function closePanel() {
+        panelOpen = false;
+        search.text = "";
+        closeTimer.restart();
+    }
+
+    function launch(entry) {
+        if (!entry)
+            return;
+        entry.execute();
+        closePanel();
+    }
+
+    anchor.window: hostWindow
+    anchor.rect.x: Math.round((hostWindow.width - width) / 2)
+    anchor.rect.y: -height
+    implicitWidth: 420
+    implicitHeight: launcherSurface.implicitHeight + Theme.space8
+    color: "transparent"
+    grabFocus: true
+    visible: false
+
+    onVisibleChanged: {
+        if (!visible) {
+            closeTimer.stop();
+            panelOpen = false;
+            search.text = "";
+        }
+    }
+
+    Timer {
+        id: closeTimer
+        interval: Theme.motionNormal
+        onTriggered: root.visible = false
+    }
+
+    Surface {
+        id: launcherSurface
+        width: parent.width
+        implicitHeight: launcherContent.implicitHeight + Theme.space24
+        y: root.panelOpen ? -Theme.space8 : Theme.space8
+        opacity: root.panelOpen ? 1 : 0
+        radius: Theme.radiusLarge
+        color: Theme.surface
+
+        transform: Scale {
+            origin.x: launcherSurface.width / 2
+            origin.y: launcherSurface.height
+            xScale: root.panelOpen ? 1 : 0.94
+            yScale: root.panelOpen ? 1 : 0.86
+            Behavior on xScale {
+                NumberAnimation {
+                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
+                }
+            }
+            Behavior on yScale {
+                NumberAnimation {
+                    duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                    easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
+                }
+            }
+        }
+
+        Behavior on y {
+            NumberAnimation {
+                duration: root.panelOpen ? Theme.motionSlow : Theme.motionNormal
+                easing.type: root.panelOpen ? Theme.easeEnter : Theme.easeExit
+            }
+        }
+        Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
+
+        ColumnLayout {
+            id: launcherContent
+            anchors { left: parent.left; right: parent.right; top: parent.top; margins: Theme.space12 }
+            spacing: Theme.space8
+
+            RowLayout {
+                Layout.fillWidth: true
+                StyledText {
+                    text: "Applications"
+                    font.pixelSize: Theme.fontTitle
+                    font.weight: Theme.fontWeightTitle
+                    Layout.fillWidth: true
+                }
+                StyledText {
+                    text: "ESC TO CLOSE"
+                    color: Theme.outline
+                    font.pixelSize: 9
+                    font.weight: Theme.fontWeightTitle
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: 42
+                radius: Theme.radiusMedium
+                color: Theme.surfaceContainer
+                border.color: search.activeFocus ? Theme.primary : Theme.outlineVariant
+
+                StyledText {
+                    anchors { left: parent.left; leftMargin: Theme.space12; verticalCenter: parent.verticalCenter }
+                    text: "⌕"
+                    color: Theme.primary
+                    font.pixelSize: 20
+                }
+
+                TextInput {
+                    id: search
+                    anchors { left: parent.left; right: parent.right; top: parent.top; bottom: parent.bottom; leftMargin: 42; rightMargin: Theme.space12 }
+                    color: Theme.foregroundSurface
+                    font.family: Theme.fontFamily
+                    font.pixelSize: Theme.fontNormal
+                    verticalAlignment: TextInput.AlignVCenter
+                    selectByMouse: true
+                    clip: true
+                    Keys.onEscapePressed: root.closePanel()
+                    Keys.onDownPressed: appList.forceActiveFocus()
+                    onAccepted: root.launch(root.filteredApps[0])
+
+                    StyledText {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: parent.text.length === 0
+                        text: "Search apps…"
+                        color: Theme.outline
+                        font.weight: Theme.fontWeightBody
+                    }
+                }
+            }
+
+            ListView {
+                id: appList
+                Layout.fillWidth: true
+                implicitHeight: Math.min(contentHeight, 460)
+                clip: true
+                spacing: Theme.space4
+                model: root.filteredApps
+                currentIndex: count > 0 ? 0 : -1
+                keyNavigationWraps: true
+                Keys.onEscapePressed: root.closePanel()
+                Keys.onReturnPressed: root.launch(root.filteredApps[currentIndex])
+                Keys.onEnterPressed: root.launch(root.filteredApps[currentIndex])
+
+                delegate: Rectangle {
+                    id: appDelegate
+                    required property var modelData
+                    required property int index
+                    width: ListView.view.width
+                    height: 46
+                    radius: Theme.radiusMedium
+                    color: ListView.isCurrentItem || appPointer.containsMouse
+                        ? Theme.surfaceContainerHigh : "transparent"
+
+                    RowLayout {
+                        anchors { fill: parent; leftMargin: Theme.space8; rightMargin: Theme.space12 }
+                        spacing: Theme.space12
+                        IconImage {
+                            implicitSize: 28
+                            source: Quickshell.iconPath(appDelegate.modelData.icon || "application-x-executable")
+                            asynchronous: true
+                            mipmap: true
+                        }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 0
+                            StyledText {
+                                text: appDelegate.modelData.name
+                                font.weight: Theme.fontWeightLabel
+                                elide: Text.ElideRight
+                                Layout.fillWidth: true
+                            }
+                            StyledText {
+                                visible: text.length > 0
+                                text: appDelegate.modelData.genericName || appDelegate.modelData.comment
+                                color: Theme.foregroundSurfaceVariant
+                                font.pixelSize: Theme.fontSmall
+                                elide: Text.ElideRight
+                                Layout.fillWidth: true
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: appPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onEntered: appList.currentIndex = appDelegate.index
+                        onClicked: root.launch(appDelegate.modelData)
+                    }
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                visible: root.filteredApps.length === 0
+                text: "No applications found"
+                color: Theme.foregroundSurfaceVariant
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Theme.fontSmall
+            }
+        }
+    }
+}

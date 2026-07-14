@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import "../../components"
 import "../../settings"
 import "../../theme"
+import "../launcher"
 
 PanelWindow {
     id: dock
@@ -55,6 +56,44 @@ PanelWindow {
             anchors.centerIn: parent
             spacing: Theme.space4
 
+            Rectangle {
+                implicitWidth: 42
+                implicitHeight: 42
+                radius: Theme.radiusMedium
+                color: launcher.panelOpen ? Theme.primaryContainer
+                    : launcherPointer.containsMouse ? Theme.surfaceContainerHigh
+                    : "transparent"
+                scale: launcherPointer.pressed ? 0.9 : 1
+
+                Behavior on color { ColorAnimation { duration: Theme.motionFast } }
+                Behavior on scale {
+                    NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
+                }
+
+                StyledText {
+                    anchors.centerIn: parent
+                    text: "A"
+                    color: launcher.panelOpen ? Theme.primary : Theme.foregroundSurface
+                    font.pixelSize: 18
+                    font.weight: Theme.fontWeightDisplay
+                }
+
+                MouseArea {
+                    id: launcherPointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: launcher.toggle()
+                }
+            }
+
+            Rectangle {
+                width: 1
+                height: 26
+                anchors.verticalCenter: parent.verticalCenter
+                color: Theme.outlineVariant
+            }
+
             Repeater {
                 model: dock.favorites
 
@@ -76,5 +115,10 @@ PanelWindow {
                 }
             }
         }
+    }
+
+    AppLauncherPopup {
+        id: launcher
+        hostWindow: dock
     }
 }
