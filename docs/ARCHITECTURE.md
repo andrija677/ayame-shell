@@ -32,12 +32,14 @@ and keeps the last response in Quickshell's cache directory for offline display.
 The top bar owns a compact reading while the dashboard presents five forecast
 days. Celsius is the default and no request occurs before setup.
 
-Dynamic colors are also opt-in. `DynamicPalette` passes an explicitly selected
-local wallpaper path to Matugen, parses its dark semantic scheme, and caches only
-the generated color data in Quickshell's cache directory. The image is never
-uploaded or copied. Theme tokens consume that palette atomically when enabled
-and otherwise retain Ayame's hand-authored violet defaults. Tonal, vibrant, and
-expressive schemes share the same semantic component API.
+Dynamic colors follow the current wallpaper automatically when the session
+publishes it through ML4W's `current_wallpaper` cache file. `DynamicPalette`
+watches that file, debounces changes, passes the new local image path to Matugen,
+and atomically swaps palettes after successful generation. A manual path remains
+available as an override. Only generated color data is cached in Quickshell's
+cache directory; the image is never uploaded or copied. Ayame Violet is a
+persistent off mode, and tonal, vibrant, and expressive schemes share the same
+semantic component API.
 
 Settings are separate from components. Components read typed feature flags from
 `ShellConfig`, allowing modules to be disabled without editing their internal

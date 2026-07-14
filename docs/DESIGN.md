@@ -30,6 +30,10 @@ colors use Matugen to replace the same semantic values with a dark tonal,
 vibrant, or expressive scheme. Surfaces remain restrained while active states,
 controls, highlights, and readable foregrounds follow the wallpaper palette.
 Returning to Ayame Violet never requires regenerating or deleting the cache.
+Follow Wallpaper is the primary experience: a wallpaper change keeps the old
+palette visible until the replacement is ready, then every semantic surface and
+accent updates together. Manual mode exists for users whose wallpaper service
+does not expose its current image or who intentionally want a different palette.
 
 ## Typography
 

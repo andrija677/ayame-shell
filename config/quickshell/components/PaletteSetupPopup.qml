@@ -16,8 +16,9 @@ PopupWindow {
     }
 
     function generatePalette() {
+        DynamicPalette.useManual();
         ShellConfig.dynamicColorWallpaper = pathInput.text.trim();
-        DynamicPalette.generate();
+        DynamicPalette.generate(ShellConfig.dynamicColorWallpaper);
     }
 
     anchor.window: hostWindow
@@ -54,9 +55,61 @@ PopupWindow {
                 wrapMode: Text.WordWrap
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+
+                Repeater {
+                    model: [
+                        { label: "FOLLOW WALLPAPER", value: "automatic" },
+                        { label: "MANUAL", value: "manual" }
+                    ]
+
+                    Rectangle {
+                        required property var modelData
+                        Layout.fillWidth: true
+                        implicitHeight: 32
+                        radius: Theme.radiusPill
+                        color: ShellConfig.dynamicColorMode === modelData.value
+                            ? Theme.primaryContainer : Theme.outlineVariant
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: parent.modelData.label
+                            color: ShellConfig.dynamicColorMode === parent.modelData.value
+                                ? Theme.foregroundPrimaryContainer
+                                : Theme.foregroundSurfaceVariant
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (parent.modelData.value === "automatic")
+                                    DynamicPalette.useAutomatic();
+                                else
+                                    DynamicPalette.useManual();
+                            }
+                        }
+                    }
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                visible: ShellConfig.dynamicColorMode === "automatic"
+                text: DynamicPalette.detectedWallpaper.length > 0
+                    ? "Watching " + DynamicPalette.detectedWallpaper
+                    : "Waiting for your wallpaper service…"
+                color: Theme.foregroundSurfaceVariant
+                font.pixelSize: Theme.fontSmall
+                elide: Text.ElideMiddle
+            }
+
             Rectangle {
                 Layout.fillWidth: true
                 implicitHeight: 40
+                visible: ShellConfig.dynamicColorMode === "manual"
                 radius: Theme.radiusSmall
                 color: Theme.surfaceContainer
                 border.color: pathInput.activeFocus ? Theme.primary : Theme.outlineVariant
@@ -169,6 +222,7 @@ PopupWindow {
                     radius: Theme.radiusPill
                     color: generatePointer.containsMouse ? Theme.primary : Theme.primaryContainer
                     opacity: DynamicPalette.generating ? 0.55 : 1
+                    visible: ShellConfig.dynamicColorMode === "manual"
                     StyledText {
                         anchors.centerIn: parent
                         text: "GENERATE"

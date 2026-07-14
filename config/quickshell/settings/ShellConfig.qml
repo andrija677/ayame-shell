@@ -22,6 +22,7 @@ QtObject {
     property alias animationsEnabled: values.animationsEnabled
     property alias densityMode: values.densityMode
     property alias dynamicColorsEnabled: values.dynamicColorsEnabled
+    property alias dynamicColorMode: values.dynamicColorMode
     property alias dynamicColorWallpaper: values.dynamicColorWallpaper
     property alias dynamicColorStyle: values.dynamicColorStyle
     property alias workspaceCount: values.workspaceCount
@@ -51,6 +52,7 @@ QtObject {
         values.animationsEnabled = true;
         values.densityMode = "normal";
         values.dynamicColorsEnabled = false;
+        values.dynamicColorMode = "automatic";
         values.dynamicColorWallpaper = "";
         values.dynamicColorStyle = "tonal";
         values.workspaceCount = 5;
@@ -95,6 +97,7 @@ QtObject {
             property bool animationsEnabled: true
             property string densityMode: "normal"
             property bool dynamicColorsEnabled: false
+            property string dynamicColorMode: "automatic"
             property string dynamicColorWallpaper: ""
             property string dynamicColorStyle: "tonal"
             property int workspaceCount: 5

@@ -186,6 +186,13 @@ Dynamic palette output is stored under Quickshell's private cache directory as
 `dynamic-palette.json`. The wallpaper itself must not be copied into Ayame's data
 or cache directories.
 
+Select Follow Wallpaper, change the wallpaper through ML4W, and confirm Ayame
+regenerates its palette without a shell restart or manual refresh. The previous
+colors must remain active while Matugen runs. Restart in Follow Wallpaper mode
+and confirm the current image is detected from ML4W's cache. Select Ayame Violet,
+restart once more, and confirm automatic following remains disabled until the
+user explicitly selects it again.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

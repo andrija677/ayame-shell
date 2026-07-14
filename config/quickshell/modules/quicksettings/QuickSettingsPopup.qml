@@ -364,7 +364,9 @@ PopupWindow {
                         StyledText {
                             Layout.fillWidth: true
                             text: DynamicPalette.active
-                                ? ShellConfig.dynamicColorStyle.toUpperCase() + " PALETTE"
+                                ? (ShellConfig.dynamicColorMode === "automatic"
+                                    ? "FOLLOWING WALLPAPER • " : "MANUAL • ")
+                                    + ShellConfig.dynamicColorStyle.toUpperCase()
                                 : "Ayame violet"
                             color: Theme.foregroundSurfaceVariant
                             font.pixelSize: Theme.fontSmall

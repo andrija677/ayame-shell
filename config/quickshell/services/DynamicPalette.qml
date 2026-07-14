@@ -12,6 +12,8 @@ QtObject {
     property bool generating: false
     property string error: ""
     property string outputBuffer: ""
+    property string sourcePath: ""
+    property string detectedWallpaper: ""
     readonly property bool available: colors !== null
     readonly property bool active: ShellConfig.dynamicColorsEnabled && available
 
@@ -26,14 +28,15 @@ QtObject {
         return entry?.dark?.color ?? entry?.default?.color ?? fallback;
     }
 
-    function generate() {
-        const path = ShellConfig.dynamicColorWallpaper.trim();
+    function generate(requestedPath) {
+        const path = (requestedPath ?? ShellConfig.dynamicColorWallpaper).trim();
         if (path.length === 0 || generator.running) {
             if (path.length === 0) error = "Choose a wallpaper image first";
             return;
         }
         error = "";
         outputBuffer = "";
+        sourcePath = path;
         generating = true;
         generator.command = [
             "matugen", "image", path,
@@ -44,8 +47,37 @@ QtObject {
         generator.running = true;
     }
 
+    function followWallpaper(path) {
+        const clean = path.trim();
+        if (clean.length === 0) return;
+        detectedWallpaper = clean;
+        if (ShellConfig.dynamicColorMode !== "automatic") return;
+        if (paletteCache.wallpaper === clean
+                && paletteCache.style === ShellConfig.dynamicColorStyle
+                && paletteCache.colors !== null) {
+            colors = paletteCache.colors;
+            ShellConfig.dynamicColorsEnabled = true;
+            error = "";
+            return;
+        }
+        automaticGenerate.restart();
+    }
+
+    function useAutomatic() {
+        ShellConfig.dynamicColorMode = "automatic";
+        if (detectedWallpaper.length > 0)
+            followWallpaper(detectedWallpaper);
+        else
+            error = "Current wallpaper could not be detected";
+    }
+
+    function useManual() {
+        ShellConfig.dynamicColorMode = "manual";
+    }
+
     function disable() {
         ShellConfig.dynamicColorsEnabled = false;
+        ShellConfig.dynamicColorMode = "off";
         error = "";
     }
 
@@ -65,25 +97,44 @@ QtObject {
 
         onRunningChanged: {
             if (running) return;
-            root.generating = false;
             if (root.outputBuffer.length === 0) {
                 if (root.error.length === 0)
                     root.error = "Could not generate a palette from that image";
-                return;
+            } else {
+                try {
+                    const result = JSON.parse(root.outputBuffer);
+                    if (!result.colors) throw new Error("missing colors");
+                    root.colors = result.colors;
+                    paletteCache.colors = result.colors;
+                    paletteCache.wallpaper = root.sourcePath;
+                    paletteCache.style = ShellConfig.dynamicColorStyle;
+                    paletteFile.writeAdapter();
+                    ShellConfig.dynamicColorsEnabled = true;
+                    root.error = "";
+                } catch (exception) {
+                    root.error = "Matugen returned an invalid palette";
+                }
             }
-            try {
-                const result = JSON.parse(root.outputBuffer);
-                if (!result.colors) throw new Error("missing colors");
-                root.colors = result.colors;
-                paletteCache.colors = result.colors;
-                paletteCache.wallpaper = ShellConfig.dynamicColorWallpaper;
-                paletteCache.style = ShellConfig.dynamicColorStyle;
-                paletteFile.writeAdapter();
-                ShellConfig.dynamicColorsEnabled = true;
-                root.error = "";
-            } catch (exception) {
-                root.error = "Matugen returned an invalid palette";
-            }
+            root.generating = false;
+        }
+    }
+
+    property Timer automaticGenerate: Timer {
+        interval: 350
+        onTriggered: root.generate(root.detectedWallpaper)
+    }
+
+    property FileView ml4wWallpaperFile: FileView {
+        path: Quickshell.env("HOME")
+            + "/.cache/ml4w/hyprland-dotfiles/current_wallpaper"
+        preload: true
+        watchChanges: true
+        printErrors: false
+
+        onLoaded: root.followWallpaper(text())
+        onFileChanged: {
+            reload();
+            root.followWallpaper(text());
         }
     }
 
@@ -103,9 +154,21 @@ QtObject {
     }
 
     Component.onCompleted: {
-        const cacheMatches = paletteCache.wallpaper === ShellConfig.dynamicColorWallpaper
-            && paletteCache.style === ShellConfig.dynamicColorStyle;
-        if (ShellConfig.dynamicColorsEnabled && !cacheMatches)
-            generate();
+        if (ShellConfig.dynamicColorMode === "manual") {
+            const cacheMatches = paletteCache.wallpaper
+                    === ShellConfig.dynamicColorWallpaper
+                && paletteCache.style === ShellConfig.dynamicColorStyle;
+            if (ShellConfig.dynamicColorsEnabled && !cacheMatches)
+                generate(ShellConfig.dynamicColorWallpaper);
+        }
+    }
+
+    property Connections styleConnections: Connections {
+        target: ShellConfig
+        function onDynamicColorStyleChanged() {
+            if (ShellConfig.dynamicColorMode === "automatic"
+                    && root.detectedWallpaper.length > 0)
+                root.followWallpaper(root.detectedWallpaper);
+        }
     }
 }
