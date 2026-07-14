@@ -202,7 +202,9 @@ never exercised by automated preview testing.
 Logout terminates the exact current logind session after Ayame's own confirmation.
 This avoids Hyprshutdown waiting indefinitely for a layer-shell or background
 client while its shutdown surface is the only thing left onscreen. Logind cleans
-up the session cgroup and SDDM receives the normal completed-session event.
+up the session cgroup. Before termination, Ayame requests `SwitchToGreeter` on the
+standard DisplayManager seat interface, supporting Plasma Login Manager and SDDM
+without depending on a service name or virtual-terminal number.
 
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power

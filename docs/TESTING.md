@@ -307,6 +307,8 @@ returns to the display manager rather than invoking the removed legacy
 `hyprctl dispatch exit` syntax. On SDDM it must reveal a fresh greeter; a black
 shutdown surface containing only a cursor is a failure. Upgrades from the old
 VT-switch approach must remove Ayame's obsolete sudoers entry.
+Repeat with Plasma Login Manager (`plasmalogin.service`): Ayame must request the
+standard DisplayManager `SwitchToGreeter` method before terminating its session.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the

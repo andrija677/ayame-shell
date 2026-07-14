@@ -11,4 +11,12 @@ fi
     exit 1
 }
 
+if command -v busctl >/dev/null 2>&1; then
+    busctl --system call \
+        org.freedesktop.DisplayManager \
+        /org/freedesktop/DisplayManager/Seat0 \
+        org.freedesktop.DisplayManager.Seat \
+        SwitchToGreeter >/dev/null 2>&1 || true
+fi
+
 exec loginctl terminate-session "$session_id"
