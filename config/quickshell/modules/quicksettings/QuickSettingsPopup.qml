@@ -330,6 +330,14 @@ PopupWindow {
                 onActivated: ShellConfig.dockEnabled = !checked
             }
 
+            QuickToggleTile {
+                Layout.fillWidth: true
+                title: "Animations"
+                subtitle: checked ? "Expressive motion" : "Reduced motion"
+                checked: ShellConfig.animationsEnabled
+                onActivated: ShellConfig.animationsEnabled = !checked
+            }
+
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 72

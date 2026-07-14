@@ -165,6 +165,11 @@ The initial Quick Settings preferences toggle the active-window title and passiv
 tray visibility. Change one, wait briefly for the debounced write, restart Ayame,
 and confirm both the visual state and toggle selection persist.
 
+Toggle Animations off and exercise the bar, dashboard, calendar, Quick Settings,
+and dock. State changes must remain correct and immediate with no stuck popup or
+partially transformed component. Re-enable it and confirm motion returns without
+a restart.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

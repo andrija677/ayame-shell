@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import "../settings"
 
 QtObject {
     // Semantic colors: components describe a color's purpose, not its shade.
@@ -52,7 +53,7 @@ QtObject {
     readonly property int fontWeightTitle: Font.Bold
     readonly property int fontWeightDisplay: Font.ExtraBold
 
-    readonly property int motionFast: 120
-    readonly property int motionNormal: 220
-    readonly property int motionSlow: 360
+    readonly property int motionFast: ShellConfig.animationsEnabled ? 120 : 0
+    readonly property int motionNormal: ShellConfig.animationsEnabled ? 220 : 0
+    readonly property int motionSlow: ShellConfig.animationsEnabled ? 360 : 0
 }
