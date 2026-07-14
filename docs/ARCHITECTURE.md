@@ -61,6 +61,9 @@ The root exposes `launcher toggle`, `launcher open`, and `launcher close` throug
 Quickshell IPC. Requests target the dock on Hyprland's focused monitor. This gives
 optional compositor bindings a stable interface without allowing Ayame's
 development configuration to modify the user's live Hyprland files.
+The generated default uses Hyprland's release-only modifier binding for
+`SUPER_L`, opening the launcher when bare Super is released while preserving
+Super combinations and Super-drag window controls.
 
 Quick Settings opens a compositor-level Utilities surface with Keybinds and
 Screenshot pages. Keybinds documents recovery-critical window controls including

@@ -320,6 +320,9 @@ screenshot shortcuts fit without clipping. Verify Super+F toggles fullscreen,
 Super+Shift+F returns a window to floating, and Super+left-drag can move it from
 any visible point. These bindings remain documentation until the optional Hyprland
 file is explicitly sourced.
+With the optional bindings enabled, tap and release bare Super to toggle the
+launcher. Holding Super for another shortcut or window drag must retain its normal
+behavior rather than opening the launcher prematurely.
 
 Open Screenshot and test desktop, monitor, and area modes with instant, 3-second,
 and 5-second timing. Area cancellation must create no file. Successful captures
