@@ -137,7 +137,7 @@ PanelWindow {
         anchors {
             top: parent.top
             right: parent.right
-            topMargin: root.hostWindow.height - Theme.space4
+            topMargin: -Theme.space4
                 + (Theme.space8 + Theme.space4) * motion.value
             rightMargin: Theme.outerMargin
         }
