@@ -54,7 +54,10 @@ PanelWindow {
                 "--grace", "0", "--immediate-render"
             ];
         } else if (action.id === "logout") {
-            actionProcess.command = ["hyprctl", "dispatch", "exit"];
+            actionProcess.command = [
+                "hyprshutdown", "--no-fork", "--top-label",
+                "Logging out of Ayame…"
+            ];
         } else if (action.id === "restart") {
             actionProcess.command = ["systemctl", "reboot"];
         } else if (action.id === "shutdown") {

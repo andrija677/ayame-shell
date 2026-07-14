@@ -26,12 +26,13 @@ kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty)
+required=(qs hyprctl hyprlock hyprpaper hyprshutdown grim slurp wl-copy kitty)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
     [hyprlock]=hyprlock
     [hyprpaper]=hyprpaper
+    [hyprshutdown]=hyprshutdown
     [grim]=grim
     [slurp]=slurp
     [wl-copy]=wl-clipboard

@@ -191,7 +191,7 @@ property. Brightness controls are capability-driven and remain absent when
 
 Power actions live in a dedicated layer-shell overlay opened from Quick Settings.
 Lock starts Hyprlock with Ayame's project-local configuration; Log Out delegates
-to Hyprland, while Restart and Shut Down delegate to systemd-logind through
+to Hyprshutdown for graceful application closure, while Restart and Shut Down delegate to systemd-logind through
 `systemctl`. Lock is immediate, but every session-ending or machine-ending action
 requires a separate confirmation state and warns about unsaved work. Commands are
 never exercised by automated preview testing.
