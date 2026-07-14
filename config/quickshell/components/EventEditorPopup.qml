@@ -99,7 +99,7 @@ PopupWindow {
 
                     Repeater {
                         model: [
-                            { label: "SAME DAY", days: 0 },
+                            { label: "Same Day", days: 0 },
                             { label: "1 DAY BEFORE", days: 1 },
                             { label: "1 WEEK BEFORE", days: 7 }
                         ]
@@ -145,7 +145,7 @@ PopupWindow {
                     radius: Theme.radiusPill
                     color: cancelPointer.containsMouse
                         ? Theme.surfaceContainer : "transparent"
-                    StyledText { anchors.centerIn: parent; text: "CANCEL"; font.pixelSize: 9 }
+                    StyledText { anchors.centerIn: parent; text: "Cancel"; font.pixelSize: 9 }
                     MouseArea {
                         id: cancelPointer
                         anchors.fill: parent
@@ -169,7 +169,7 @@ PopupWindow {
                     color: savePointer.containsMouse ? Theme.primary : Theme.primaryContainer
                     StyledText {
                         anchors.centerIn: parent
-                        text: "SAVE"
+                        text: "Save"
                         color: savePointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 9

@@ -151,7 +151,7 @@ PanelWindow {
                     Layout.fillWidth: true
                 }
                 StyledText {
-                    text: "ESC TO CLOSE"
+                    text: "Esc to Close"
                     color: Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle

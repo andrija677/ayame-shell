@@ -16,6 +16,7 @@ PanelWindow {
     property int titleClicks: 0
     property bool easterEggOpen: false
     property string status: ""
+    property string captureError: ""
     readonly property var bindings: [
         { keys: "SUPER", action: "Open launcher when released" },
         { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
@@ -50,6 +51,7 @@ PanelWindow {
         if (captureProcess.running || captureStartTimer.running)
             return;
         status = captureDelay > 0 ? "Capturing in " + captureDelay + " seconds…" : "Capturing…";
+        captureError = "";
         panelOpen = false;
         visible = false;
         captureProcess.command = [
@@ -84,13 +86,13 @@ PanelWindow {
         stderr: StdioCollector {
             onStreamFinished: {
                 if (text.trim().length > 0)
-                    root.status = text.trim();
+                    root.captureError = text.trim();
             }
         }
         onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0) {
-                const failure = root.status.length > 0 && root.status !== "Capturing…"
-                    ? root.status : "Screenshot failed. Check that grim and slurp can access this session.";
+            if (exitCode !== 0 || root.captureError.length > 0) {
+                const failure = root.captureError.length > 0
+                    ? root.captureError : "Screenshot failed. Check that grim and slurp can access this session.";
                 Qt.callLater(() => {
                     root.openPage("screenshot");
                     root.status = failure;
@@ -142,7 +144,7 @@ PanelWindow {
                     }
                 }
                 Repeater {
-                    model: [{ label: "KEYS", value: "keys" }, { label: "CAPTURE", value: "capture" }]
+                    model: [{ label: "Keys", value: "keys" }, { label: "Capture", value: "capture" }]
                     Rectangle {
                         required property var modelData
                         implicitWidth: 76; implicitHeight: 30; radius: Theme.radiusPill
@@ -177,11 +179,11 @@ PanelWindow {
                 Layout.fillWidth: true
                 visible: root.page === "capture"
                 spacing: Theme.space12
-                StyledText { text: "WHAT TO CAPTURE"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                StyledText { text: "What to Capture"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
                 RowLayout {
                     Layout.fillWidth: true; spacing: Theme.space8
                     Repeater {
-                        model: [{ label: "DESKTOP", value: "desktop" }, { label: "MONITOR", value: "monitor" }, { label: "AREA", value: "area" }]
+                        model: [{ label: "Desktop", value: "desktop" }, { label: "Monitor", value: "monitor" }, { label: "Area", value: "area" }]
                         QuickToggleTile {
                             required property var modelData
                             Layout.fillWidth: true
@@ -192,11 +194,11 @@ PanelWindow {
                         }
                     }
                 }
-                StyledText { text: "COUNTDOWN"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                StyledText { text: "Countdown"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
                 RowLayout {
                     Layout.fillWidth: true; spacing: Theme.space8
                     Repeater {
-                        model: [{ label: "INSTANT", value: 0 }, { label: "3 SECONDS", value: 3 }, { label: "5 SECONDS", value: 5 }]
+                        model: [{ label: "Instant", value: 0 }, { label: "3 Seconds", value: 3 }, { label: "5 Seconds", value: 5 }]
                         Rectangle {
                             required property var modelData
                             Layout.fillWidth: true; implicitHeight: 38; radius: Theme.radiusPill
@@ -208,7 +210,7 @@ PanelWindow {
                 }
                 Rectangle {
                     Layout.fillWidth: true; implicitHeight: 44; radius: Theme.radiusPill; color: capturePointer.containsMouse ? Theme.primary : Theme.primaryContainer
-                    StyledText { anchors.centerIn: parent; text: "TAKE SCREENSHOT"; font.weight: Theme.fontWeightTitle }
+                    StyledText { anchors.centerIn: parent; text: "Take Screenshot"; font.weight: Theme.fontWeightTitle }
                     MouseArea { id: capturePointer; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.capture() }
                 }
             }

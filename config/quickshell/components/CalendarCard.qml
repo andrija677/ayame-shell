@@ -56,7 +56,7 @@ Surface {
             Repeater {
                 model: [
                     { label: "‹", action: () => root.navigateMonth(-1) },
-                    { label: "TODAY", action: () => root.returnToToday() },
+                    { label: "Today", action: () => root.returnToToday() },
                     { label: "›", action: () => root.navigateMonth(1) }
                 ]
 

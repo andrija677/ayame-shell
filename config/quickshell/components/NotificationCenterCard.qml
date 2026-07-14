@@ -32,7 +32,7 @@ Surface {
             }
             StyledText {
                 visible: NotificationService.count > 0
-                text: "CLEAR ALL"
+                text: "Clear All"
                 color: clearPointer.containsMouse ? Theme.primary : Theme.outline
                 font.pixelSize: 9
                 font.weight: Theme.fontWeightTitle

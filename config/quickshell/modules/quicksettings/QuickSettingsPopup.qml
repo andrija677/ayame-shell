@@ -36,11 +36,11 @@ PopupWindow {
     }
     readonly property var powerProfileOptions: {
         const options = [
-            { label: "SAVER", value: PowerProfile.PowerSaver },
-            { label: "BALANCED", value: PowerProfile.Balanced }
+            { label: "Saver", value: PowerProfile.PowerSaver },
+            { label: "Balanced", value: PowerProfile.Balanced }
         ];
         if (PowerProfiles.hasPerformanceProfile)
-            options.push({ label: "PERFORMANCE", value: PowerProfile.Performance });
+            options.push({ label: "Performance", value: PowerProfile.Performance });
         return options;
     }
     property bool panelOpen: false
@@ -407,7 +407,7 @@ PopupWindow {
                     implicitHeight: 34
                     radius: Theme.radiusPill
                     color: keysPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
-                    StyledText { anchors.centerIn: parent; text: "KEYBINDS"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                    StyledText { anchors.centerIn: parent; text: "Keybinds"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
                     MouseArea {
                         id: keysPointer
                         anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
@@ -420,7 +420,7 @@ PopupWindow {
                     implicitHeight: 34
                     radius: Theme.radiusPill
                     color: captureUtilityPointer.containsMouse ? Theme.primary : Theme.surfaceContainerHigh
-                    StyledText { anchors.centerIn: parent; text: "SCREENSHOT"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
+                    StyledText { anchors.centerIn: parent; text: "Screenshot"; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
                     MouseArea {
                         id: captureUtilityPointer
                         anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
@@ -441,7 +441,7 @@ PopupWindow {
                         ? Theme.primary : Theme.primaryContainer
                     StyledText {
                         anchors.centerIn: parent
-                        text: "AYAME SETTINGS"
+                        text: "Ayame Settings"
                         color: settingsPointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 10
@@ -466,7 +466,7 @@ PopupWindow {
                     color: powerPointer.containsMouse ? Theme.error : Theme.surfaceContainerHigh
                     StyledText {
                         anchors.centerIn: parent
-                        text: "POWER"
+                        text: "Power"
                         color: powerPointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundSurface
                         font.pixelSize: 10

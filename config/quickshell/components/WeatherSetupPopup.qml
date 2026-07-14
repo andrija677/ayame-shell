@@ -68,7 +68,7 @@ PopupWindow {
                     implicitHeight: 34
                     radius: Theme.radiusPill
                     color: Theme.primaryContainer
-                    StyledText { anchors.centerIn: parent; text: "SEARCH"; font.pixelSize: 9 }
+                    StyledText { anchors.centerIn: parent; text: "Search"; font.pixelSize: 9 }
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
@@ -122,7 +122,7 @@ PopupWindow {
                 StyledText {
                     Layout.fillWidth: true
                     visible: WeatherService.configured
-                    text: "FORGET LOCATION"
+                    text: "Forget Location"
                     color: forgetPointer.containsMouse ? Theme.error : Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle
@@ -138,7 +138,7 @@ PopupWindow {
                     }
                 }
                 StyledText {
-                    text: "CANCEL"
+                    text: "Cancel"
                     MouseArea {
                         anchors { fill: parent; margins: -Theme.space8 }
                         cursorShape: Qt.PointingHandCursor

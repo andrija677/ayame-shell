@@ -250,7 +250,7 @@ PanelWindow {
                     ? Theme.surfaceContainerHigh : Theme.surface
                 StyledText {
                     anchors.centerIn: parent
-                    text: "CANCEL"
+                    text: "Cancel"
                     font.weight: Theme.fontWeightTitle
                 }
                 MouseArea {
@@ -270,7 +270,7 @@ PanelWindow {
                     ? Theme.error : Theme.primaryContainer
                 StyledText {
                     anchors.centerIn: parent
-                    text: "CONFIRM " + (root.pendingAction?.label || "").toUpperCase()
+                    text: "Confirm " + (root.pendingAction?.label || "")
                     color: confirmPointer.containsMouse
                         ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                     font.weight: Theme.fontWeightTitle

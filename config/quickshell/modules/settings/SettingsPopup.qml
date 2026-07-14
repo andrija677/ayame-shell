@@ -95,7 +95,7 @@ PopupWindow {
                     Layout.fillWidth: true
                 }
                 StyledText {
-                    text: "CLOSE"
+                    text: "Close"
                     color: closePointer.containsMouse ? Theme.primary : Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle
@@ -110,7 +110,7 @@ PopupWindow {
             }
 
             StyledText {
-                text: "APPEARANCE"
+                text: "Appearance"
                 color: Theme.primary
                 font.pixelSize: 10
                 font.weight: Theme.fontWeightTitle
@@ -125,8 +125,8 @@ PopupWindow {
                     StyledText { text: "Color scheme"; Layout.fillWidth: true }
                     Repeater {
                         model: [
-                            { label: "DARK", value: "dark" },
-                            { label: "LIGHT", value: "light" }
+                            { label: "Dark", value: "dark" },
+                            { label: "Light", value: "light" }
                         ]
                         Rectangle {
                             required property var modelData
@@ -198,7 +198,7 @@ PopupWindow {
                         color: wallpaperPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "WALLPAPER"
+                            text: "Wallpaper"
                             color: wallpaperPointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                             font.pixelSize: 9
@@ -219,7 +219,7 @@ PopupWindow {
                         color: palettePointer.containsMouse ? Theme.primary : Theme.outlineVariant
                         StyledText {
                             anchors.centerIn: parent
-                            text: "COLORS"
+                            text: "Colors"
                             color: palettePointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundSurfaceVariant
                             font.pixelSize: 9
@@ -256,7 +256,7 @@ PopupWindow {
             }
 
             StyledText {
-                text: "SHELL LAYOUT"
+                text: "Shell Layout"
                 color: Theme.primary
                 font.pixelSize: 10
                 font.weight: Theme.fontWeightTitle
@@ -299,7 +299,7 @@ PopupWindow {
             }
 
             StyledText {
-                text: "SERVICES"
+                text: "Services"
                 color: Theme.primary
                 font.pixelSize: 10
                 font.weight: Theme.fontWeightTitle

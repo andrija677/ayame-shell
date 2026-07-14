@@ -68,8 +68,8 @@ PopupWindow {
 
                 Repeater {
                     model: [
-                        { label: "FOLLOW WALLPAPER", value: "automatic" },
-                        { label: "MANUAL", value: "manual" }
+                        { label: "Follow Wallpaper", value: "automatic" },
+                        { label: "Manual", value: "manual" }
                     ]
 
                     Rectangle {
@@ -151,7 +151,7 @@ PopupWindow {
                 color: browsePointer.containsMouse ? Theme.primary : Theme.primaryContainer
                 StyledText {
                     anchors.centerIn: parent
-                    text: "BROWSE…"
+                    text: "Browse…"
                     color: browsePointer.containsMouse
                         ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                     font.pixelSize: 9
@@ -172,9 +172,9 @@ PopupWindow {
 
                 Repeater {
                     model: [
-                        { label: "TONAL", value: "tonal" },
-                        { label: "VIBRANT", value: "vibrant" },
-                        { label: "EXPRESSIVE", value: "expressive" }
+                        { label: "Tonal", value: "tonal" },
+                        { label: "Vibrant", value: "vibrant" },
+                        { label: "Expressive", value: "expressive" }
                     ]
 
                     Rectangle {
@@ -222,7 +222,7 @@ PopupWindow {
                 StyledText {
                     Layout.fillWidth: true
                     visible: DynamicPalette.active
-                    text: "USE AYAME VIOLET"
+                    text: "Use Ayame Violet"
                     color: violetPointer.containsMouse ? Theme.primary : Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle
@@ -239,7 +239,7 @@ PopupWindow {
                 }
 
                 StyledText {
-                    text: "CANCEL"
+                    text: "Cancel"
                     MouseArea {
                         anchors { fill: parent; margins: -Theme.space8 }
                         cursorShape: Qt.PointingHandCursor
@@ -256,7 +256,7 @@ PopupWindow {
                     visible: ShellConfig.dynamicColorMode === "manual"
                     StyledText {
                         anchors.centerIn: parent
-                        text: "APPLY"
+                        text: "Apply"
                         color: generatePointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 9

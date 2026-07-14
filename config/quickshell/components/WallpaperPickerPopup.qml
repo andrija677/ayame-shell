@@ -51,7 +51,7 @@ PopupWindow {
                     font.weight: Theme.fontWeightTitle
                 }
                 StyledText {
-                    text: "CLOSE"
+                    text: "Close"
                     color: closePointer.containsMouse ? Theme.primary : Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle
