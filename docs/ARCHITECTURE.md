@@ -85,6 +85,9 @@ Ayame can choose and persist its own wallpaper through Hyprpaper, restore it at
 login, and pass the same local image to Matugen. The chooser is rendered inside
 Ayame and scans Pictures and Downloads, avoiding native-dialog layer-shell conflicts. Dynamic colors can also follow
 an existing session that publishes ML4W's `current_wallpaper` cache file.
+The wallpaper path is also written to Ayame's state directory. Hyprpaper starts
+from a generated Ayame-owned config before Quickshell, while Hyprland's built-in
+logo and wallpaper are disabled to prevent fallback flashes during login/logout.
 `DynamicPalette` watches that file, debounces changes, passes the image to Matugen,
 and atomically swaps palettes after successful generation. A manual path remains
 available as an override. Only generated color data is cached in Quickshell's

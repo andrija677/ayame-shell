@@ -2,6 +2,19 @@
 local project = os.getenv("HOME") .. "/Projects/ayame-shell"
 local ayame = "qs --path " .. project .. "/config/quickshell"
 local screenshot = project .. "/scripts/ayame-screenshot.sh"
+local wallpaper = project .. "/scripts/ayame-wallpaper.sh"
+
+hl.config({
+    misc = {
+        disable_hyprland_logo = true,
+        disable_splash_rendering = true,
+        force_default_wallpaper = 0
+    }
+})
+
+hl.on("hyprland.start", function()
+    hl.exec_cmd(wallpaper .. " start")
+end)
 
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(ayame .. " ipc call launcher toggle"), { release = true })
 hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("kitty"))

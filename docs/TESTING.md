@@ -94,6 +94,9 @@ must receive the generated palette. Restart the Hyprland session and confirm the
 wallpaper is restored without ML4W being installed.
 Close the picker and confirm the wallpaper stays unchanged and Quickshell remains
 running.
+Log out, restart, and shut down after selecting a wallpaper. The persisted image
+must be present as Hyprpaper starts, and Hyprland's default logo or wallpapers
+must never flash while Ayame starts or exits.
 
 For clock testing:
 

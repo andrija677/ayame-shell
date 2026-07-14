@@ -16,7 +16,7 @@ QtObject {
         error = "";
         applying = true;
         ShellConfig.dynamicColorWallpaper = clean;
-        setter.command = ["hyprctl", "hyprpaper", "wallpaper", ", " + clean + ", cover"];
+        setter.command = [Quickshell.shellDir + "/../../scripts/ayame-wallpaper.sh", "set", clean];
         setter.running = true;
     }
 
