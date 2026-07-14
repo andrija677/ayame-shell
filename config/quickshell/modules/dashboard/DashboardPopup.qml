@@ -21,11 +21,13 @@ PopupWindow {
 
     function openPanel() {
         closeTimer.stop();
+        panelOpen = false;
         visible = true;
-        panelOpen = true;
+        openTimer.restart();
     }
 
     function closePanel() {
+        openTimer.stop();
         panelOpen = false;
         closeTimer.restart();
     }
@@ -46,6 +48,12 @@ PopupWindow {
             closeTimer.stop();
             panelOpen = false;
         }
+    }
+
+    Timer {
+        id: openTimer
+        interval: Theme.motionMapGrace
+        onTriggered: root.panelOpen = true
     }
 
     Timer {

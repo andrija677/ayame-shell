@@ -57,11 +57,13 @@ PopupWindow {
         if (settingsPanel.panelOpen)
             settingsPanel.closePanel();
         closeTimer.stop();
+        panelOpen = false;
         visible = true;
-        panelOpen = true;
+        openTimer.restart();
     }
 
     function closePanel() {
+        openTimer.stop();
         panelOpen = false;
         closeTimer.restart();
         if (settingsPanel.panelOpen)
@@ -94,6 +96,12 @@ PopupWindow {
     IdleInhibitor {
         window: root.hostWindow
         enabled: root.keepAwake
+    }
+
+    Timer {
+        id: openTimer
+        interval: Theme.motionMapGrace
+        onTriggered: root.panelOpen = true
     }
 
     Timer {

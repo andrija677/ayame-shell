@@ -34,12 +34,13 @@ PanelWindow {
 
     function openPanel() {
         closeTimer.stop();
+        panelOpen = false;
         visible = true;
-        panelOpen = true;
-        Qt.callLater(() => search.forceActiveFocus());
+        openTimer.restart();
     }
 
     function closePanel() {
+        openTimer.stop();
         panelOpen = false;
         search.text = "";
         closeTimer.restart();
@@ -71,6 +72,15 @@ PanelWindow {
             closeTimer.stop();
             panelOpen = false;
             search.text = "";
+        }
+    }
+
+    Timer {
+        id: openTimer
+        interval: Theme.motionMapGrace
+        onTriggered: {
+            root.panelOpen = true;
+            search.forceActiveFocus();
         }
     }
 

@@ -57,14 +57,16 @@ Rectangle {
 
         function openPanel() {
             closeTimer.stop();
+            panelOpen = false;
             visible = true;
-            panelOpen = true;
+            openTimer.restart();
             WeatherService.refresh();
         }
 
         function closePanel() {
             if (!visible)
                 return;
+            openTimer.stop();
             panelOpen = false;
             closeTimer.restart();
         }
@@ -84,6 +86,12 @@ Rectangle {
                 closeTimer.stop();
                 panelOpen = false;
             }
+        }
+
+        Timer {
+            id: openTimer
+            interval: Theme.motionMapGrace
+            onTriggered: details.panelOpen = true
         }
 
         Timer {
