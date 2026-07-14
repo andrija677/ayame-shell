@@ -346,14 +346,14 @@ some Git rollback commands can discard uncommitted work.
 Never point installer tests at the live configuration. Use a temporary HOME and
 stub required commands, then verify the generated prefix, launcher, Hyprland
 fragment, source-line backup, and uninstall behavior. A real install must preview
-its paths and ask before changing `hyprland.conf`; reinstall must move the previous
+its paths and ask before changing `hyprland.lua`; reinstall must move the previous
 Ayame prefix to a timestamped backup rather than overwriting it.
 On a clean EndeavourOS installation, confirm the installer lists missing commands
 and their Arch package names before requesting permission to run `pacman`.
 Declining or passing `--no-install-deps` must leave the system unchanged and exit
 with instructions. After accepting, every required command must be rechecked
 before Ayame files are installed.
-Test once with no `hyprland.conf`: accepting profile creation must produce a
+Test once with no `hyprland.lua`: accepting profile creation must produce a
 minimal marked file that sources Ayame, and a Hyprland login must start the shell.
 Ayame must not autostart in KDE Plasma. Uninstall must remove an untouched minimal
 profile, but preserve a profile to which the user added any other configuration.

@@ -52,7 +52,7 @@ On EndeavourOS and Arch Linux it offers to install missing core packages with
 `pacman`, including Hyprland, Quickshell, Hyprlock, the screenshot tools, and
 Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
 When Hyprland has no user configuration yet, the installer can create a minimal
-profile that sources Ayame and starts it only for Hyprland logins. It does not
+Hyprland 0.55 Lua profile that loads Ayame and starts it only for Hyprland logins. It does not
 autostart Ayame in KDE Plasma or other desktop sessions.
 Autostart waits briefly for the graphical session and records diagnostics under
 `~/.local/state/ayame-shell/startup.log`. Super+Enter opens Kitty, with
