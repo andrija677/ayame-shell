@@ -413,6 +413,8 @@ PanelWindow {
             GridLayout {
                 Layout.fillWidth: true
                 columns: 2
+                uniformCellWidths: true
+                uniformCellHeights: true
                 rowSpacing: Theme.space8
                 columnSpacing: Theme.space8
 
