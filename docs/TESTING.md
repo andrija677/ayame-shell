@@ -81,6 +81,17 @@ For dashboard testing:
 8. Confirm the first closing click both reverses the animation and compacts the
    clock date; a second cleanup click must never be necessary.
 
+For Quick Settings testing:
+
+1. Click the sliders icon at the right and confirm the panel unfolds from its
+   top-right corner.
+2. Drag and click the volume track and confirm PipeWire volume follows it.
+3. Toggle mute and confirm both the bar and panel update.
+4. Confirm network and available battery state update live.
+5. Open the clock dashboard, then Quick Settings, and confirm only one remains
+   open; repeat in the opposite order.
+6. Click the sliders icon again and confirm the reverse animation completes.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

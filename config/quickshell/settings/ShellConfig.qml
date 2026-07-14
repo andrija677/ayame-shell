@@ -10,6 +10,7 @@ QtObject {
     readonly property bool activeWindowEnabled: true
     readonly property bool clockEnabled: true
     readonly property bool dashboardEnabled: true
+    readonly property bool quickSettingsEnabled: true
     readonly property bool audioEnabled: true
     readonly property bool networkEnabled: true
     readonly property bool batteryEnabled: true

@@ -54,3 +54,8 @@ popups unexpectedly.
 Dashboard visibility is controlled by Ayame rather than popup focus dismissal.
 This keeps the clock trigger reachable while the popup is open and ensures the
 reverse animation completes before the backing window is hidden.
+
+Quick Settings is a separate screen-local popup owned by the bar's right-side
+trigger. It tracks PipeWire, NetworkManager connectivity, and UPower directly.
+Opening it closes the center dashboard and vice versa, so major surfaces never
+overlap.

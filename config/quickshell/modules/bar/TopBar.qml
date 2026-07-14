@@ -7,6 +7,7 @@ import "../../components"
 import "../../settings"
 import "../../theme"
 import "../dashboard"
+import "../quicksettings"
 
 PanelWindow {
     id: bar
@@ -96,7 +97,13 @@ PanelWindow {
                 Layout.alignment: Qt.AlignCenter
                 visible: ShellConfig.clockEnabled
                 expanded: dashboard.open
-                onActivated: if (ShellConfig.dashboardEnabled) dashboard.toggle()
+                onActivated: {
+                    if (!ShellConfig.dashboardEnabled)
+                        return;
+                    if (quickSettings.open)
+                        quickSettings.closePanel();
+                    dashboard.toggle();
+                }
             }
 
             Item { Layout.fillWidth: true }
@@ -108,6 +115,7 @@ PanelWindow {
                 visible: ShellConfig.audioEnabled
                     || ShellConfig.networkEnabled
                     || ShellConfig.batteryEnabled
+                    || ShellConfig.quickSettingsEnabled
                     || ShellConfig.trayEnabled
 
                 Surface {
@@ -138,6 +146,16 @@ PanelWindow {
                             visible: ShellConfig.batteryEnabled && available
                         }
 
+                        QuickSettingsButton {
+                            visible: ShellConfig.quickSettingsEnabled
+                            active: quickSettings.open
+                            onActivated: {
+                                if (dashboard.open)
+                                    dashboard.closePanel();
+                                quickSettings.toggle();
+                            }
+                        }
+
                         Repeater {
                             model: ShellConfig.trayEnabled ? SystemTray.items : null
 
@@ -155,6 +173,12 @@ PanelWindow {
 
     DashboardPopup {
         id: dashboard
+        hostWindow: bar
+        visible: false
+    }
+
+    QuickSettingsPopup {
+        id: quickSettings
         hostWindow: bar
         visible: false
     }
