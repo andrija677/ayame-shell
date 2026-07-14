@@ -193,14 +193,22 @@ Rectangle {
             }
 
             if (root.dragInProgress) {
-                const scenePoint = root.mapToItem(
+                const releasePoint = root.mapToItem(
                     null, root.width / 2, root.height / 2);
                 if (root.dockController)
                     root.dockController.reorderDockApp(
-                        root.favoriteId, scenePoint.x);
+                        root.favoriteId, releasePoint.x);
                 root.dragInProgress = false;
-                root.z = 0;
-                dragReturn.restart();
+                // ScriptModel applies the new row position on the next event
+                // turn. Compensate for that base-position change so the icon
+                // remains exactly under the release point, then settle it.
+                Qt.callLater(() => {
+                    const shiftedPoint = root.mapToItem(
+                        null, root.width / 2, root.height / 2);
+                    root.dragOffset += releasePoint.x - shiftedPoint.x;
+                    root.z = 0;
+                    dragReturn.restart();
+                });
                 return;
             }
 
