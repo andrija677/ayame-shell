@@ -54,6 +54,9 @@ Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
 When Hyprland has no user configuration yet, the installer can create a minimal
 profile that sources Ayame and starts it only for Hyprland logins. It does not
 autostart Ayame in KDE Plasma or other desktop sessions.
+Autostart waits briefly for the graphical session and records diagnostics under
+`~/.local/state/ayame-shell/startup.log`. Super+Enter opens Kitty, with
+Ctrl+Alt+T available as a VM-friendly fallback.
 Run the installed `uninstall.sh` to remove only Ayame-owned files and its generated
 source line; pre-install backups are retained.
 

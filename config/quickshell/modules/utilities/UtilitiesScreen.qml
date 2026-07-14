@@ -19,6 +19,7 @@ PanelWindow {
     readonly property var bindings: [
         { keys: "SUPER", action: "Open launcher when released" },
         { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
+        { keys: "CTRL + ALT + T", action: "Open Kitty (VM fallback)" },
         { keys: "SUPER + F", action: "Toggle fullscreen" },
         { keys: "SUPER + SHIFT + F", action: "Toggle floating / unlock window" },
         { keys: "SUPER + LEFT DRAG", action: "Move a floating window anywhere" },

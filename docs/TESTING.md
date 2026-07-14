@@ -317,7 +317,7 @@ popup. Disable notification ownership before returning to another session shell.
 
 Open Quick Settings → Keybinds and confirm all launcher, window recovery, and
 screenshot shortcuts fit without clipping. Verify Super+Enter opens Kitty,
-Super+F toggles fullscreen,
+Ctrl+Alt+T provides the same recovery path in a VM, and Super+F toggles fullscreen,
 Super+Shift+F returns a window to floating, and Super+left-drag can move it from
 any visible point. These bindings remain documentation until the optional Hyprland
 file is explicitly sourced.
@@ -357,3 +357,7 @@ Test once with no `hyprland.conf`: accepting profile creation must produce a
 minimal marked file that sources Ayame, and a Hyprland login must start the shell.
 Ayame must not autostart in KDE Plasma. Uninstall must remove an untouched minimal
 profile, but preserve a profile to which the user added any other configuration.
+Confirm installation runs Hyprland's offline configuration validator. A Hyprland
+login must start Ayame after a short session-ready delay and write failures to
+`~/.local/state/ayame-shell/startup.log`; KDE must not start Ayame or create that
+log.
