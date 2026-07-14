@@ -26,6 +26,10 @@ compositor-safe IPC toggle for an optional keyboard binding.
 Quick Settings also opens a full-screen power surface with safe Lock, Log Out,
 Restart, and Shut Down actions. The repository includes an Ayame Hyprlock design,
 but does not replace the user's live lock configuration during development.
+Log Out detects the active display-manager capabilities at runtime. Plasma Login
+Manager, SDDM, GDM, and LightDM receive an explicit greeter handoff; greetd,
+tuigreet, Ly, and other logind-managed sessions use the universal session-exit
+fallback. Ayame does not install, replace, or enable a display manager.
 
 ## Test without installing
 

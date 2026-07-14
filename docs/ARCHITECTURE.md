@@ -204,7 +204,10 @@ This avoids Hyprshutdown waiting indefinitely for a layer-shell or background
 client while its shutdown surface is the only thing left onscreen. Logind cleans
 up the session cgroup. Before termination, Ayame requests `SwitchToGreeter` on the
 standard DisplayManager seat interface, supporting Plasma Login Manager and SDDM
-without depending on a service name or virtual-terminal number.
+without depending on a service name or virtual-terminal number. If that interface
+is unavailable, GDM uses `gdmflexiserver --startnew` and LightDM uses
+`dm-tool switch-to-greeter`. Managers such as greetd and Ly naturally recreate
+their greeter after the final logind session termination.
 
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power
