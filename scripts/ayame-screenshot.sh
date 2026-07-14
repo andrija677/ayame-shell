@@ -37,6 +37,8 @@ case "$mode" in
         ;;
 esac
 
-wl-copy --type image/png < "$output"
-command -v notify-send >/dev/null && notify-send "Screenshot saved" "$output"
+wl-copy --type image/png < "$output" 2>/dev/null || true
+if command -v notify-send >/dev/null; then
+    notify-send "Screenshot saved" "$output" 2>/dev/null || true
+fi
 printf '%s\n' "$output"

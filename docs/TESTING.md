@@ -306,12 +306,10 @@ After saving work, confirm Log Out starts Hyprshutdown and returns to the displa
 manager rather than invoking the removed legacy `hyprctl dispatch exit` syntax.
 Hyprshutdown must run in its default forked mode so closing Quickshell cannot
 terminate the logout before Hyprland exits.
-On SDDM, logout must switch to its configured `MinimumVT` (VT3 by default) and
-reveal the greeter instead of leaving the display on Hyprland's dead VT. Verify
-the installed sudoers entry permits only the detected `/usr/bin/chvt N`, and
-confirm uninstall removes that entry.
-Confirm the Hyprland logind session disappears after logout and SDDM creates a
-fresh greeter session; a display containing only a cursor is a failure.
+On SDDM, logout must keep Hyprland alive while applications close, terminate the
+current logind session, and reveal a fresh greeter. A black display containing
+only a cursor is a failure. Upgrades from the old VT-switch approach must remove
+Ayame's obsolete sudoers entry.
 
 Do not confirm a destructive action during ordinary preview testing. Test Lock
 only after saving work: it must start `config/hyprlock/hyprlock.conf`, show the

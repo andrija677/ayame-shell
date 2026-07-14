@@ -5,13 +5,11 @@ prefix="${XDG_DATA_HOME:-$HOME/.local/share}/ayame-shell"
 assume_yes=false
 install_dependencies=true
 replace_desktop=false
-sddm_vt_override=""
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
         --no-install-deps) install_dependencies=false ;;
         --replace-desktop) replace_desktop=true ;;
-        --sddm-vt=*) sddm_vt_override="${argument#*=}" ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
     esac
@@ -28,12 +26,6 @@ kitty_fragment="$kitty_dir/ayame-shell.conf"
 timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
-sddm_vt=3
-
-if [[ -n "$sddm_vt_override" && ! "$sddm_vt_override" =~ ^[0-9]+$ ]]; then
-    echo "--sddm-vt must be a virtual-terminal number." >&2
-    exit 2
-fi
 
 required=(qs hyprctl hyprlock hyprpaper hyprshutdown grim slurp wl-copy kitty)
 declare -A command_packages=(
@@ -113,22 +105,10 @@ if [[ "$assume_yes" != true ]]; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
-for sddm_config in /etc/sddm.conf /etc/sddm.conf.d/*.conf; do
-    [[ -r "$sddm_config" ]] || continue
-    configured_vt="$(awk -F= '/^[[:space:]]*MinimumVT[[:space:]]*=/ {
-        gsub(/[[:space:]]/, "", $2); value=$2
-    } END { print value }' "$sddm_config")"
-    [[ "$configured_vt" =~ ^[0-9]+$ ]] && sddm_vt="$configured_vt"
-done
-[[ -n "$sddm_vt_override" ]] && sddm_vt="$sddm_vt_override"
-
-sudoers_temporary="$(mktemp)"
-printf '%s ALL=(root) NOPASSWD: /usr/bin/chvt %s\n' "$USER" "$sddm_vt" > "$sudoers_temporary"
-if ! sudo cmp -s "$sudoers_temporary" "$sudoers_file" 2>/dev/null; then
-    echo "Configuring the SDDM VT${sddm_vt} handoff used by Ayame Log Out."
-    sudo install -o root -g root -m 0440 "$sudoers_temporary" "$sudoers_file"
+if [[ -f "$sudoers_file" ]]; then
+    echo "Removing Ayame's obsolete VT handoff rule."
+    sudo rm -f "$sudoers_file"
 fi
-rm -f "$sudoers_temporary"
 
 if [[ "$replace_desktop" == true ]]; then
     config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -209,7 +189,6 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-kitty-colors.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
     "$prefix/scripts/ayame-logout.sh" "$prefix/uninstall.sh"
-printf '%s\n' "$sddm_vt" > "$prefix/sddm-vt"
 
 install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
 install -m 0644 "$prefix/config/kitty/ayame-colors.conf" "$kitty_dir/ayame-colors.conf"
