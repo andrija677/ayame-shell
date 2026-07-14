@@ -43,6 +43,12 @@ PopupWindow {
     // before Ayame can play the closing transition.
     grabFocus: false
 
+    Shortcut {
+        sequence: "Escape"
+        enabled: root.visible
+        onActivated: root.closePanel()
+    }
+
     onVisibleChanged: {
         if (!visible) {
             closeTimer.stop();

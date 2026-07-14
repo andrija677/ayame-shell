@@ -34,6 +34,12 @@ PopupWindow {
     grabFocus: false
     visible: false
 
+    Shortcut {
+        sequence: "Escape"
+        enabled: root.visible
+        onActivated: root.closePanel()
+    }
+
     onVisibleChanged: {
         if (!visible) {
             closeTimer.stop();
