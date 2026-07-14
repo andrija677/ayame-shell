@@ -55,8 +55,7 @@ PanelWindow {
             ];
         } else if (action.id === "logout") {
             actionProcess.command = [
-                "hyprshutdown", "--vt", "2", "--top-label",
-                "Logging out of Ayame…"
+                Quickshell.shellDir + "/../../scripts/ayame-logout.sh"
             ];
         } else if (action.id === "restart") {
             actionProcess.command = ["systemctl", "reboot"];

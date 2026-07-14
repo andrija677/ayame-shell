@@ -202,9 +202,10 @@ never exercised by automated preview testing.
 Hyprshutdown is allowed to fork for logout. It must outlive Quickshell because
 closing desktop clients includes closing the process that launched it; foreground
 mode would otherwise terminate the logout before Hyprland exits.
-Logout then requests VT2, where SDDM normally runs. The installer grants only the
-exact passwordless `/usr/bin/chvt 2` command required for this handoff and the
-uninstaller removes that narrowly scoped sudoers entry.
+Logout requests SDDM's configured `MinimumVT`, defaulting to VT3 when SDDM has no
+override. `--sddm-vt=N` handles unusual display-manager layouts. The installer
+grants only that exact passwordless `/usr/bin/chvt N` command and the uninstaller
+removes the narrowly scoped sudoers entry.
 
 Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power

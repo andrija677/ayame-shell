@@ -57,7 +57,7 @@ rm -f "$bin_path" "$hypr_fragment" "$kitty_fragment" \
     "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/ayame-colors.conf"
 rm -rf -- "$prefix"
 if [[ -f "$sudoers_file" ]] \
-        && sudo grep -Fxq "$USER ALL=(root) NOPASSWD: /usr/bin/chvt 2" "$sudoers_file"; then
+        && sudo grep -Eq "^${USER} ALL=\\(root\\) NOPASSWD: /usr/bin/chvt [0-9]+$" "$sudoers_file"; then
     sudo rm -f "$sudoers_file"
 fi
 echo "Ayame Shell was removed. Existing pre-install backups were left untouched."
