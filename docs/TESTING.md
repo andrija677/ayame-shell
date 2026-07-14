@@ -62,10 +62,17 @@ For multi-monitor testing:
 
 For clock testing:
 
-1. Click the clock and confirm it expands to show the weekday and date.
-2. Confirm it returns to the compact time after five seconds.
-3. Click it again while expanded and confirm it compacts immediately.
-4. Confirm its width and colors animate without moving it off center.
+1. Click the clock and confirm the centered dashboard opens below the bar.
+2. Confirm the clock expands to show the weekday and date while it is open.
+3. Click it again and confirm the dashboard closes and clock compacts.
+4. Confirm the clock remains centered throughout.
+
+For dashboard testing:
+
+1. Confirm the calendar highlights today and includes adjacent-month days.
+2. Start an MPRIS-compatible player and confirm title and artist update.
+3. Test previous, play/pause, and next when the player supports each action.
+4. Confirm no notification popup behavior changes while Ayame is running.
 
 ## Stop the development shell
 

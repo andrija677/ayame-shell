@@ -40,5 +40,11 @@ The active-window label reads Hyprland's focused toplevel title directly. It is
 confined to the fixed-width left area and elides long text so the centered clock
 and right-side system area never shift.
 
-The clock is a reusable component rather than bar-owned markup. It owns its date
-reveal interaction and collapse timer while the bar only places it.
+The clock is a reusable component rather than bar-owned markup. It emits its
+interaction to the bar, which owns a screen-local dashboard popup. The dashboard
+composes independent media and calendar cards.
+
+The dashboard reads existing MPRIS players but deliberately does not register a
+notification server during development. Notification ownership will be enabled
+only when Ayame can replace the current session shell without intercepting its
+popups unexpectedly.

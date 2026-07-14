@@ -6,6 +6,7 @@ import Quickshell.Services.SystemTray
 import "../../components"
 import "../../settings"
 import "../../theme"
+import "../dashboard"
 
 PanelWindow {
     id: bar
@@ -91,8 +92,14 @@ PanelWindow {
             Item { Layout.fillWidth: true }
 
             ClockPill {
+                id: clockPill
                 Layout.alignment: Qt.AlignCenter
                 visible: ShellConfig.clockEnabled
+                expanded: dashboard.visible
+                onActivated: {
+                    if (ShellConfig.dashboardEnabled)
+                        dashboard.visible = !dashboard.visible;
+                }
             }
 
             Item { Layout.fillWidth: true }
@@ -146,5 +153,11 @@ PanelWindow {
                 }
             }
         }
+    }
+
+    DashboardPopup {
+        id: dashboard
+        hostWindow: bar
+        visible: false
     }
 }

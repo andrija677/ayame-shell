@@ -9,6 +9,7 @@ QtObject {
     readonly property bool workspacesEnabled: true
     readonly property bool activeWindowEnabled: true
     readonly property bool clockEnabled: true
+    readonly property bool dashboardEnabled: true
     readonly property bool audioEnabled: true
     readonly property bool networkEnabled: true
     readonly property bool batteryEnabled: true
@@ -16,5 +17,4 @@ QtObject {
     readonly property bool showPassiveTrayItems: true
 
     readonly property int workspaceCount: 5
-    readonly property int clockDateDisplayDuration: 5000
 }

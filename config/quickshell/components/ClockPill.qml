@@ -1,12 +1,12 @@
 import QtQuick
 import Quickshell
-import "../settings"
 import "../theme"
 
 Surface {
     id: root
 
     property bool expanded: false
+    signal activated()
 
     implicitWidth: clockText.implicitWidth + Theme.space24
     implicitHeight: Theme.itemHeight
@@ -35,12 +35,6 @@ Surface {
         precision: SystemClock.Seconds
     }
 
-    Timer {
-        id: collapseTimer
-        interval: ShellConfig.clockDateDisplayDuration
-        onTriggered: root.expanded = false
-    }
-
     StyledText {
         id: clockText
         anchors.centerIn: parent
@@ -64,12 +58,6 @@ Surface {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: {
-            root.expanded = !root.expanded;
-            if (root.expanded)
-                collapseTimer.restart();
-            else
-                collapseTimer.stop();
-        }
+        onClicked: root.activated()
     }
 }
