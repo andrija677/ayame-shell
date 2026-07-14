@@ -62,7 +62,10 @@ PanelWindow {
     function runCommand() {
         if (commandText.length === 0 || commandProcess.running)
             return;
-        commandProcess.command = ["sh", "-lc", commandText];
+        commandProcess.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-run-command.sh",
+            commandText
+        ];
         commandProcess.running = true;
         closePanel();
     }

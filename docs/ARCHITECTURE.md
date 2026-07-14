@@ -60,9 +60,11 @@ Quickshell IPC. Requests target the dock on Hyprland's focused monitor. This giv
 optional compositor bindings a stable interface without allowing Ayame's
 development configuration to modify the user's live Hyprland files.
 Launcher searches remain desktop-entry-only unless input begins with `/`. Command
-mode strips that prefix and deliberately executes the remaining text through the
-user's shell, making the explicit prefix the safety boundary against accidental
-execution during ordinary app searches.
+mode strips that prefix and inspects desktop-entry `Terminal` metadata. Graphical
+commands launch directly; terminal and general shell commands open in Kitty. The
+explicit prefix remains the safety boundary against accidental execution during
+ordinary app searches, and the helper backgrounds either path so the launcher is
+immediately ready for another request.
 The generated default uses Hyprland's release-only modifier binding for
 `SUPER_L`, opening the launcher when bare Super is released while preserving
 Super combinations and Super-drag window controls.

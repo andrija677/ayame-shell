@@ -190,7 +190,8 @@ cp -a "$source_dir/assets" "$source_dir/config" "$source_dir/docs" \
 chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-kitty-colors.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
-    "$prefix/scripts/ayame-logout.sh" "$prefix/uninstall.sh"
+    "$prefix/scripts/ayame-logout.sh" \
+    "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 
 if [[ "$enable_kitty" == true ]]; then
     install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"

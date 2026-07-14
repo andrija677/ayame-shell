@@ -23,8 +23,9 @@ The Utilities surface documents recovery-friendly window keybinds and captures
 the desktop, active monitor, or selected area instantly or after a countdown.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
-Prefix launcher input with `/` to run a shell command directly; the prefix is a
-launcher cue and is not passed to the command.
+Prefix launcher input with `/` to run a shell command; the prefix is a launcher
+cue and is not passed to the command. Desktop-entry metadata keeps graphical apps
+such as Firefox direct, while terminal programs such as `btop` open in Kitty.
 Quick Settings also opens a full-screen power surface with safe Lock, Log Out,
 Restart, and Shut Down actions. The repository includes an Ayame Hyprlock design,
 but does not replace the user's live lock configuration during development.

@@ -357,9 +357,12 @@ file is explicitly sourced.
 With the optional bindings enabled, tap and release bare Super to toggle the
 launcher. Holding Super for another shortcut or window drag must retain its normal
 behavior rather than opening the launcher prematurely.
-Type `/touch /tmp/ayame-command-test` and press Enter. Confirm the launcher closes,
-the file is created, and no leading slash is passed as part of the command. Normal
-app searches must never enter command mode without the explicit `/` prefix.
+Type `/btop` and press Enter. Confirm the launcher closes, Kitty opens with btop,
+and quitting btop leaves an interactive shell plus its exit status. No leading
+slash may reach the shell. Normal app searches must never enter command mode
+without the explicit `/` prefix.
+Type `/firefox` and confirm its `Terminal=false` desktop entry launches it directly
+without opening Kitty.
 Verify Super+1 through Super+5 switch directly to the matching workspace and
 Super+Shift+1 through Super+Shift+5 move the active window there. Neither action
 may trigger the bare-Super launcher after the combination is released.
