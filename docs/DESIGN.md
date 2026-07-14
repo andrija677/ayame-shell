@@ -44,6 +44,10 @@ Quick Settings answers “what changes this session?”; Ayame Settings answers
 “how should my shell look and behave?”. Keeping those purposes separate prevents
 device controls from being buried among long-lived personalization choices.
 
+The dock launcher uses a neutral nine-dot application grid rather than a letter
+or brand mark. It remains recognizable across languages and lets wallpaper-driven
+color communicate its active state without tying the shell to a wordmark.
+
 ## Typography
 
 Ayame uses Adwaita Sans for interface text, with Medium body copy, bold labels,

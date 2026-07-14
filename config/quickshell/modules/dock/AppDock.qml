@@ -89,12 +89,34 @@ PanelWindow {
                     NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
                 }
 
-                StyledText {
+                Grid {
                     anchors.centerIn: parent
-                    text: "A"
-                    color: launcher.panelOpen ? Theme.primary : Theme.foregroundSurface
-                    font.pixelSize: 18
-                    font.weight: Theme.fontWeightDisplay
+                    columns: 3
+                    spacing: 3
+
+                    Repeater {
+                        model: 9
+
+                        Rectangle {
+                            required property int index
+                            width: 3.5
+                            height: 3.5
+                            radius: width / 2
+                            color: launcher.panelOpen
+                                ? Theme.primary : Theme.foregroundSurface
+                            scale: launcher.panelOpen ? 1.12 : 1
+
+                            Behavior on color {
+                                ColorAnimation { duration: Theme.motionFast }
+                            }
+                            Behavior on scale {
+                                NumberAnimation {
+                                    duration: Theme.motionFast
+                                    easing.type: Theme.easeEnter
+                                }
+                            }
+                        }
+                    }
                 }
 
                 MouseArea {
