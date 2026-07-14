@@ -2,10 +2,12 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import "modules/bar"
 import "modules/dock"
 import "services"
+import "settings"
 
 ShellRoot {
     id: root
@@ -20,6 +22,17 @@ ShellRoot {
         function toggle(): void { root.launcherRequested("toggle"); }
         function open(): void { root.launcherRequested("open"); }
         function close(): void { root.launcherRequested("close"); }
+    }
+
+    // Hyprland does not emit continuously updated geometry during a pointer
+    // move. Refresh only while intelligent hiding is enabled so the dock can
+    // react during a live Win-drag rather than waiting for a later event.
+    Timer {
+        interval: 120
+        repeat: true
+        running: ShellConfig.dockEnabled && ShellConfig.dockAutoHide
+        triggeredOnStart: true
+        onTriggered: Hyprland.refreshToplevels()
     }
 
     Variants {

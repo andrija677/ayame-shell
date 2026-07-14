@@ -43,6 +43,10 @@ model. A passive hover handler keeps a transparent bottom-edge sensor alive,
 reveals the dock as the pointer approaches, and delays hiding briefly after the
 pointer leaves to avoid oscillation. Non-obstructing window layouts keep the dock
 visible, and opening the launcher temporarily holds it open.
+Hyprland does not stream intermediate geometry for every pointer-driven move, so
+one shell-root timer refreshes the shared toplevel model every 120 ms while the
+feature is enabled. This makes Win-drag overlap responsive without spawning a
+poller per monitor, and the timer stops entirely when the dock or option is off.
 
 The dock's Ayame button owns a screen-local application launcher. Unlike small
 bar popups, the launcher is a layer-shell overlay: this gives it reliable keyboard
