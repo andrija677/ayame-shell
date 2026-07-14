@@ -18,6 +18,7 @@ Rectangle {
     readonly property bool active: toplevel?.activated || false
     readonly property bool urgent: toplevel?.urgent || false
     readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
+    property bool pinChanging: false
 
     implicitWidth: 42
     implicitHeight: 42
@@ -26,6 +27,40 @@ Rectangle {
         : pointer.containsMouse ? Theme.surfaceContainerHigh : "transparent"
     scale: pointer.pressed ? 0.9 : pointer.containsMouse ? 1.08 : 1
     y: pointer.containsMouse ? -Theme.space4 : 0
+    opacity: 0
+
+    transform: Translate { id: pinSlide; x: 14 }
+
+    Component.onCompleted: enterAnimation.start()
+
+    ParallelAnimation {
+        id: enterAnimation
+        NumberAnimation {
+            target: root; property: "opacity"; to: 1
+            duration: Theme.motionNormal; easing.type: Theme.easeEnter
+        }
+        NumberAnimation {
+            target: pinSlide; property: "x"; to: 0
+            duration: Theme.motionNormal; easing.type: Theme.easeEnter
+        }
+    }
+
+    SequentialAnimation {
+        id: pinAnimation
+        ParallelAnimation {
+            NumberAnimation {
+                target: root; property: "opacity"; to: 0
+                duration: Theme.motionFast; easing.type: Theme.easeExit
+            }
+            NumberAnimation {
+                target: pinSlide; property: "x"; to: -16
+                duration: Theme.motionFast; easing.type: Theme.easeExit
+            }
+        }
+        ScriptAction {
+            script: ShellConfig.toggleDockFavorite(root.favoriteId)
+        }
+    }
 
     Behavior on color { ColorAnimation { duration: Theme.motionFast } }
     Behavior on scale {
@@ -33,6 +68,10 @@ Rectangle {
     }
     Behavior on y {
         NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
+    }
+    Behavior on x {
+        enabled: !pinAnimation.running
+        NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
     }
 
     readonly property string resolvedIcon: Quickshell.iconPath(
@@ -90,7 +129,10 @@ Rectangle {
 
         onClicked: event => {
             if (event.button === Qt.RightButton) {
-                ShellConfig.toggleDockFavorite(root.favoriteId);
+                if (!root.pinChanging) {
+                    root.pinChanging = true;
+                    pinAnimation.start();
+                }
                 return;
             }
 

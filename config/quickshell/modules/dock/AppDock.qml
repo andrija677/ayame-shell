@@ -60,6 +60,20 @@ PanelWindow {
     readonly property bool dockHidden: ShellConfig.dockAutoHide
         && workspaceObstructed && !pointerReveal && !launcher.panelOpen
     property bool pointerReveal: false
+    property bool pinHintPresented: false
+    property bool pinHintOpen: false
+
+    function offerPinHint() {
+        if (!hasAppItems || ShellConfig.dockPinHintShown)
+            return;
+        ShellConfig.dockPinHintShown = true;
+        pinHintPresented = true;
+        pinHintOpen = true;
+        pinHintTimer.restart();
+    }
+
+    onHasAppItemsChanged: offerPinHint()
+    Component.onCompleted: Qt.callLater(offerPinHint)
 
     function desktopIdFor(toplevel) {
         const appId = toplevel?.wayland?.appId
@@ -97,6 +111,7 @@ PanelWindow {
     anchors.bottom: true
     implicitWidth: dockSurface.implicitWidth + Theme.outerMargin * 2
     implicitHeight: Theme.dockHeight + Theme.outerMargin
+        + (pinHintPresented ? 44 : 0)
     exclusiveZone: 0
     visible: ShellConfig.dockEnabled
     color: "transparent"
@@ -118,6 +133,52 @@ PanelWindow {
         id: hideDelay
         interval: 420
         onTriggered: dock.pointerReveal = false
+    }
+
+    Timer {
+        id: pinHintTimer
+        interval: 5500
+        onTriggered: {
+            dock.pinHintOpen = false;
+            pinHintUnmapTimer.restart();
+        }
+    }
+
+    Timer {
+        id: pinHintUnmapTimer
+        interval: Theme.motionNormal + Theme.motionUnmapGrace
+        onTriggered: dock.pinHintPresented = false
+    }
+
+    Surface {
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom: dockSurface.top
+            bottomMargin: Theme.space8
+        }
+        implicitWidth: pinHintText.implicitWidth + Theme.space24
+        implicitHeight: 34
+        visible: dock.pinHintPresented
+        opacity: dock.pinHintOpen ? 1 : 0
+        scale: dock.pinHintOpen ? 1 : 0.94
+        radius: Theme.radiusPill
+        color: Theme.surfaceContainerHigh
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+        }
+        Behavior on scale {
+            NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+        }
+
+        StyledText {
+            id: pinHintText
+            anchors.centerIn: parent
+            text: "Tip: Right-click an app to pin it"
+            color: Theme.foregroundSurfaceVariant
+            font.pixelSize: Theme.fontSmall
+            font.weight: Theme.fontWeightLabel
+        }
     }
 
     Surface {

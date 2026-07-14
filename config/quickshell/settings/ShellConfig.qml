@@ -11,6 +11,7 @@ QtObject {
     property alias dockEnabled: values.dockEnabled
     property alias dockAutoHide: values.dockAutoHide
     property alias pinnedDockApps: values.pinnedDockApps
+    property alias dockPinHintShown: values.dockPinHintShown
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
     property alias clockEnabled: values.clockEnabled
@@ -71,6 +72,7 @@ QtObject {
         values.dockEnabled = true;
         values.dockAutoHide = false;
         values.pinnedDockApps = "";
+        values.dockPinHintShown = false;
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
         values.clockEnabled = true;
@@ -123,6 +125,7 @@ QtObject {
             property bool dockEnabled: true
             property bool dockAutoHide: false
             property string pinnedDockApps: ""
+            property bool dockPinHintShown: false
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true
             property bool clockEnabled: true
