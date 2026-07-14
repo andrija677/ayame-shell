@@ -1,18 +1,17 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
+import Quickshell.Wayland
 import "../../components"
 import "../../settings"
 import "../../theme"
 
-PopupWindow {
+PanelWindow {
     id: root
 
     required property var hostWindow
     readonly property bool open: panelOpen
     property bool panelOpen: false
-    property bool intentionalHide: false
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -36,18 +35,14 @@ PopupWindow {
         closeTimer.restart();
     }
 
-    anchor.window: hostWindow
-    anchor.rect.x: Math.round((hostWindow.width - width) / 2)
-    anchor.rect.y: hostWindow.height
-    implicitWidth: 390
-    implicitHeight: dashboard.implicitHeight + Theme.space8
+    screen: hostWindow.screen
+    anchors { top: true; bottom: true; left: true; right: true }
+    exclusiveZone: 0
     color: "transparent"
-    grabFocus: true
-
-    HyprlandFocusGrab {
-        windows: [root, root.hostWindow]
-        active: root.visible
-    }
+    WlrLayershell.namespace: "ayame-shell-dashboard"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: visible
+        ? WlrLayershell.OnDemand : WlrLayershell.None
 
     Shortcut {
         sequence: "Escape"
@@ -57,11 +52,6 @@ PopupWindow {
 
     onVisibleChanged: {
         if (!visible) {
-            if (!intentionalHide && panelOpen) {
-                visible = true;
-                closePanel();
-                return;
-            }
             closeTimer.stop();
             panelOpen = false;
         }
@@ -76,21 +66,26 @@ PopupWindow {
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + Theme.motionUnmapGrace
-        onTriggered: {
-            root.intentionalHide = true;
-            root.visible = false;
-            root.intentionalHide = false;
-        }
+        onTriggered: root.visible = false
     }
+
+    MouseArea { anchors.fill: parent; onClicked: root.closePanel() }
 
     Surface {
         id: dashboard
-        width: parent.width
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+            topMargin: root.hostWindow.height - Theme.space4
+                + (Theme.space8 + Theme.space4) * motion.value
+        }
+        width: 390
         implicitHeight: content.implicitHeight + Theme.space16
-        y: -Theme.space4 + (Theme.space8 + Theme.space4) * motion.value
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
+
+        MouseArea { anchors.fill: parent }
 
         transform: Scale {
             id: panelScale

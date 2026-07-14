@@ -1,17 +1,17 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import "../../components"
 import "../../services"
 import "../../settings"
 import "../../theme"
 
-PopupWindow {
+PanelWindow {
     id: root
 
     required property var hostWindow
     property bool panelOpen: false
-    property bool intentionalHide: false
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -28,13 +28,14 @@ PopupWindow {
         closeTimer.restart();
     }
 
-    anchor.window: hostWindow
-    anchor.rect.x: hostWindow.width - width - Theme.outerMargin
-    anchor.rect.y: hostWindow.height
-    implicitWidth: 460
-    implicitHeight: settingsSurface.implicitHeight + Theme.space8
+    screen: hostWindow.screen
+    anchors { top: true; bottom: true; left: true; right: true }
+    exclusiveZone: 0
     color: "transparent"
-    grabFocus: true
+    WlrLayershell.namespace: "ayame-shell-settings"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: visible
+        ? WlrLayershell.OnDemand : WlrLayershell.None
     visible: false
 
     Shortcut {
@@ -45,11 +46,6 @@ PopupWindow {
 
     onVisibleChanged: {
         if (!visible) {
-            if (!intentionalHide && panelOpen) {
-                visible = true;
-                closePanel();
-                return;
-            }
             closeTimer.stop();
             panelOpen = false;
         }
@@ -64,21 +60,27 @@ PopupWindow {
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + Theme.motionUnmapGrace
-        onTriggered: {
-            root.intentionalHide = true;
-            root.visible = false;
-            root.intentionalHide = false;
-        }
+        onTriggered: root.visible = false
     }
+
+    MouseArea { anchors.fill: parent; onClicked: root.closePanel() }
 
     Surface {
         id: settingsSurface
-        width: parent.width
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: root.hostWindow.height - Theme.space4
+                + (Theme.space8 + Theme.space4) * motion.value
+            rightMargin: Theme.outerMargin
+        }
+        width: 460
         implicitHeight: content.implicitHeight + Theme.space24
-        y: -Theme.space4 + (Theme.space8 + Theme.space4) * motion.value
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
+
+        MouseArea { anchors.fill: parent }
 
         transform: Scale {
             origin.x: settingsSurface.width

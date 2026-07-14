@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Bluetooth
 import Quickshell.Networking
 import Quickshell.Services.Pipewire
@@ -13,7 +12,7 @@ import "../../services"
 import "../../theme"
 import "../settings"
 
-PopupWindow {
+PanelWindow {
     id: root
 
     signal powerRequested()
@@ -46,7 +45,6 @@ PopupWindow {
     }
     property bool panelOpen: false
     property bool keepAwake: false
-    property bool intentionalHide: false
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -80,18 +78,14 @@ PopupWindow {
         audio.volume = Math.max(0, Math.min(1, position / volumeTrack.width));
     }
 
-    anchor.window: hostWindow
-    anchor.rect.x: hostWindow.width - width - Theme.outerMargin
-    anchor.rect.y: hostWindow.height
-    implicitWidth: 340
-    implicitHeight: panel.implicitHeight + Theme.space8
+    screen: hostWindow.screen
+    anchors { top: true; bottom: true; left: true; right: true }
+    exclusiveZone: 0
     color: "transparent"
-    grabFocus: true
-
-    HyprlandFocusGrab {
-        windows: [root, settingsPanel, root.hostWindow]
-        active: root.visible || settingsPanel.visible
-    }
+    WlrLayershell.namespace: "ayame-shell-quick-settings"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: visible
+        ? WlrLayershell.OnDemand : WlrLayershell.None
 
     Shortcut {
         sequence: "Escape"
@@ -101,11 +95,6 @@ PopupWindow {
 
     onVisibleChanged: {
         if (!visible) {
-            if (!intentionalHide && panelOpen) {
-                visible = true;
-                closePanel();
-                return;
-            }
             closeTimer.stop();
             panelOpen = false;
         }
@@ -127,21 +116,27 @@ PopupWindow {
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + Theme.motionUnmapGrace
-        onTriggered: {
-            root.intentionalHide = true;
-            root.visible = false;
-            root.intentionalHide = false;
-        }
+        onTriggered: root.visible = false
     }
+
+    MouseArea { anchors.fill: parent; onClicked: root.closePanel() }
 
     Surface {
         id: panel
-        width: parent.width
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: root.hostWindow.height - Theme.space4
+                + (Theme.space8 + Theme.space4) * motion.value
+            rightMargin: Theme.outerMargin
+        }
+        width: 340
         implicitHeight: content.implicitHeight + Theme.space24
-        y: -Theme.space4 + (Theme.space8 + Theme.space4) * motion.value
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
+
+        MouseArea { anchors.fill: parent }
 
         transform: Scale {
             id: panelScale
