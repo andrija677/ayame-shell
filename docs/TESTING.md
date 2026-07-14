@@ -222,6 +222,13 @@ the tray icon, including application-provided quit and status entries. A tray
 item without a menu must retain normal primary activation, middle-click must
 retain secondary activation, and wheel events must continue reaching the item.
 
+Right-click a running application in the dock and confirm it remains as a
+favorite after the window closes. Left-click the favorite to launch it, then
+confirm the running window reuses the same icon rather than adding a duplicate.
+Left-click the active icon to minimize and click it again to restore/focus it.
+Restart Ayame and confirm the favorite remains. Right-click it again to unpin it;
+once its window closes, the icon must leave the dock.
+
 If the terminal was closed, list Quickshell instances first:
 
 ```bash

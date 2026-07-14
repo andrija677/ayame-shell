@@ -21,10 +21,13 @@ The root creates one `TopBar` per Quickshell screen. Each bar maps its screen to
 the corresponding Hyprland monitor, so workspace selection is monitor-local and
 the active-window title appears only on the currently focused monitor.
 
-The root also creates one `AppDock` per screen. Its first milestone displays
-running Hyprland toplevels belonging to that monitor, resolves application icons
-through desktop entries, and uses native Wayland activation/minimize requests.
-It overlays windows without reserving a permanent bottom work area.
+The root also creates one `AppDock` per screen. It displays running Hyprland
+toplevels belonging to that monitor, resolves application icons through desktop
+entries, and uses native Wayland activation/minimize requests. Right-clicking an
+icon pins or unpins its desktop entry. Favorites persist through `ShellConfig`,
+launch through the desktop entry when closed, and merge with their running window
+instead of creating a duplicate icon. The dock overlays windows without reserving
+a permanent bottom work area.
 
 Weather is opt-in. `WeatherService` geocodes only explicit city searches, stores
 the confirmed name and coordinates in ShellConfig, retrieves Open-Meteo forecasts,

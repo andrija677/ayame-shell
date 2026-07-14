@@ -9,6 +9,7 @@ QtObject {
 
     property alias barEnabled: values.barEnabled
     property alias dockEnabled: values.dockEnabled
+    property alias pinnedDockApps: values.pinnedDockApps
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
     property alias clockEnabled: values.clockEnabled
@@ -39,9 +40,33 @@ QtObject {
         saveTimer.restart();
     }
 
+    function dockFavorites() {
+        return values.pinnedDockApps.length > 0
+            ? values.pinnedDockApps.split("|").filter(id => id.length > 0)
+            : [];
+    }
+
+    function dockAppPinned(desktopId) {
+        return desktopId.length > 0 && dockFavorites().indexOf(desktopId) >= 0;
+    }
+
+    function toggleDockFavorite(desktopId) {
+        if (desktopId.length === 0)
+            return;
+
+        const favorites = dockFavorites();
+        const index = favorites.indexOf(desktopId);
+        if (index >= 0)
+            favorites.splice(index, 1);
+        else
+            favorites.push(desktopId);
+        values.pinnedDockApps = favorites.join("|");
+    }
+
     function resetDefaults() {
         values.barEnabled = true;
         values.dockEnabled = true;
+        values.pinnedDockApps = "";
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
         values.clockEnabled = true;
@@ -90,6 +115,7 @@ QtObject {
 
             property bool barEnabled: true
             property bool dockEnabled: true
+            property string pinnedDockApps: ""
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true
             property bool clockEnabled: true

@@ -1,17 +1,23 @@
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
+import "../settings"
 import "../theme"
 
 Rectangle {
     id: root
 
-    required property var toplevel
-    readonly property string appId: toplevel.wayland?.appId
-        || toplevel.lastIpcObject?.class || ""
-    readonly property var desktopEntry: DesktopEntries.heuristicLookup(appId)
-    readonly property bool active: toplevel.activated
-    readonly property bool urgent: toplevel.urgent
+    property var toplevel: null
+    property string desktopId: ""
+    readonly property string appId: desktopId.length > 0 ? desktopId
+        : toplevel?.wayland?.appId || toplevel?.lastIpcObject?.class || ""
+    readonly property var desktopEntry: desktopId.length > 0
+        ? (DesktopEntries.byId(desktopId) || DesktopEntries.heuristicLookup(desktopId))
+        : DesktopEntries.heuristicLookup(appId)
+    readonly property string favoriteId: desktopEntry?.id || appId
+    readonly property bool active: toplevel?.activated || false
+    readonly property bool urgent: toplevel?.urgent || false
+    readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
 
     implicitWidth: 42
     implicitHeight: 42
@@ -62,15 +68,24 @@ Rectangle {
         id: pointer
         anchors.fill: parent
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
 
-        onClicked: {
-            if (!root.toplevel.wayland)
+        onClicked: event => {
+            if (event.button === Qt.RightButton) {
+                ShellConfig.toggleDockFavorite(root.favoriteId);
                 return;
-            if (root.active)
+            }
+
+            if (!root.toplevel) {
+                root.desktopEntry?.execute();
+            } else if (!root.toplevel.wayland) {
+                return;
+            } else if (root.active) {
                 root.toplevel.wayland.minimized = true;
-            else
+            } else {
                 root.toplevel.wayland.activate();
+            }
         }
     }
 }
