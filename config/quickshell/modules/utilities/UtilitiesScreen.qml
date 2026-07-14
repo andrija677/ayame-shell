@@ -326,11 +326,42 @@ PanelWindow {
 
         Rectangle {
             visible: root.selectionDragging
+            x: 0; y: 0; width: parent.width
+            height: Math.min(root.selectionStartY, root.selectionCurrentY)
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: 0
+            y: Math.max(root.selectionStartY, root.selectionCurrentY)
+            width: parent.width
+            height: parent.height - y
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: 0
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: Math.min(root.selectionStartX, root.selectionCurrentX)
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            color: "#99000000"
+        }
+        Rectangle {
+            visible: root.selectionDragging
+            x: Math.max(root.selectionStartX, root.selectionCurrentX)
+            y: Math.min(root.selectionStartY, root.selectionCurrentY)
+            width: parent.width - x
+            height: Math.abs(root.selectionCurrentY - root.selectionStartY)
+            color: "#99000000"
+        }
+
+        Rectangle {
+            visible: root.selectionDragging
             x: Math.min(root.selectionStartX, root.selectionCurrentX)
             y: Math.min(root.selectionStartY, root.selectionCurrentY)
             width: Math.abs(root.selectionCurrentX - root.selectionStartX)
             height: Math.abs(root.selectionCurrentY - root.selectionStartY)
-            color: "#596d4c8e"
+            color: "transparent"
             border.color: Theme.primary
             border.width: 4
         }
