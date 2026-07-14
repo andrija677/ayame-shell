@@ -72,6 +72,8 @@ The bar reserves equal left and right regions to keep the clock geometrically
 centered. Those regions are wide enough for workspace paging and a useful amount
 of active-window context; marquee motion is a fallback for unusually long titles,
 not a substitute for adequate title space.
+The marquee pauses briefly at each readable endpoint and travels quickly enough
+to be perceptible without turning the top bar into constant distracting motion.
 
 Calendar month changes preserve spatial direction: later months travel left and
 enter from the right, while earlier months do the reverse. Clock text uses two

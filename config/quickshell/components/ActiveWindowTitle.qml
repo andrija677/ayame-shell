@@ -35,22 +35,22 @@ Item {
         running: root.visible && root.overflowing
         loops: Animation.Infinite
 
-        PauseAnimation { duration: 1100 }
+        PauseAnimation { duration: 750 }
         NumberAnimation {
             target: titleLabel
             property: "x"
             to: -(titleLabel.implicitWidth - root.width)
-            duration: Math.max(900,
-                (titleLabel.implicitWidth - root.width) * 28)
+            duration: Math.max(800,
+                (titleLabel.implicitWidth - root.width) * 12)
             easing.type: Easing.InOutCubic
         }
-        PauseAnimation { duration: 1400 }
+        PauseAnimation { duration: 1100 }
         NumberAnimation {
             target: titleLabel
             property: "x"
             to: 0
-            duration: Math.max(700,
-                (titleLabel.implicitWidth - root.width) * 22)
+            duration: Math.max(650,
+                (titleLabel.implicitWidth - root.width) * 9)
             easing.type: Easing.InOutCubic
         }
 
