@@ -60,6 +60,13 @@ For multi-monitor testing:
    focused monitor.
 4. Disconnect and reconnect a screen and confirm its bar follows it.
 
+For clock testing:
+
+1. Click the clock and confirm it expands to show the weekday and date.
+2. Confirm it returns to the compact time after five seconds.
+3. Click it again while expanded and confirm it compacts immediately.
+4. Confirm its width and colors animate without moving it off center.
+
 ## Stop the development shell
 
 Press `Ctrl+C` in the terminal that started it.

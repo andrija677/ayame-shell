@@ -39,3 +39,6 @@ when a connected Wi-Fi network is available. It never changes connections.
 The active-window label reads Hyprland's focused toplevel title directly. It is
 confined to the fixed-width left area and elides long text so the centered clock
 and right-side system area never shift.
+
+The clock is a reusable component rather than bar-owned markup. It owns its date
+reveal interaction and collapse timer while the bar only places it.

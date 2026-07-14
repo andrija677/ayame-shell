@@ -16,4 +16,5 @@ QtObject {
     readonly property bool showPassiveTrayItems: true
 
     readonly property int workspaceCount: 5
+    readonly property int clockDateDisplayDuration: 5000
 }

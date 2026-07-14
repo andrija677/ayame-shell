@@ -90,26 +90,9 @@ PanelWindow {
 
             Item { Layout.fillWidth: true }
 
-            Surface {
+            ClockPill {
                 Layout.alignment: Qt.AlignCenter
-                implicitWidth: clockText.implicitWidth + Theme.space24
-                implicitHeight: Theme.itemHeight
-                radius: Theme.radiusPill
-                color: Theme.surfaceContainerHigh
                 visible: ShellConfig.clockEnabled
-
-                SystemClock {
-                    id: clock
-                    precision: SystemClock.Seconds
-                }
-
-                StyledText {
-                    id: clockText
-                    anchors.centerIn: parent
-                    text: Qt.formatDateTime(clock.date, "HH:mm")
-                    font.pixelSize: Theme.fontNormal
-                    font.weight: Font.DemiBold
-                }
             }
 
             Item { Layout.fillWidth: true }
