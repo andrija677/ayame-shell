@@ -76,6 +76,8 @@ For dashboard testing:
 5. Confirm opening unfolds downward from the clock with a top-center origin.
 6. Confirm closing reverses fully before the popup window disappears.
 7. Toggle repeatedly and confirm no half-open or invisible state remains.
+8. Confirm the first closing click both reverses the animation and compacts the
+   clock date; a second cleanup click must never be necessary.
 
 ## Stop the development shell
 

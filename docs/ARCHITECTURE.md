@@ -48,3 +48,7 @@ The dashboard reads existing MPRIS players but deliberately does not register a
 notification server during development. Notification ownership will be enabled
 only when Ayame can replace the current session shell without intercepting its
 popups unexpectedly.
+
+Dashboard visibility is controlled by Ayame rather than popup focus dismissal.
+This keeps the clock trigger reachable while the popup is open and ensures the
+reverse animation completes before the backing window is hidden.

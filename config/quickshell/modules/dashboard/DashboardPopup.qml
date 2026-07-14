@@ -35,7 +35,17 @@ PopupWindow {
     implicitWidth: 420
     implicitHeight: dashboard.implicitHeight + Theme.space8
     color: "transparent"
-    grabFocus: true
+    // Keeping focus with the bar lets a second clock click reach toggle().
+    // If the popup grabs focus, Quickshell dismisses it as an outside click
+    // before Ayame can play the closing transition.
+    grabFocus: false
+
+    onVisibleChanged: {
+        if (!visible) {
+            closeTimer.stop();
+            panelOpen = false;
+        }
+    }
 
     Timer {
         id: closeTimer
