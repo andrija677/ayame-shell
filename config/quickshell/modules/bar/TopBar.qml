@@ -19,6 +19,8 @@ PanelWindow {
     readonly property int workspacePageStart: activeWorkspaceId <= 5 ? 1
         : 6 + Math.floor((activeWorkspaceId - 6) / 6) * 6
     readonly property int workspacePageSize: workspacePageStart === 1 ? 5 : 6
+    readonly property int balancedSideWidth: Math.max(240,
+        Math.min(560, Math.floor((width - 320) / 2)))
     property bool trayExpanded: false
 
     anchors {
@@ -53,7 +55,7 @@ PanelWindow {
 
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: Theme.sideAreaWidth
+                Layout.preferredWidth: bar.balancedSideWidth
                 implicitHeight: Theme.itemHeight
                 visible: ShellConfig.workspacesEnabled
                     || ShellConfig.activeWindowEnabled
@@ -120,7 +122,7 @@ PanelWindow {
 
             Item {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: Theme.sideAreaWidth
+                Layout.preferredWidth: bar.balancedSideWidth
                 implicitHeight: Theme.itemHeight
                 visible: ShellConfig.audioEnabled
                     || ShellConfig.networkEnabled

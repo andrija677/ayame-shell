@@ -221,8 +221,9 @@ Switch from workspace 1–5 to workspace 6 and confirm the bar changes to 6–11
 Workspace 12 must change the page to 12–17, and larger IDs must continue the same
 six-workspace pattern. Return to workspace 1 and confirm the original 1–5 page.
 Open a window with a title wider than the remaining left-side space. The title
-must pause, scroll smoothly until its ending is readable, pause, then return to
-the beginning without moving the centered clock.
+must use the expanded responsive region and, only if it still cannot fit, end in
+an ellipsis without moving the centered clock. Resize across display widths and
+confirm the left and right regions remain balanced.
 
 While Ayame Settings is open, the top-bar Quick Settings trigger must remain in
 its active state. Clicking it must close Settings rather than stacking Quick

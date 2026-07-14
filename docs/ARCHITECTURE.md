@@ -86,9 +86,10 @@ font dependencies, while its popup exposes passive connection details. Neither
 surface changes connections.
 
 The active-window label reads Hyprland's focused toplevel title directly. It is
-confined to the fixed-width left area so the centered clock and right-side system
-area never shift. Long titles pause, scroll through their full text, pause again,
-and return instead of being permanently truncated.
+confined to a responsive left area while an equal right area keeps the clock
+centered. On wide displays each side may grow to 560 pixels, leaving substantially
+more room for titles; narrower displays scale both regions down together. Only
+titles longer than the resulting space use a conventional trailing ellipsis.
 
 Workspace buttons follow the active Hyprland workspace. The familiar first page
 shows 1–5; higher workspaces page in six-button groups (6–11, 12–17, and onward),
