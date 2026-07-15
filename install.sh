@@ -232,6 +232,10 @@ local wallpaper = "$prefix/scripts/ayame-wallpaper.sh"
 local emoji_picker = "$prefix/scripts/ayame-emoji-picker.sh"
 
 hl.config({
+    decoration = {
+        rounding = 14,
+        rounding_power = 2
+    },
     misc = {
         disable_hyprland_logo = true,
         disable_splash_rendering = true,
