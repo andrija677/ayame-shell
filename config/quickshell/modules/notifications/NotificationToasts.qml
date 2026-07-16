@@ -44,7 +44,7 @@ PanelWindow {
     }
     implicitWidth: 380
     implicitHeight: toastItem.implicitHeight
-    exclusiveZone: 0
+    exclusiveZone: -1
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     visible: false

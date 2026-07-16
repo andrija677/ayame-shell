@@ -93,7 +93,7 @@ PanelWindow {
     }
 
     anchors { top: true; bottom: true; left: true; right: true }
-    exclusiveZone: 0
+    exclusiveZone: -1
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     visible: false
