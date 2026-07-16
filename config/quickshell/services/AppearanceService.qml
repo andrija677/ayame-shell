@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import "../settings"
 
@@ -8,6 +9,18 @@ QtObject {
     id: root
 
     property string error: ""
+
+    function applyColorScheme() {
+        if (appearanceProcess.running) {
+            appearanceRetry.restart();
+            return;
+        }
+        appearanceProcess.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-appearance-mode.sh",
+            ShellConfig.colorScheme === "light" ? "light" : "dark"
+        ];
+        appearanceProcess.running = true;
+    }
 
     function applyBlur() {
         if (ruleProcess.running) return;
@@ -38,10 +51,29 @@ QtObject {
         }
     }
 
+    property Process appearanceProcess: Process {
+        id: appearanceProcess
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.error = "App appearance: " + text.trim().split("\n").pop();
+            }
+        }
+    }
+
+    property Timer appearanceRetry: Timer {
+        interval: 120
+        onTriggered: root.applyColorScheme()
+    }
+
     property Connections configConnections: Connections {
         target: ShellConfig
         function onBlurEnabledChanged() { root.applyBlur(); }
+        function onColorSchemeChanged() { root.applyColorScheme(); }
     }
 
-    Component.onCompleted: applyBlur()
+    Component.onCompleted: {
+        applyBlur();
+        applyColorScheme();
+    }
 }

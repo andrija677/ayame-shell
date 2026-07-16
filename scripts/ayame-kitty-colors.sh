@@ -30,3 +30,8 @@ printf '%s\n' \
 mv -f -- "$temporary" "$target"
 trap - EXIT
 pkill -USR1 -x kitty 2>/dev/null || true
+# A palette reload can leave the current frame using a mixture of the old and
+# new colors until Kitty receives another surface event. Prompt that redraw so
+# users do not have to unfocus and refocus the terminal manually.
+sleep 0.08
+pkill -WINCH -x kitty 2>/dev/null || true

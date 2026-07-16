@@ -196,6 +196,7 @@ cp -a "$source_dir/assets" "$source_dir/config" "$source_dir/docs" \
     "$source_dir/uninstall.sh" "$prefix/"
 chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-gaming-mode.sh" \
+    "$prefix/scripts/ayame-appearance-mode.sh" \
     "$prefix/scripts/ayame-update.sh" \
     "$prefix/scripts/ayame-kitty-colors.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
