@@ -26,6 +26,8 @@ PanelWindow {
     property real dragBaseX: 0
     property real dragBaseY: 0
     property real dragReleaseX: 0
+    property real pointerStartX: 0
+    property real pointerStartY: 0
     property string dragStartSide: ""
     property string status: ""
     property string error: ""
@@ -78,14 +80,17 @@ PanelWindow {
         }
         displayX = offsetX;
     }
-    function beginDrag() {
+    function beginDragAt(sceneX, sceneY) {
         dragStartSide = snappedSide;
         dragReleaseX = 0;
         dragBaseX = Math.min(offsetX, Math.max(0, width - pillWidth));
         dragBaseY = offsetY;
-        dragProxy.x = 0;
-        dragProxy.y = 0;
+        pointerStartX = sceneX;
+        pointerStartY = sceneY;
         dragging = true;
+    }
+    function dragTo(sceneX, sceneY) {
+        updateDrag(sceneX - pointerStartX, sceneY - pointerStartY);
     }
     function updateDrag(dx, dy) {
         if (!dragging)
@@ -120,7 +125,6 @@ PanelWindow {
             displayX = offsetX;
             dragStartSide = "";
         } else {
-            updateDrag(dragProxy.x, dragProxy.y);
             snapIfNearEdge();
         }
         dragging = false;
@@ -150,16 +154,6 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    // MouseArea's native drag engine keeps its grab across moving/clipped items
-    // more reliably than a pointer handler on layer-shell surfaces.
-    Item {
-        id: dragProxy
-        width: 1
-        height: 1
-        onXChanged: root.updateDrag(x, y)
-        onYChanged: root.updateDrag(x, y)
-    }
-
     ClippingRectangle {
         id: pillSurface
         x: root.displayX
@@ -186,9 +180,15 @@ PanelWindow {
             id: surfaceDragArea
             anchors.fill: parent
             cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-            drag.target: dragProxy
-            drag.threshold: 3
-            onPressed: root.beginDrag()
+            onPressed: mouse => {
+                const point = mapToItem(null, mouse.x, mouse.y);
+                root.beginDragAt(point.x, point.y);
+            }
+            onPositionChanged: mouse => {
+                if (!pressed) return;
+                const point = mapToItem(null, mouse.x, mouse.y);
+                root.dragTo(point.x, point.y);
+            }
             onReleased: root.endDrag()
             onCanceled: root.endDrag()
         }
@@ -212,9 +212,15 @@ PanelWindow {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                    drag.target: dragProxy
-                    drag.threshold: 2
-                    onPressed: root.beginDrag()
+                    onPressed: mouse => {
+                        const point = mapToItem(null, mouse.x, mouse.y);
+                        root.beginDragAt(point.x, point.y);
+                    }
+                    onPositionChanged: mouse => {
+                        if (!pressed) return;
+                        const point = mapToItem(null, mouse.x, mouse.y);
+                        root.dragTo(point.x, point.y);
+                    }
                     onReleased: root.endDrag()
                     onCanceled: root.endDrag()
                 }
