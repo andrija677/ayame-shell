@@ -26,6 +26,14 @@ PanelWindow {
     readonly property int balancedSideWidth: Math.max(240,
         Math.min(560, Math.floor((width - 320) / 2)))
     property bool trayExpanded: false
+    property real recordingProgress: RecordingService.recording ? 1 : 0
+
+    Behavior on recordingProgress {
+        NumberAnimation {
+            duration: Theme.motionSlow
+            easing.type: Easing.InOutCubic
+        }
+    }
 
     anchors {
         top: true
@@ -137,15 +145,18 @@ PanelWindow {
                 Surface {
                     anchors {
                         right: systemPill.left
-                        rightMargin: Theme.space8
+                        rightMargin: Theme.space8 * bar.recordingProgress
                         verticalCenter: parent.verticalCenter
                     }
-                    visible: RecordingService.recording
-                    implicitWidth: recordingLabel.implicitWidth + Theme.space16
+                    visible: bar.recordingProgress > 0.001
+                    implicitWidth: (recordingLabel.implicitWidth + Theme.space16)
+                        * bar.recordingProgress
                     implicitHeight: Theme.itemHeight
                     radius: Theme.radiusPill
                     color: Theme.error
-                    opacity: visible ? 1 : 0
+                    opacity: bar.recordingProgress
+                    scale: 0.9 + 0.1 * bar.recordingProgress
+                    clip: true
 
                     StyledText {
                         id: recordingLabel
