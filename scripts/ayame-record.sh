@@ -100,6 +100,14 @@ case "$action" in
                 [[ -n "$geometry" ]] || exit 0
                 args+=(-g "$geometry")
                 ;;
+            geometry)
+                geometry="$monitor"
+                [[ "$geometry" =~ ^-?[0-9]+,-?[0-9]+[[:space:]][0-9]+x[0-9]+$ ]] || {
+                    echo "Invalid recording geometry: $geometry" >&2
+                    exit 2
+                }
+                args+=(-g "$geometry")
+                ;;
             *) echo "Unknown recording mode: $mode" >&2; exit 2 ;;
         esac
         case "$audio" in

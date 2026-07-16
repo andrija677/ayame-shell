@@ -12,6 +12,7 @@ PanelWindow {
     id: root
 
     signal areaScreenshotRequested(int delay)
+    signal areaRecordingRequested(string audio, int delay)
 
     property bool opened: false
     property string captureMode: "area"
@@ -30,7 +31,7 @@ PanelWindow {
     property string snappedSide: ""
     property bool dragging: false
     readonly property real pillWidth: pillRow.implicitWidth + Theme.space16
-    readonly property real pillHeight: snappedSide.length > 0 ? 54 : 48
+    readonly property real pillHeight: pillRow.implicitHeight + Theme.space16
 
     function open() {
         freeClosing = false;
@@ -88,7 +89,7 @@ PanelWindow {
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
     exclusiveZone: 0
-    mask: Region { item: root.dragging ? dragPlane : pillSurface }
+    mask: Region { item: pillSurface }
     Behavior on displayX {
         enabled: !root.dragging
         SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.35 }
@@ -96,8 +97,6 @@ PanelWindow {
     WlrLayershell.namespace: "ayame-shell-capture-pill"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
-
-    Item { id: dragPlane; anchors.fill: parent; visible: false }
 
     ClippingRectangle {
         id: pillSurface
@@ -115,13 +114,16 @@ PanelWindow {
         opacity: root.freeClosing ? 0 : 1
         scale: root.freeClosing ? 0.84 : 1
         Behavior on height { SpringAnimation { spring: 3; damping: 0.38 } }
+        Behavior on width { SpringAnimation { spring: 3; damping: 0.38 } }
         Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
         Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeExit } }
 
-        RowLayout {
+        GridLayout {
             id: pillRow
             anchors.centerIn: parent
-            spacing: Theme.space4
+            columns: root.snappedSide.length > 0 ? 1 : 9
+            rowSpacing: Theme.space4
+            columnSpacing: Theme.space4
 
             Rectangle {
                 implicitWidth: 32; implicitHeight: 32
@@ -203,7 +205,10 @@ PanelWindow {
                     onClicked: {
                         if (RecordingService.recording)
                             RecordingService.stop();
-                        else
+                        else if (root.captureMode === "area") {
+                            root.suppressVisibility = true;
+                            root.areaRecordingRequested(root.audioMode, root.countdown);
+                        } else
                             RecordingService.start(root.captureMode, root.audioMode,
                                 root.screen.name, root.countdown);
                     }
@@ -249,6 +254,13 @@ PanelWindow {
                 StyledText { anchors.centerIn: parent; text: "×"; font.pixelSize: 16 }
                 MouseArea { id: closePointer; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.close() }
             }
+        }
+    }
+
+    onPillWidthChanged: {
+        if (snappedSide === "right" && !dragging) {
+            offsetX = Math.max(0, width - pillWidth);
+            displayX = offsetX;
         }
     }
 

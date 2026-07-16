@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import "../../components"
+import "../../services"
 import "../../theme"
 
 PanelWindow {
@@ -23,6 +24,8 @@ PanelWindow {
     property real selectionCurrentX: 0
     property real selectionCurrentY: 0
     property bool selectionDragging: false
+    property string selectionPurpose: "screenshot"
+    property string pendingRecordingAudio: "none"
     readonly property var bindings: [
         { keys: "SUPER", action: "Open launcher when released" },
         { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
@@ -88,9 +91,19 @@ PanelWindow {
             visible = false;
             capturePill.suppressVisibility = false;
             capturePill.open();
+            selectionPurpose = "screenshot";
             return;
         }
         const geometry = left + "," + top + " " + width + "x" + height;
+        if (selectionPurpose === "recording") {
+            selectionMode = false;
+            visible = false;
+            capturePill.suppressVisibility = false;
+            capturePill.open();
+            RecordingService.start("geometry", pendingRecordingAudio, geometry, 0);
+            selectionPurpose = "screenshot";
+            return;
+        }
         captureProcess.command = [
             Quickshell.shellDir + "/../../scripts/ayame-screenshot.sh",
             "geometry", "0", geometry
@@ -119,6 +132,7 @@ PanelWindow {
                 root.visible = false;
                 capturePill.suppressVisibility = false;
                 capturePill.open();
+                root.selectionPurpose = "screenshot";
             } else {
                 root.closePanel();
             }
@@ -434,6 +448,14 @@ PanelWindow {
         id: capturePill
         screen: root.screen
         onAreaScreenshotRequested: delay => {
+            root.selectionPurpose = "screenshot";
+            root.captureMode = "area";
+            root.captureDelay = delay;
+            root.capture();
+        }
+        onAreaRecordingRequested: (audio, delay) => {
+            root.selectionPurpose = "recording";
+            root.pendingRecordingAudio = audio;
             root.captureMode = "area";
             root.captureDelay = delay;
             root.capture();
