@@ -104,6 +104,13 @@ PanelWindow {
             tuckTimer.restart();
         }
     }
+    function revealFromWall() {
+        if (!docked || !tucked)
+            return;
+        tuckTimer.stop();
+        tucked = false;
+        displayX = snappedSide === "left" ? 0 : width - pillWidth;
+    }
     function beginDragAt(sceneX, sceneY) {
         dragStartSide = snappedSide;
         dragReleaseX = 0;
@@ -211,7 +218,9 @@ PanelWindow {
         MouseArea {
             id: surfaceDragArea
             anchors.fill: parent
+            hoverEnabled: true
             cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+            onEntered: root.revealFromWall()
             onPressed: mouse => {
                 const point = mapToGlobal(mouse.x, mouse.y);
                 root.beginDragAt(point.x, point.y);
