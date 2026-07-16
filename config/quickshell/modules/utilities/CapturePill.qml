@@ -28,6 +28,7 @@ PanelWindow {
     property real dragReleaseX: 0
     property real pointerStartX: 0
     property real pointerStartY: 0
+    property bool cursorPrimed: false
     property string dragStartSide: ""
     property string status: ""
     property string error: ""
@@ -87,7 +88,9 @@ PanelWindow {
         dragBaseY = offsetY;
         pointerStartX = sceneX;
         pointerStartY = sceneY;
+        cursorPrimed = false;
         dragging = true;
+        cursorPoll.restart();
     }
     function dragTo(sceneX, sceneY) {
         updateDrag(sceneX - pointerStartX, sceneY - pointerStartY);
@@ -128,6 +131,7 @@ PanelWindow {
             snapIfNearEdge();
         }
         dragging = false;
+        cursorPrimed = false;
     }
     function takeScreenshot() {
         if (screenshotProcess.running) return;
@@ -185,7 +189,7 @@ PanelWindow {
                 root.beginDragAt(point.x, point.y);
             }
             onPositionChanged: mouse => {
-                if (!pressed) return;
+                if (!pressed || root.cursorPrimed) return;
                 const point = mapToGlobal(mouse.x, mouse.y);
                 root.dragTo(point.x, point.y);
             }
@@ -217,7 +221,7 @@ PanelWindow {
                         root.beginDragAt(point.x, point.y);
                     }
                     onPositionChanged: mouse => {
-                        if (!pressed) return;
+                        if (!pressed || root.cursorPrimed) return;
                         const point = mapToGlobal(mouse.x, mouse.y);
                         root.dragTo(point.x, point.y);
                     }
@@ -332,6 +336,38 @@ PanelWindow {
         }
     }
 
+    Timer {
+        id: cursorPoll
+        interval: 24
+        repeat: true
+        running: root.dragging
+        onTriggered: {
+            if (!cursorPositionProcess.running)
+                cursorPositionProcess.running = true;
+        }
+    }
+    Process {
+        id: cursorPositionProcess
+        command: ["hyprctl", "cursorpos", "-j"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (!root.dragging)
+                    return;
+                try {
+                    const position = JSON.parse(text);
+                    if (!root.cursorPrimed) {
+                        root.pointerStartX = position.x;
+                        root.pointerStartY = position.y;
+                        root.cursorPrimed = true;
+                    } else {
+                        root.dragTo(position.x, position.y);
+                    }
+                } catch (e) {
+                    // Mouse events remain as a fallback on non-Hyprland compositors.
+                }
+            }
+        }
+    }
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + 30
