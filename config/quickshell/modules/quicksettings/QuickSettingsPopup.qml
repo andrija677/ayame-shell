@@ -170,7 +170,7 @@ PanelWindow {
             StyledText {
                 text: "Quick Settings"
                 font.pixelSize: Theme.fontTitle
-                font.weight: Theme.fontWeightLabel
+                font.weight: Theme.fontWeightTitle
             }
 
             Surface {
