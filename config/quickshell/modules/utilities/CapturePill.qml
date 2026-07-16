@@ -181,12 +181,12 @@ PanelWindow {
             anchors.fill: parent
             cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
             onPressed: mouse => {
-                const point = mapToItem(null, mouse.x, mouse.y);
+                const point = mapToGlobal(mouse.x, mouse.y);
                 root.beginDragAt(point.x, point.y);
             }
             onPositionChanged: mouse => {
                 if (!pressed) return;
-                const point = mapToItem(null, mouse.x, mouse.y);
+                const point = mapToGlobal(mouse.x, mouse.y);
                 root.dragTo(point.x, point.y);
             }
             onReleased: root.endDrag()
@@ -213,12 +213,12 @@ PanelWindow {
                     hoverEnabled: true
                     cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
                     onPressed: mouse => {
-                        const point = mapToItem(null, mouse.x, mouse.y);
+                        const point = mapToGlobal(mouse.x, mouse.y);
                         root.beginDragAt(point.x, point.y);
                     }
                     onPositionChanged: mouse => {
                         if (!pressed) return;
-                        const point = mapToItem(null, mouse.x, mouse.y);
+                        const point = mapToGlobal(mouse.x, mouse.y);
                         root.dragTo(point.x, point.y);
                     }
                     onReleased: root.endDrag()
