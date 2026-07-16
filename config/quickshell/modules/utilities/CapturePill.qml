@@ -29,6 +29,7 @@ PanelWindow {
     property real pointerStartX: 0
     property real pointerStartY: 0
     property bool cursorPrimed: false
+    property bool tucked: false
     property string dragStartSide: ""
     property string status: ""
     property string error: ""
@@ -45,6 +46,7 @@ PanelWindow {
         freeClosing = false;
         closing = false;
         opened = true;
+        tucked = false;
         displayX = offsetX;
     }
     function close() {
@@ -79,7 +81,28 @@ PanelWindow {
             offsetX = right;
             snappedSide = "right";
         }
+        tucked = false;
         displayX = offsetX;
+        if (snappedSide.length > 0)
+            tuckTimer.restart();
+    }
+    function updateDockPresence(globalX, globalY) {
+        if (!docked || dragging || closing)
+            return;
+        const localX = globalX - (screen ? screen.x : 0);
+        const localY = globalY - (screen ? screen.y : 0);
+        const nearEdge = snappedSide === "left" ? localX < 52 : localX > width - 52;
+        const nearPill = localY > pillSurface.y - 72
+            && localY < pillSurface.y + pillHeight + 72;
+        if (nearEdge && nearPill) {
+            tuckTimer.stop();
+            if (tucked) {
+                tucked = false;
+                displayX = snappedSide === "left" ? 0 : width - pillWidth;
+            }
+        } else if (!tucked && !tuckTimer.running) {
+            tuckTimer.restart();
+        }
     }
     function beginDragAt(sceneX, sceneY) {
         dragStartSide = snappedSide;
@@ -337,15 +360,26 @@ PanelWindow {
     onPillWidthChanged: {
         if (snappedSide === "right" && !dragging) {
             offsetX = Math.max(0, width - pillWidth);
-            displayX = offsetX;
+            displayX = tucked ? width - 10 : offsetX;
         }
     }
 
     Timer {
+        id: tuckTimer
+        interval: 2500
+        onTriggered: {
+            if (!root.docked || root.dragging)
+                return;
+            root.tucked = true;
+            root.displayX = root.snappedSide === "left"
+                ? -root.pillWidth + 10 : root.width - 10;
+        }
+    }
+    Timer {
         id: cursorPoll
-        interval: 8
+        interval: root.dragging ? 8 : 120
         repeat: true
-        running: root.dragging
+        running: root.dragging || (root.opened && root.docked)
         onTriggered: {
             if (!cursorPositionProcess.running)
                 cursorPositionProcess.running = true;
@@ -360,7 +394,9 @@ PanelWindow {
                     return;
                 try {
                     const position = JSON.parse(text);
-                    if (!root.cursorPrimed) {
+                    if (!root.dragging) {
+                        root.updateDockPresence(position.x, position.y);
+                    } else if (!root.cursorPrimed) {
                         root.pointerStartX = position.x;
                         root.pointerStartY = position.y;
                         root.cursorPrimed = true;
