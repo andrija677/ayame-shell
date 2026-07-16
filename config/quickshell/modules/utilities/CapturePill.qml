@@ -78,6 +78,53 @@ PanelWindow {
         }
         displayX = offsetX;
     }
+    function beginDrag() {
+        dragStartSide = snappedSide;
+        dragReleaseX = 0;
+        dragBaseX = Math.min(offsetX, Math.max(0, width - pillWidth));
+        dragBaseY = offsetY;
+        dragProxy.x = 0;
+        dragProxy.y = 0;
+        dragging = true;
+    }
+    function updateDrag(dx, dy) {
+        if (!dragging)
+            return;
+        if (dragStartSide.length > 0) {
+            const inward = dragStartSide === "left"
+                ? Math.max(0, dx) : Math.max(0, -dx);
+            if (inward < 72) {
+                const stretch = inward * 0.16;
+                displayX = dragStartSide === "left"
+                    ? stretch : width - pillWidth - stretch;
+                offsetY = Math.max(0, Math.min(height - pillHeight, dragBaseY + dy));
+                return;
+            }
+
+            const releasedSide = dragStartSide;
+            dragStartSide = "";
+            snappedSide = "";
+            dragReleaseX = dx;
+            dragBaseX = releasedSide === "left" ? 18
+                : Math.max(0, width - pillWidth - 18);
+        }
+        offsetX = Math.max(0, Math.min(width - pillWidth,
+            dragBaseX + dx - dragReleaseX));
+        offsetY = Math.max(0, Math.min(height - pillHeight, dragBaseY + dy));
+        displayX = offsetX;
+    }
+    function endDrag() {
+        if (dragStartSide.length > 0) {
+            offsetX = dragStartSide === "left" ? 0
+                : Math.max(0, width - pillWidth);
+            displayX = offsetX;
+            dragStartSide = "";
+        } else {
+            updateDrag(dragProxy.x, dragProxy.y);
+            snapIfNearEdge();
+        }
+        dragging = false;
+    }
     function takeScreenshot() {
         if (screenshotProcess.running) return;
         status = "Capturing…";
@@ -103,6 +150,16 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
+    // MouseArea's native drag engine keeps its grab across moving/clipped items
+    // more reliably than a pointer handler on layer-shell surfaces.
+    Item {
+        id: dragProxy
+        width: 1
+        height: 1
+        onXChanged: root.updateDrag(x, y)
+        onYChanged: root.updateDrag(x, y)
+    }
+
     ClippingRectangle {
         id: pillSurface
         x: root.displayX
@@ -125,8 +182,20 @@ PanelWindow {
         Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
         Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeExit } }
 
+        MouseArea {
+            id: surfaceDragArea
+            anchors.fill: parent
+            cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+            drag.target: dragProxy
+            drag.threshold: 3
+            onPressed: root.beginDrag()
+            onReleased: root.endDrag()
+            onCanceled: root.endDrag()
+        }
+
         GridLayout {
             id: pillRow
+            z: 1
             anchors.centerIn: parent
             columns: root.docked ? 1 : 9
             rowSpacing: root.docked ? Theme.space6 : Theme.space4
@@ -136,71 +205,18 @@ PanelWindow {
                 implicitWidth: root.docked ? 68 : 32
                 implicitHeight: 32
                 radius: Theme.radiusMedium
-                color: dragHandler.hovered ? Theme.surfaceContainerHigh : "transparent"
+                color: gripDragArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
                 StyledText { anchors.centerIn: parent; text: "⠿"; color: Theme.outline; font.pixelSize: 15 }
-                DragHandler {
-                    id: dragHandler
-                    target: null
-                    cursorShape: active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                    onActiveChanged: {
-                        if (active) {
-                            root.dragging = true;
-                            root.dragStartSide = root.snappedSide;
-                            root.dragReleaseX = 0;
-                            root.dragBaseX = Math.min(root.offsetX,
-                                Math.max(0, root.width - root.pillWidth));
-                            root.dragBaseY = root.offsetY;
-                        } else {
-                            if (root.dragStartSide.length > 0) {
-                                root.offsetX = root.dragStartSide === "left"
-                                    ? 0 : Math.max(0, root.width - root.pillWidth);
-                                root.displayX = root.offsetX;
-                                root.dragStartSide = "";
-                                root.dragging = false;
-                                return;
-                            }
-                            root.offsetX = Math.max(0, Math.min(
-                                root.width - root.pillWidth,
-                                root.dragBaseX + translation.x - root.dragReleaseX));
-                            root.offsetY = Math.max(0, Math.min(
-                                root.height - root.pillHeight,
-                                root.dragBaseY + translation.y));
-                            root.displayX = root.offsetX;
-                            root.dragging = false;
-                            root.snapIfNearEdge();
-                        }
-                    }
-                    onTranslationChanged: {
-                        if (!active) return;
-                        if (root.dragStartSide.length > 0) {
-                            const inward = root.dragStartSide === "left"
-                                ? Math.max(0, translation.x)
-                                : Math.max(0, -translation.x);
-                            if (inward < 72) {
-                                const stretch = inward * 0.16;
-                                root.displayX = root.dragStartSide === "left"
-                                    ? stretch : root.width - root.pillWidth - stretch;
-                                root.offsetY = Math.max(0, Math.min(
-                                    root.height - root.pillHeight,
-                                    root.dragBaseY + translation.y));
-                                return;
-                            }
-
-                            const releasedSide = root.dragStartSide;
-                            root.dragStartSide = "";
-                            root.snappedSide = "";
-                            root.dragReleaseX = translation.x;
-                            root.dragBaseX = releasedSide === "left" ? 18
-                                : Math.max(0, root.width - root.pillWidth - 18);
-                        }
-                        root.offsetX = Math.max(0, Math.min(
-                            root.width - root.pillWidth,
-                            root.dragBaseX + translation.x - root.dragReleaseX));
-                        root.offsetY = Math.max(0, Math.min(
-                            root.height - root.pillHeight,
-                            root.dragBaseY + translation.y));
-                        root.displayX = root.offsetX;
-                    }
+                MouseArea {
+                    id: gripDragArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                    drag.target: dragProxy
+                    drag.threshold: 2
+                    onPressed: root.beginDrag()
+                    onReleased: root.endDrag()
+                    onCanceled: root.endDrag()
                 }
             }
 
