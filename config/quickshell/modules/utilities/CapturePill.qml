@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Widgets
 import "../../components"
 import "../../services"
 import "../../theme"
@@ -19,8 +20,8 @@ PanelWindow {
     property int offsetX: 28
     property int offsetY: 110
     property real displayX: 0
-    property int offsetStartX: 0
-    property int offsetStartY: 0
+    property real pointerOffsetX: 0
+    property real pointerOffsetY: 0
     property string status: ""
     property string error: ""
     property bool suppressVisibility: false
@@ -28,9 +29,8 @@ PanelWindow {
     property bool freeClosing: false
     property string snappedSide: ""
     property bool dragging: false
-    property bool dragInitialized: false
-    property real cursorStartX: 0
-    property real cursorStartY: 0
+    readonly property real pillWidth: pillRow.implicitWidth + Theme.space16
+    readonly property real pillHeight: snappedSide.length > 0 ? 54 : 48
 
     function open() {
         freeClosing = false;
@@ -43,9 +43,9 @@ PanelWindow {
             return;
         closing = true;
         if (snappedSide === "left")
-            displayX = 0;
+            displayX = -pillWidth - 4;
         else if (snappedSide === "right")
-            displayX = Math.max(0, screen.width - width);
+            displayX = width + 4;
         else
             freeClosing = true;
         closeTimer.restart();
@@ -62,12 +62,12 @@ PanelWindow {
         countdown = countdown === 0 ? 3 : countdown === 3 ? 5 : 0;
     }
     function snapIfNearEdge() {
-        const right = Math.max(0, screen.width - width);
+        const right = Math.max(0, width - pillWidth);
         if (offsetX < 110) {
-            offsetX = 16;
+            offsetX = 0;
             snappedSide = "left";
         } else if (right - offsetX < 110) {
-            offsetX = Math.max(16, right - 16);
+            offsetX = right;
             snappedSide = "right";
         }
         displayX = offsetX;
@@ -85,28 +85,36 @@ PanelWindow {
     }
 
     visible: (opened || RecordingService.recording || closing) && !suppressVisibility
-    implicitWidth: pillRow.implicitWidth + Theme.space16
-    implicitHeight: 48
+    anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
     exclusiveZone: 0
-    anchors { top: true; left: true }
-    margins { left: displayX; top: offsetY }
+    mask: Region { item: root.dragging ? dragPlane : pillSurface }
     Behavior on displayX {
-        NumberAnimation { duration: Theme.motionSlow; easing.type: Theme.easeEnter }
+        enabled: !root.dragging
+        SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.35 }
     }
     WlrLayershell.namespace: "ayame-shell-capture-pill"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
 
-    Surface {
+    Item { id: dragPlane; anchors.fill: parent; visible: false }
+
+    ClippingRectangle {
         id: pillSurface
-        anchors.fill: parent
-        radius: Theme.radiusPill
+        x: root.displayX
+        y: root.offsetY - (height - 48) / 2
+        width: root.pillWidth
+        height: root.pillHeight
+        topLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusPill
+        bottomLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusPill
+        topRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusPill
+        bottomRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusPill
         color: Theme.surface
         border.width: RecordingService.recording ? 2 : 1
         border.color: RecordingService.recording ? Theme.error : Theme.outlineVariant
         opacity: root.freeClosing ? 0 : 1
         scale: root.freeClosing ? 0.84 : 1
+        Behavior on height { SpringAnimation { spring: 3; damping: 0.38 } }
         Behavior on opacity { NumberAnimation { duration: Theme.motionNormal } }
         Behavior on scale { NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeExit } }
 
@@ -127,15 +135,22 @@ PanelWindow {
                     cursorShape: Qt.SizeAllCursor
                     onPressed: mouse => {
                         root.snappedSide = "";
-                        root.offsetStartX = root.offsetX;
-                        root.offsetStartY = root.offsetY;
-                        root.dragInitialized = false;
                         root.dragging = true;
-                        cursorTracker.running = true;
+                        const point = dragArea.mapToItem(root, mouse.x, mouse.y);
+                        root.pointerOffsetX = point.x - root.offsetX;
+                        root.pointerOffsetY = point.y - root.offsetY;
+                    }
+                    onPositionChanged: mouse => {
+                        if (!pressed) return;
+                        const point = dragArea.mapToItem(root, mouse.x, mouse.y);
+                        root.offsetX = Math.max(0, Math.min(root.width - root.pillWidth,
+                            point.x - root.pointerOffsetX));
+                        root.offsetY = Math.max(0, Math.min(root.height - root.pillHeight,
+                            point.y - root.pointerOffsetY));
+                        root.displayX = root.offsetX;
                     }
                     onReleased: {
                         root.dragging = false;
-                        root.dragInitialized = false;
                         root.snapIfNearEdge();
                     }
                 }
@@ -217,6 +232,16 @@ PanelWindow {
                 font.weight: Theme.fontWeightTitle
             }
 
+            StyledText {
+                visible: RecordingService.error.length > 0
+                Layout.maximumWidth: 180
+                text: RecordingService.error
+                color: Theme.error
+                font.pixelSize: 9
+                font.weight: Theme.fontWeightLabel
+                elide: Text.ElideRight
+            }
+
             Rectangle {
                 visible: !RecordingService.recording
                 implicitWidth: 30; implicitHeight: 30; radius: Theme.radiusPill
@@ -227,38 +252,6 @@ PanelWindow {
         }
     }
 
-    Timer {
-        interval: 32
-        repeat: true
-        running: root.dragging
-        onTriggered: {
-            if (!cursorTracker.running)
-                cursorTracker.running = true;
-        }
-    }
-    Process {
-        id: cursorTracker
-        command: ["hyprctl", "cursorpos"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const match = text.match(/(-?\d+)\s*,\s*(-?\d+)/);
-                if (!match || !root.dragging) return;
-                const cursorX = Number(match[1]) - (root.screen?.x ?? 0);
-                const cursorY = Number(match[2]) - (root.screen?.y ?? 0);
-                if (!root.dragInitialized) {
-                    root.cursorStartX = cursorX;
-                    root.cursorStartY = cursorY;
-                    root.dragInitialized = true;
-                    return;
-                }
-                root.offsetX = Math.max(0, Math.min(root.screen.width - root.width,
-                    root.offsetStartX + cursorX - root.cursorStartX));
-                root.offsetY = Math.max(0, Math.min(root.screen.height - root.height,
-                    root.offsetStartY + cursorY - root.cursorStartY));
-                root.displayX = root.offsetX;
-            }
-        }
-    }
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + 30

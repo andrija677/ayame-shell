@@ -19,7 +19,8 @@ read_state() {
 }
 
 is_recording() {
-    read_state && kill -0 "$recorder_pid" 2>/dev/null
+    read_state && kill -0 "$recorder_pid" 2>/dev/null \
+        && [[ "$(awk '{print $3}' "/proc/$recorder_pid/stat" 2>/dev/null || true)" != Z ]]
 }
 
 stop_recording() {
@@ -44,8 +45,13 @@ case "$action" in
         if is_recording; then
             printf 'recording|%s|%s\n' "$output" "$started"
         else
+            if [[ -f "$state_file" && -s "$log_file" ]]; then
+                failure=$(tail -n 1 "$log_file" | tr '|' '/')
+                printf 'failed|%s|\n' "$failure"
+            else
+                echo "idle||"
+            fi
             rm -f "$state_file"
-            echo "idle||"
         fi
         ;;
     stop)
@@ -73,6 +79,10 @@ case "$action" in
             sleep "$delay"
         fi
         args=(-f "$output" -r 60 -c libx264 -p preset=veryfast -p crf=20 -y)
+        if command -v systemd-detect-virt >/dev/null 2>&1 \
+                && [[ "$(systemd-detect-virt 2>/dev/null || true)" != none ]]; then
+            args+=(--no-dmabuf)
+        fi
         case "$mode" in
             desktop) ;;
             monitor)
@@ -105,7 +115,7 @@ case "$action" in
         recorder_pid=$!
         started=$(date +%s)
         printf '%s|%s|%s\n' "$recorder_pid" "$output" "$started" > "$state_file"
-        sleep 0.4
+        sleep 1
         if ! kill -0 "$recorder_pid" 2>/dev/null; then
             rm -f "$state_file"
             tail -n 3 "$log_file" >&2

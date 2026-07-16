@@ -50,6 +50,8 @@ QtObject {
                 root.recording = parts[0] === "recording";
                 root.outputPath = parts[1] ?? "";
                 root.startedAt = Number(parts[2] ?? 0);
+                if (parts[0] === "failed")
+                    root.error = parts[1] || "Screen recording failed";
                 root.elapsedSeconds = root.recording && root.startedAt > 0
                     ? Math.max(0, Math.floor(Date.now() / 1000 - root.startedAt)) : 0;
             }

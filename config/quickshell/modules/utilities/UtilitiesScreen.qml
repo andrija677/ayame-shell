@@ -384,14 +384,23 @@ PanelWindow {
             border.width: 4
         }
 
-        StyledText {
+        Rectangle {
             anchors { top: parent.top; horizontalCenter: parent.horizontalCenter; topMargin: Theme.space24 }
-            text: root.selectionDragging
-                ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
-                    + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
-                : "Drag to select an area • Esc to cancel"
-            color: Theme.foregroundPrimary
-            font.weight: Theme.fontWeightLabel
+            implicitWidth: selectionHint.implicitWidth + Theme.space24
+            implicitHeight: 34
+            radius: Theme.radiusPill
+            color: Theme.primary
+
+            StyledText {
+                id: selectionHint
+                anchors.centerIn: parent
+                text: root.selectionDragging
+                    ? Math.round(Math.abs(root.selectionCurrentX - root.selectionStartX))
+                        + " × " + Math.round(Math.abs(root.selectionCurrentY - root.selectionStartY))
+                    : "Drag to select an area • Esc to cancel"
+                color: Theme.foregroundPrimary
+                font.weight: Theme.fontWeightLabel
+            }
         }
 
         MouseArea {
