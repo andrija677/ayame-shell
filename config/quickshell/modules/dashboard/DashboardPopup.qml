@@ -15,6 +15,11 @@ PanelWindow {
 
     MotionProgress { id: motion; open: root.panelOpen }
 
+    SystemClock {
+        id: dashboardClock
+        precision: SystemClock.Minutes
+    }
+
     function toggle() {
         if (panelOpen)
             closePanel();
@@ -106,9 +111,12 @@ PanelWindow {
             spacing: Theme.space8
 
             StyledText {
-                text: Qt.formatDateTime(new Date(), "dddd, d MMMM")
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+                text: Qt.formatDateTime(dashboardClock.date, "dddd, d MMMM")
+                horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Theme.fontTitle
-                font.weight: Theme.fontWeightLabel
+                font.weight: Theme.fontWeightTitle
             }
 
             MediaCard { Layout.fillWidth: true }
