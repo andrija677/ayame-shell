@@ -149,7 +149,7 @@ PanelWindow {
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
     exclusiveZone: 0
-    mask: Region { item: pillSurface }
+    mask: Region { item: root.dragging ? dragInputSurface : pillSurface }
     Behavior on displayX {
         enabled: !root.dragging
         SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.35 }
@@ -157,6 +157,11 @@ PanelWindow {
     WlrLayershell.namespace: "ayame-shell-capture-pill"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrLayershell.None
+
+    Item {
+        id: dragInputSurface
+        anchors.fill: parent
+    }
 
     ClippingRectangle {
         id: pillSurface
@@ -338,7 +343,7 @@ PanelWindow {
 
     Timer {
         id: cursorPoll
-        interval: 24
+        interval: 8
         repeat: true
         running: root.dragging
         onTriggered: {
