@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import "../settings"
 import "../theme"
 
 Surface {
@@ -39,7 +40,8 @@ Surface {
     StyledText {
         id: timeText
         anchors.centerIn: parent
-        text: Qt.formatDateTime(clock.date, "HH:mm")
+        text: Qt.formatDateTime(clock.date,
+            ShellConfig.clockFormat === "12h" ? "h:mm AP" : "HH:mm")
         font.family: Theme.fontFamilyNumeric
         color: Theme.foregroundSurface
         opacity: root.expanded ? 0 : 1
@@ -56,7 +58,8 @@ Surface {
     StyledText {
         id: dateText
         anchors.centerIn: parent
-        text: Qt.formatDateTime(clock.date, "ddd, d MMM  •  HH:mm")
+        text: Qt.formatDateTime(clock.date, "ddd, d MMM  •  "
+            + (ShellConfig.clockFormat === "12h" ? "h:mm AP" : "HH:mm"))
         color: Theme.foregroundPrimaryContainer
         opacity: root.expanded ? 1 : 0
         y: root.expanded ? 0 : -Theme.space4

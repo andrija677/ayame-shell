@@ -333,6 +333,43 @@ PanelWindow {
                 font.weight: Theme.fontWeightTitle
             }
 
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 54
+                color: Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    StyledText { text: "Clock format"; Layout.fillWidth: true }
+                    Repeater {
+                        model: [
+                            { label: "24-hour", value: "24h" },
+                            { label: "12-hour AM/PM", value: "12h" }
+                        ]
+                        Rectangle {
+                            required property var modelData
+                            implicitWidth: modelData.value === "12h" ? 106 : 70
+                            implicitHeight: 28
+                            radius: Theme.radiusPill
+                            color: ShellConfig.clockFormat === modelData.value
+                                ? Theme.primary : Theme.outlineVariant
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: parent.modelData.label
+                                color: ShellConfig.clockFormat === parent.modelData.value
+                                    ? Theme.foregroundPrimary : Theme.foregroundSurfaceVariant
+                                font.pixelSize: 9
+                                font.weight: Theme.fontWeightTitle
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: ShellConfig.clockFormat = parent.modelData.value
+                            }
+                        }
+                    }
+                }
+            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: Theme.space8

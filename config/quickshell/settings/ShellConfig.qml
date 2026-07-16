@@ -18,6 +18,7 @@ QtObject {
     property alias workspacesEnabled: values.workspacesEnabled
     property alias activeWindowEnabled: values.activeWindowEnabled
     property alias clockEnabled: values.clockEnabled
+    property alias clockFormat: values.clockFormat
     property alias dashboardEnabled: values.dashboardEnabled
     property alias quickSettingsEnabled: values.quickSettingsEnabled
     property alias audioEnabled: values.audioEnabled
@@ -104,6 +105,7 @@ QtObject {
         values.workspacesEnabled = true;
         values.activeWindowEnabled = true;
         values.clockEnabled = true;
+        values.clockFormat = "24h";
         values.dashboardEnabled = true;
         values.quickSettingsEnabled = true;
         values.audioEnabled = true;
@@ -160,6 +162,7 @@ QtObject {
             property bool workspacesEnabled: true
             property bool activeWindowEnabled: true
             property bool clockEnabled: true
+            property string clockFormat: "24h"
             property bool dashboardEnabled: true
             property bool quickSettingsEnabled: true
             property bool audioEnabled: true
