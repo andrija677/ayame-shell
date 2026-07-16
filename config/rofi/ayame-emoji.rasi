@@ -6,12 +6,12 @@
     ayame-outline: @OUTLINE@;
     ayame-primary: @PRIMARY@;
     ayame-on-primary: @ON_PRIMARY@;
-    font: "JetBrainsMono Nerd Font 11";
+    font: "Adwaita Sans 11.5";
 }
 
 window {
     width: 620px;
-    border: 2px;
+    border: 1px;
     border-color: @ayame-primary;
     border-radius: 26px;
     padding: 18px;
@@ -33,10 +33,13 @@ inputbar {
 }
 
 prompt {
+    background-color: transparent;
     text-color: @ayame-primary;
+    font: "Adwaita Sans Bold 11.5";
 }
 
 entry {
+    background-color: transparent;
     placeholder: "Search emoji…";
     placeholder-color: @ayame-outline;
     text-color: @ayame-fg;
@@ -80,4 +83,3 @@ scrollbar {
     handle-color: @ayame-primary;
     background-color: @ayame-surface-high;
 }
-
