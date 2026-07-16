@@ -210,7 +210,14 @@ PanelWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: ShellConfig.colorScheme = parent.modelData.value
+                                onClicked: {
+                                    ShellConfig.colorScheme = parent.modelData.value;
+                                    // Apply this explicitly from the user action as well as
+                                    // through the singleton listener. This keeps external KDE,
+                                    // Qt and GTK apps in sync even after a live shell update.
+                                    AppearanceService.applyColorScheme();
+                                    DynamicPalette.syncKitty();
+                                }
                             }
                         }
                     }
