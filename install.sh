@@ -207,7 +207,13 @@ chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
 
 if [[ "$enable_kitty" == true ]]; then
     install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
-    install -m 0644 "$prefix/config/kitty/ayame-colors.conf" "$kitty_dir/ayame-colors.conf"
+    # This file is generated live from Ayame's current light/dark wallpaper
+    # palette. Preserve it during updates instead of flashing back to the
+    # repository's default dark colors; create the default only once.
+    if [[ ! -f "$kitty_dir/ayame-colors.conf" ]]; then
+        install -m 0644 "$prefix/config/kitty/ayame-colors.conf" \
+            "$kitty_dir/ayame-colors.conf"
+    fi
     if ! grep -Fq "include $kitty_fragment" "$kitty_main" 2>/dev/null; then
         if [[ -f "$kitty_main" ]]; then
             cp -a "$kitty_main" "$kitty_main.ayame-backup-$timestamp"
