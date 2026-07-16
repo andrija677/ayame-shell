@@ -14,8 +14,10 @@ Rectangle {
         : volumePercent < 34 ? "󰕿"
         : volumePercent < 67 ? "󰖀" : "󰕾"
     property bool feedbackVisible: false
+    property real feedbackProgress: feedbackVisible ? 1 : 0
 
-    implicitWidth: feedbackVisible ? 96 : Theme.itemHeight
+    implicitWidth: Theme.itemHeight
+        + (96 - Theme.itemHeight) * feedbackProgress
     implicitHeight: Theme.itemHeight
     radius: Theme.radiusPill
     color: pointer.containsMouse || feedbackVisible
@@ -30,10 +32,10 @@ Rectangle {
         ColorAnimation { duration: Theme.motionFast }
     }
 
-    Behavior on implicitWidth {
+    Behavior on feedbackProgress {
         NumberAnimation {
-            duration: Theme.motionNormal
-            easing.type: root.feedbackVisible ? Theme.easeEnter : Theme.easeExit
+            duration: Theme.motionSlow
+            easing.type: Easing.InOutCubic
         }
     }
 
@@ -61,21 +63,10 @@ Rectangle {
         }
 
         Item {
-            Layout.preferredWidth: root.feedbackVisible ? 48 : 0
+            Layout.preferredWidth: 48 * root.feedbackProgress
             implicitHeight: root.implicitHeight
             clip: true
-            opacity: root.feedbackVisible ? 1 : 0
-
-            Behavior on Layout.preferredWidth {
-                NumberAnimation {
-                    duration: Theme.motionNormal
-                    easing.type: root.feedbackVisible
-                        ? Theme.easeEnter : Theme.easeExit
-                }
-            }
-            Behavior on opacity {
-                NumberAnimation { duration: Theme.motionFast }
-            }
+            opacity: root.feedbackProgress
 
             StyledText {
                 anchors.centerIn: parent
