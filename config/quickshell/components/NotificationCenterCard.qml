@@ -9,7 +9,7 @@ Surface {
 
     readonly property var recentNotifications: {
         NotificationService.count;
-        const items = NotificationService.notifications?.values ?? [];
+        const items = NotificationService.displayNotifications;
         return items.slice(Math.max(0, items.length - 3)).reverse();
     }
 

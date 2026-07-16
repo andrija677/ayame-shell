@@ -9,11 +9,22 @@ Surface {
 
     required property var notification
     signal dismissed()
-    readonly property var notificationData: notification || ({
+    readonly property var notificationData: notification?.payload ?? notification ?? ({
         appIcon: "", desktopEntry: "", summary: "", appName: "",
         body: "", actions: []
     })
     readonly property var safeActions: notificationData.actions || []
+
+    function dismissNotification() {
+        if (notification?.dismiss) {
+            notification.dismiss();
+        } else {
+            notificationData?.dismiss?.();
+            if (notificationData)
+                notificationData.tracked = false;
+        }
+        dismissed();
+    }
     readonly property string resolvedIcon: {
         const icon = notificationData.appIcon || "";
         if (icon.startsWith("/"))
@@ -82,12 +93,7 @@ Surface {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        root.notification?.dismiss();
-                        if (root.notification)
-                            root.notification.tracked = false;
-                        root.dismissed();
-                    }
+                    onClicked: root.dismissNotification()
                 }
             }
         }
@@ -134,10 +140,7 @@ Surface {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             parent.modelData.invoke();
-                            root.notification?.dismiss();
-                            if (root.notification)
-                                root.notification.tracked = false;
-                            root.dismissed();
+                            root.dismissNotification();
                         }
                     }
                 }
