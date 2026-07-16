@@ -23,6 +23,10 @@ PanelWindow {
     property real displayX: 0
     property real pointerOffsetX: 0
     property real pointerOffsetY: 0
+    property real dragBaseX: 0
+    property real dragBaseY: 0
+    property real dragReleaseX: 0
+    property string dragStartSide: ""
     property string status: ""
     property string error: ""
     property bool suppressVisibility: false
@@ -32,6 +36,7 @@ PanelWindow {
     property bool dragging: false
     readonly property real pillWidth: pillRow.implicitWidth + Theme.space16
     readonly property real pillHeight: pillRow.implicitHeight + Theme.space16
+    readonly property bool docked: snappedSide.length > 0
 
     function open() {
         freeClosing = false;
@@ -101,13 +106,15 @@ PanelWindow {
     ClippingRectangle {
         id: pillSurface
         x: root.displayX
-        y: root.offsetY - (height - 48) / 2
+        y: Math.max(root.docked ? Theme.barHeight + Theme.outerMargin + Theme.space8 : 0,
+            Math.min(root.height - height,
+                root.offsetY - (height - 48) / 2))
         width: root.pillWidth
         height: root.pillHeight
-        topLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusPill
-        bottomLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusPill
-        topRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusPill
-        bottomRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusPill
+        topLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusLarge
+        bottomLeftRadius: root.snappedSide === "left" ? 0 : Theme.radiusLarge
+        topRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusLarge
+        bottomRightRadius: root.snappedSide === "right" ? 0 : Theme.radiusLarge
         color: Theme.surface
         border.width: RecordingService.recording ? 2 : 1
         border.color: RecordingService.recording ? Theme.error : Theme.outlineVariant
@@ -121,46 +128,85 @@ PanelWindow {
         GridLayout {
             id: pillRow
             anchors.centerIn: parent
-            columns: root.snappedSide.length > 0 ? 1 : 9
-            rowSpacing: Theme.space4
+            columns: root.docked ? 1 : 9
+            rowSpacing: root.docked ? Theme.space6 : Theme.space4
             columnSpacing: Theme.space4
 
             Rectangle {
-                implicitWidth: 32; implicitHeight: 32
-                radius: Theme.radiusPill
-                color: dragArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                implicitWidth: root.docked ? 68 : 32
+                implicitHeight: 32
+                radius: Theme.radiusMedium
+                color: dragHandler.hovered ? Theme.surfaceContainerHigh : "transparent"
                 StyledText { anchors.centerIn: parent; text: "⠿"; color: Theme.outline; font.pixelSize: 15 }
-                MouseArea {
-                    id: dragArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.SizeAllCursor
-                    onPressed: mouse => {
-                        root.snappedSide = "";
-                        root.dragging = true;
-                        const point = dragArea.mapToItem(root, mouse.x, mouse.y);
-                        root.pointerOffsetX = point.x - root.offsetX;
-                        root.pointerOffsetY = point.y - root.offsetY;
+                DragHandler {
+                    id: dragHandler
+                    target: null
+                    cursorShape: active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                    onActiveChanged: {
+                        if (active) {
+                            root.dragging = true;
+                            root.dragStartSide = root.snappedSide;
+                            root.dragReleaseX = 0;
+                            root.dragBaseX = Math.min(root.offsetX,
+                                Math.max(0, root.width - root.pillWidth));
+                            root.dragBaseY = root.offsetY;
+                        } else {
+                            if (root.dragStartSide.length > 0) {
+                                root.offsetX = root.dragStartSide === "left"
+                                    ? 0 : Math.max(0, root.width - root.pillWidth);
+                                root.displayX = root.offsetX;
+                                root.dragStartSide = "";
+                                root.dragging = false;
+                                return;
+                            }
+                            root.offsetX = Math.max(0, Math.min(
+                                root.width - root.pillWidth,
+                                root.dragBaseX + translation.x - root.dragReleaseX));
+                            root.offsetY = Math.max(0, Math.min(
+                                root.height - root.pillHeight,
+                                root.dragBaseY + translation.y));
+                            root.displayX = root.offsetX;
+                            root.dragging = false;
+                            root.snapIfNearEdge();
+                        }
                     }
-                    onPositionChanged: mouse => {
-                        if (!pressed) return;
-                        const point = dragArea.mapToItem(root, mouse.x, mouse.y);
-                        root.offsetX = Math.max(0, Math.min(root.width - root.pillWidth,
-                            point.x - root.pointerOffsetX));
-                        root.offsetY = Math.max(0, Math.min(root.height - root.pillHeight,
-                            point.y - root.pointerOffsetY));
+                    onTranslationChanged: {
+                        if (!active) return;
+                        if (root.dragStartSide.length > 0) {
+                            const inward = root.dragStartSide === "left"
+                                ? Math.max(0, translation.x)
+                                : Math.max(0, -translation.x);
+                            if (inward < 72) {
+                                const stretch = inward * 0.16;
+                                root.displayX = root.dragStartSide === "left"
+                                    ? stretch : root.width - root.pillWidth - stretch;
+                                root.offsetY = Math.max(0, Math.min(
+                                    root.height - root.pillHeight,
+                                    root.dragBaseY + translation.y));
+                                return;
+                            }
+
+                            const releasedSide = root.dragStartSide;
+                            root.dragStartSide = "";
+                            root.snappedSide = "";
+                            root.dragReleaseX = translation.x;
+                            root.dragBaseX = releasedSide === "left" ? 18
+                                : Math.max(0, root.width - root.pillWidth - 18);
+                        }
+                        root.offsetX = Math.max(0, Math.min(
+                            root.width - root.pillWidth,
+                            root.dragBaseX + translation.x - root.dragReleaseX));
+                        root.offsetY = Math.max(0, Math.min(
+                            root.height - root.pillHeight,
+                            root.dragBaseY + translation.y));
                         root.displayX = root.offsetX;
-                    }
-                    onReleased: {
-                        root.dragging = false;
-                        root.snapIfNearEdge();
                     }
                 }
             }
 
             Rectangle {
-                implicitWidth: modeLabel.implicitWidth + Theme.space16
-                implicitHeight: 32; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : modeLabel.implicitWidth + Theme.space16
+                implicitHeight: 34; radius: Theme.radiusMedium
                 color: modePointer.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                 StyledText {
                     id: modeLabel; anchors.centerIn: parent
@@ -172,8 +218,8 @@ PanelWindow {
             }
 
             Rectangle {
-                implicitWidth: delayLabel.implicitWidth + Theme.space16
-                implicitHeight: 32; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : delayLabel.implicitWidth + Theme.space16
+                implicitHeight: 34; radius: Theme.radiusMedium
                 color: delayPointer.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                 StyledText {
                     id: delayLabel; anchors.centerIn: parent
@@ -184,14 +230,14 @@ PanelWindow {
             }
 
             Rectangle {
-                implicitWidth: 36; implicitHeight: 32; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : 36; implicitHeight: 34; radius: Theme.radiusMedium
                 color: shotPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                 StyledText { anchors.centerIn: parent; text: "󰄀"; font.family: Theme.fontFamilyNumeric; font.pixelSize: 15 }
                 MouseArea { id: shotPointer; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.takeScreenshot() }
             }
 
             Rectangle {
-                implicitWidth: 36; implicitHeight: 32; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : 36; implicitHeight: 34; radius: Theme.radiusMedium
                 color: RecordingService.recording ? Theme.error
                     : recordPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                 StyledText {
@@ -216,8 +262,8 @@ PanelWindow {
             }
 
             Rectangle {
-                implicitWidth: audioLabel.implicitWidth + Theme.space16
-                implicitHeight: 32; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : audioLabel.implicitWidth + Theme.space16
+                implicitHeight: 34; radius: Theme.radiusMedium
                 color: audioPointer.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                 StyledText {
                     id: audioLabel; anchors.centerIn: parent
@@ -249,7 +295,7 @@ PanelWindow {
 
             Rectangle {
                 visible: !RecordingService.recording
-                implicitWidth: 30; implicitHeight: 30; radius: Theme.radiusPill
+                implicitWidth: root.docked ? 68 : 30; implicitHeight: 30; radius: Theme.radiusMedium
                 color: closePointer.containsMouse ? Theme.surfaceContainerHigh : "transparent"
                 StyledText { anchors.centerIn: parent; text: "×"; font.pixelSize: 16 }
                 MouseArea { id: closePointer; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.close() }
