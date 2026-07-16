@@ -14,7 +14,9 @@ QtObject {
     readonly property int count: notifications?.values?.length ?? 0
 
     function clearAll() {
-        const items = notifications?.values ?? [];
+        // trackedNotifications is a live model. Dismissing an item mutates its
+        // values array immediately, so iterate over a stable snapshot.
+        const items = (notifications?.values ?? []).slice();
         for (let i = items.length - 1; i >= 0; --i) {
             items[i].dismiss();
             items[i].tracked = false;

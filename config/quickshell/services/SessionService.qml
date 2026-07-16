@@ -12,9 +12,9 @@ QtObject {
     property bool networkingEnabled: true
     property bool networkingBusy: false
     readonly property string gameModeMarker: Quickshell.env("HOME")
-        + "/.config/ml4w/settings/gamemode-enabled"
-    readonly property string gameModeScript: Quickshell.env("HOME")
-        + "/.config/hypr/scripts/gamemode.sh"
+        + "/.local/state/ayame-shell/gaming-mode"
+    readonly property string gameModeScript:
+        Quickshell.shellDir + "/../../scripts/ayame-gaming-mode.sh"
 
     function refreshGameMode() {
         if (statusProcess.running) return;
@@ -44,7 +44,7 @@ QtObject {
 
     property Process statusProcess: Process {
         id: statusProcess
-        command: ["sh", "-c", "test -f \"$HOME/.config/ml4w/settings/gamemode-enabled\" && echo 1 || echo 0"]
+        command: [gameModeScript, "status"]
         stdout: StdioCollector {
             onStreamFinished: root.gameMode = text.trim() === "1"
         }

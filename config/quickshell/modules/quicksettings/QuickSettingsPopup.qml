@@ -308,7 +308,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     title: "Gaming mode"
                     subtitle: SessionService.gameModeBusy ? "Switching…"
-                        : checked ? "Performance session" : "Normal desktop"
+                        : checked ? "Effects reduced" : "Normal desktop"
                     checked: SessionService.gameMode
                     interactive: !SessionService.gameModeBusy
                     onActivated: SessionService.toggleGameMode()

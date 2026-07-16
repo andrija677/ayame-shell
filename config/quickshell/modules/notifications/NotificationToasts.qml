@@ -38,7 +38,10 @@ PanelWindow {
     }
 
     anchors { top: true; right: true }
-    margins { top: Theme.barHeight + Theme.outerMargin * 2; right: Theme.outerMargin }
+    margins {
+        top: Theme.barHeight + Theme.outerMargin + Theme.space4
+        right: Theme.outerMargin
+    }
     implicitWidth: 380
     implicitHeight: toastItem.implicitHeight
     exclusiveZone: 0

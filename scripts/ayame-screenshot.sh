@@ -7,6 +7,8 @@ monitor="${3:-}"
 directory="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
 mkdir -p "$directory"
 output="$directory/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+screenshot_icon="$script_dir/../assets/icons/screenshot.svg"
 
 if [[ "$delay" =~ ^[0-9]+$ ]] && (( delay > 0 )); then
     sleep "$delay"
@@ -62,6 +64,7 @@ esac
 
 wl-copy --type image/png < "$output" 2>/dev/null || true
 if command -v notify-send >/dev/null; then
-    notify-send "Screenshot saved" "$output" 2>/dev/null || true
+    notify-send -a "Ayame Screenshot" -i "$screenshot_icon" \
+        "Screenshot saved" "$output" 2>/dev/null || true
 fi
 printf '%s\n' "$output"

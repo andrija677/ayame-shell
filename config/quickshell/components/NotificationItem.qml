@@ -13,6 +13,18 @@ Surface {
         appIcon: "", desktopEntry: "", summary: "", appName: "",
         body: "", actions: []
     })
+    readonly property var safeActions: notificationData.actions || []
+    readonly property string resolvedIcon: {
+        const icon = notificationData.appIcon || "";
+        if (icon.startsWith("/"))
+            return "file://" + icon;
+        if (icon.startsWith("file:"))
+            return icon;
+        if (icon.length > 0)
+            return Quickshell.iconPath(icon, true);
+        return Quickshell.iconPath(
+            notificationData.desktopEntry || "dialog-information", true);
+    }
 
     implicitHeight: notificationContent.implicitHeight + Theme.space24
     radius: Theme.radiusLarge
@@ -29,10 +41,7 @@ Surface {
 
             IconImage {
                 implicitSize: 24
-                source: root.notificationData.appIcon.length > 0
-                    ? root.notificationData.appIcon
-                    : Quickshell.iconPath(
-                        root.notificationData.desktopEntry || "dialog-information")
+                source: root.resolvedIcon
                 asynchronous: true
                 mipmap: true
             }
@@ -96,11 +105,11 @@ Surface {
 
         RowLayout {
             Layout.fillWidth: true
-            visible: root.notificationData.actions.length > 0
+            visible: root.safeActions.length > 0
             spacing: Theme.space6
 
             Repeater {
-                model: root.notificationData.actions
+                model: root.safeActions
 
                 Rectangle {
                     required property var modelData
