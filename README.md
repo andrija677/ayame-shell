@@ -26,6 +26,14 @@ compositor-safe IPC toggle for an optional keyboard binding.
 Fresh installations start with Ayame's bundled CC0 anime wallpaper; existing
 wallpaper choices are preserved. Press `Super + .` to open the emoji picker,
 then paste the copied emoji normally.
+
+The Screenshot action in Quick Settings opens a movable capture pill that
+slides in from the left. It supports desktop, monitor, and area screenshots;
+instant, three-second, and five-second countdowns; and screen recording with
+silent, system-audio, or microphone modes. Drag it freely or near an edge to
+snap it left or right. While recording, the pill shows elapsed time and remains
+available as the stop control. Recordings are saved under `Videos/Recordings`.
+`Super + Shift + R` is an emergency desktop record/stop toggle.
 Prefix launcher input with `/` to run a shell command; the prefix is a launcher
 cue and is not passed to the command. Desktop-entry metadata keeps graphical apps
 such as Firefox direct, while terminal programs such as `btop` open in Kitty.

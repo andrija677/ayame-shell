@@ -36,8 +36,14 @@ PanelWindow {
         { keys: "SUPER + Q", action: "Close the active window" },
         { keys: "PRINT", action: "Capture the full desktop" },
         { keys: "SHIFT + PRINT", action: "Select an area to capture" },
-        { keys: "SUPER + PRINT", action: "Capture the active monitor" }
+        { keys: "SUPER + PRINT", action: "Capture the active monitor" },
+        { keys: "SUPER + SHIFT + R", action: "Start or stop screen recording" }
     ]
+
+    function openCapturePill() {
+        closePanel();
+        capturePill.open();
+    }
 
     function openPage(targetPage) {
         closeTimer.stop();
@@ -406,5 +412,10 @@ PanelWindow {
                 root.finishSelection();
             }
         }
+    }
+
+    CapturePill {
+        id: capturePill
+        screen: root.screen
     }
 }

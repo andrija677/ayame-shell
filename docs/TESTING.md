@@ -407,6 +407,19 @@ Test once with no `hyprland.lua`: accepting profile creation must produce a
 minimal marked file that sources Ayame, and a Hyprland login must start the shell.
 Ayame must not autostart in KDE Plasma. Uninstall must remove an untouched minimal
 profile, but preserve a profile to which the user added any other configuration.
+
+## Capture pill and screen recording
+
+Open Quick Settings and click Screenshot. Confirm the capture pill slides in
+from the left, can be dragged freely, and snaps only when released near either
+screen edge. A freely positioned pill must shrink and fade when closed; a
+snapped pill must slide back through its edge.
+
+Test desktop, monitor, and area screenshots with each countdown. The pill must
+hide before capture and return afterward. Start silent, system-audio, and
+microphone recordings, confirm the elapsed timer advances, then stop from the
+red button. Each resulting MP4 must open from `Videos/Recordings`. During an
+active recording the pill must remain visible and refuse to close.
 Confirm installation runs Hyprland's offline configuration validator. A Hyprland
 login must start Ayame after a short session-ready delay and write failures to
 `~/.local/state/ayame-shell/startup.log`; KDE must not start Ayame or create that

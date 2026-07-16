@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import Quickshell.Wayland
 import "../../components"
+import "../../services"
 import "../../settings"
 import "../../theme"
 import "../dashboard"
@@ -134,6 +135,38 @@ PanelWindow {
                     || ShellConfig.trayEnabled
 
                 Surface {
+                    anchors {
+                        right: systemPill.left
+                        rightMargin: Theme.space8
+                        verticalCenter: parent.verticalCenter
+                    }
+                    visible: RecordingService.recording
+                    implicitWidth: recordingLabel.implicitWidth + Theme.space16
+                    implicitHeight: Theme.itemHeight
+                    radius: Theme.radiusPill
+                    color: Theme.error
+                    opacity: visible ? 1 : 0
+
+                    StyledText {
+                        id: recordingLabel
+                        anchors.centerIn: parent
+                        text: "●  " + RecordingService.elapsedText
+                        color: Theme.foregroundPrimary
+                        font.family: Theme.fontFamilyNumeric
+                        font.pixelSize: 10
+                        font.weight: Theme.fontWeightTitle
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: RecordingService.stop()
+                    }
+                }
+
+                Surface {
+                    id: systemPill
                     anchors.right: parent.right
                     implicitWidth: Math.max(
                         Theme.itemHeight,
@@ -270,7 +303,12 @@ PanelWindow {
         hostWindow: bar
         visible: false
         onPowerRequested: powerScreen.openPanel()
-        onUtilityRequested: page => utilities.openPage(page)
+        onUtilityRequested: page => {
+            if (page === "capture")
+                utilities.openCapturePill();
+            else
+                utilities.openPage(page);
+        }
     }
 
     PowerScreen {
