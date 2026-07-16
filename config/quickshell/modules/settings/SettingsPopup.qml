@@ -16,6 +16,8 @@ PanelWindow {
     required property var hostWindow
     property bool panelOpen: false
     property bool otherQuickshellDetected: false
+    property bool updateBusy: false
+    property string updateStatus: "Install the newest version from GitHub :3"
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -37,6 +39,28 @@ PanelWindow {
         }
     }
 
+    Process {
+        id: updateProcess
+        command: [Quickshell.shellDir + "/../../scripts/ayame-update.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.updateStatus = text.trim();
+            }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim().length > 0)
+                    root.updateStatus = "Update failed • check update.log";
+            }
+        }
+        onRunningChanged: root.updateBusy = running
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                root.updateStatus = "Update failed • check update.log";
+        }
+    }
+
     function openPanel() {
         closeTimer.stop();
         panelOpen = false;
@@ -48,6 +72,13 @@ PanelWindow {
         openTimer.stop();
         panelOpen = false;
         closeTimer.restart();
+    }
+
+    function updateAyame() {
+        if (updateProcess.running)
+            return;
+        updateStatus = "Downloading and installing…";
+        updateProcess.running = true;
     }
 
     screen: hostWindow.screen
@@ -428,6 +459,69 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: weatherSetup.open()
+                        }
+                    }
+                }
+            }
+
+            StyledText {
+                text: "Updates"
+                color: Theme.primary
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightTitle
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 66
+                color: Theme.surfaceContainer
+
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space12
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Theme.space2
+                        StyledText {
+                            text: "Ayame Shell"
+                            font.weight: Theme.fontWeightLabel
+                        }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: root.updateStatus
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    Rectangle {
+                        implicitWidth: 82
+                        implicitHeight: 30
+                        radius: Theme.radiusPill
+                        color: updatePointer.containsMouse && !root.updateBusy
+                            ? Theme.primary : Theme.primaryContainer
+                        opacity: root.updateBusy ? 0.65 : 1
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: root.updateBusy ? "Updating…" : "Update"
+                            color: updatePointer.containsMouse && !root.updateBusy
+                                ? Theme.foregroundPrimary
+                                : Theme.foregroundPrimaryContainer
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+
+                        MouseArea {
+                            id: updatePointer
+                            anchors.fill: parent
+                            enabled: !root.updateBusy
+                            hoverEnabled: true
+                            cursorShape: enabled
+                                ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            onClicked: root.updateAyame()
                         }
                     }
                 }

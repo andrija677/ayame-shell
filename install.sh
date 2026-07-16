@@ -6,11 +6,13 @@ assume_yes=false
 install_dependencies=true
 replace_desktop=false
 enable_kitty=true
+update_only=false
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
         --no-install-deps) install_dependencies=false ;;
         --replace-desktop) replace_desktop=true ;;
+        --update) assume_yes=true; install_dependencies=false; update_only=true ;;
         --no-kitty) enable_kitty=false ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
@@ -29,7 +31,7 @@ timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty matugen rofi rofimoji)
+required=(qs hyprctl hyprlock hyprpaper grim slurp wl-copy kitty matugen rofi rofimoji curl)
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
@@ -42,6 +44,7 @@ declare -A command_packages=(
     [matugen]=matugen
     [rofi]=rofi
     [rofimoji]=rofimoji
+    [curl]=curl
 )
 missing=()
 for command_name in "${required[@]}"; do
@@ -87,7 +90,8 @@ if ((${#missing[@]})); then
     fi
 fi
 
-if command -v pacman >/dev/null 2>&1 \
+if [[ "$update_only" != true ]] \
+        && command -v pacman >/dev/null 2>&1 \
         && ! pacman -Q ttf-jetbrains-mono-nerd >/dev/null 2>&1; then
     if [[ "$assume_yes" == true ]]; then
         font_answer=y
@@ -109,7 +113,7 @@ if [[ "$assume_yes" != true ]]; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
-if [[ -f "$sudoers_file" ]]; then
+if [[ "$update_only" != true && -f "$sudoers_file" ]]; then
     echo "Removing Ayame's obsolete VT handoff rule."
     sudo rm -f "$sudoers_file"
 fi
@@ -188,14 +192,17 @@ fi
 mkdir -p "$prefix"
 cp -a "$source_dir/assets" "$source_dir/config" "$source_dir/docs" \
     "$source_dir/scripts" "$source_dir/themes" "$source_dir/README.md" \
+    "$source_dir/bootstrap.sh" "$source_dir/install.sh" \
     "$source_dir/uninstall.sh" "$prefix/"
 chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-gaming-mode.sh" \
+    "$prefix/scripts/ayame-update.sh" \
     "$prefix/scripts/ayame-kitty-colors.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
     "$prefix/scripts/ayame-emoji-picker.sh" \
     "$prefix/scripts/ayame-logout.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
+chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
 
 if [[ "$enable_kitty" == true ]]; then
     install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"

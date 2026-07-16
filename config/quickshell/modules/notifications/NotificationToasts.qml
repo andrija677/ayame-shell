@@ -45,6 +45,7 @@ PanelWindow {
     implicitWidth: 380
     implicitHeight: toastItem.implicitHeight
     exclusiveZone: 0
+    exclusionMode: ExclusionMode.Ignore
     color: "transparent"
     visible: false
     WlrLayershell.namespace: "ayame-shell-notification"
