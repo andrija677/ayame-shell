@@ -24,13 +24,11 @@ green=$((16#${background_hex:2:2}))
 blue=$((16#${background_hex:4:2}))
 luminance=$((299 * red + 587 * green + 114 * blue))
 if ((luminance > 128000)); then
-    appearance_mode=light
     ansi_black=$foreground
     ansi_white=$outline
     ansi_bright_black=$outline
     ansi_bright_white=$foreground
 else
-    appearance_mode=dark
     ansi_black=$surface
     ansi_white=$foreground
     ansi_bright_black=$outline
@@ -59,11 +57,3 @@ pkill -USR1 -x kitty 2>/dev/null || true
 # users do not have to unfocus and refocus the terminal manually.
 sleep 0.08
 pkill -WINCH -x kitty 2>/dev/null || true
-
-# Kitty palette updates are the most reliable appearance signal during a live
-# Quickshell session. Use the same detected mode for all other application
-# toolkits so KDE/Qt/GTK cannot drift away from Ayame in Hyprland or a VM.
-appearance_script="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/ayame-appearance-mode.sh"
-if [[ -x "$appearance_script" ]]; then
-    "$appearance_script" "$appearance_mode" >/dev/null 2>&1 || true
-fi

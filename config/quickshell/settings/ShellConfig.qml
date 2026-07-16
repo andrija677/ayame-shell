@@ -7,6 +7,8 @@ import Quickshell.Io
 QtObject {
     id: root
 
+    property bool ready: false
+
     property alias barEnabled: values.barEnabled
     property alias dockEnabled: values.dockEnabled
     property alias dockAutoHide: values.dockAutoHide
@@ -141,6 +143,8 @@ QtObject {
         watchChanges: true
         atomicWrites: true
         printErrors: false
+
+        onLoaded: root.ready = true
 
         onAdapterUpdated: root.save()
 

@@ -196,7 +196,10 @@ QtObject {
     }
 
     Component.onCompleted: {
-        syncKitty();
+        // ShellConfig is backed by an asynchronously loaded FileView. Running
+        // this immediately can briefly see the default dark mode during a live
+        // update and overwrite an existing light Kitty palette.
+        initialKittySync.restart();
         if (ShellConfig.dynamicColorWallpaper.length > 0)
             followWallpaper(ShellConfig.dynamicColorWallpaper);
         if (ShellConfig.dynamicColorMode === "manual") {
@@ -205,6 +208,16 @@ QtObject {
                 && paletteCache.style === ShellConfig.dynamicColorStyle;
             if (ShellConfig.dynamicColorsEnabled && !cacheMatches)
                 generate(ShellConfig.dynamicColorWallpaper);
+        }
+    }
+
+    property Timer initialKittySync: Timer {
+        interval: 100
+        onTriggered: {
+            if (ShellConfig.ready)
+                root.syncKitty();
+            else
+                restart();
         }
     }
 
