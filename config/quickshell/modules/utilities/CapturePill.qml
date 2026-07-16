@@ -182,7 +182,11 @@ PanelWindow {
     mask: Region { item: root.dragging ? dragInputSurface : pillSurface }
     Behavior on displayX {
         enabled: !root.dragging
-        SpringAnimation { spring: 3.2; damping: 0.32; epsilon: 0.35 }
+        SpringAnimation {
+            spring: root.tucked ? 3.2 : 8
+            damping: root.tucked ? 0.32 : 0.58
+            epsilon: 0.35
+        }
     }
     WlrLayershell.namespace: "ayame-shell-capture-pill"
     WlrLayershell.layer: WlrLayer.Overlay
@@ -221,6 +225,10 @@ PanelWindow {
             hoverEnabled: true
             cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
             onEntered: root.revealFromWall()
+            onExited: {
+                if (root.docked && !root.tucked && !root.dragging)
+                    tuckTimer.restart();
+            }
             onPressed: mouse => {
                 const point = mapToGlobal(mouse.x, mouse.y);
                 root.beginDragAt(point.x, point.y);
@@ -388,7 +396,7 @@ PanelWindow {
         id: cursorPoll
         interval: root.dragging ? 8 : 120
         repeat: true
-        running: root.dragging || (root.opened && root.docked)
+        running: root.dragging
         onTriggered: {
             if (!cursorPositionProcess.running)
                 cursorPositionProcess.running = true;
