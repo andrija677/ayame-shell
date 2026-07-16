@@ -10,15 +10,15 @@ import "../../theme"
 PanelWindow {
     id: root
 
+    signal areaScreenshotRequested(int delay)
+
     property bool opened: false
     property string captureMode: "area"
     property string audioMode: "none"
     property int countdown: 0
     property int offsetX: 28
     property int offsetY: 110
-    property real displayX: -implicitWidth
-    property real dragStartX: 0
-    property real dragStartY: 0
+    property real displayX: 0
     property int offsetStartX: 0
     property int offsetStartY: 0
     property string status: ""
@@ -27,6 +27,10 @@ PanelWindow {
     property bool closing: false
     property bool freeClosing: false
     property string snappedSide: ""
+    property bool dragging: false
+    property bool dragInitialized: false
+    property real cursorStartX: 0
+    property real cursorStartY: 0
 
     function open() {
         freeClosing = false;
@@ -39,9 +43,9 @@ PanelWindow {
             return;
         closing = true;
         if (snappedSide === "left")
-            displayX = -width - 4;
+            displayX = 0;
         else if (snappedSide === "right")
-            displayX = screen.width + 4;
+            displayX = Math.max(0, screen.width - width);
         else
             freeClosing = true;
         closeTimer.restart();
@@ -72,6 +76,11 @@ PanelWindow {
         if (screenshotProcess.running) return;
         status = "Capturing…";
         error = "";
+        if (captureMode === "area") {
+            suppressVisibility = true;
+            areaScreenshotRequested(countdown);
+            return;
+        }
         screenshotHide.restart();
     }
 
@@ -118,22 +127,17 @@ PanelWindow {
                     cursorShape: Qt.SizeAllCursor
                     onPressed: mouse => {
                         root.snappedSide = "";
-                        root.dragStartX = mouse.x;
-                        root.dragStartY = mouse.y;
                         root.offsetStartX = root.offsetX;
                         root.offsetStartY = root.offsetY;
+                        root.dragInitialized = false;
+                        root.dragging = true;
+                        cursorTracker.running = true;
                     }
-                    onPositionChanged: mouse => {
-                        if (!pressed) return;
-                        root.offsetX = Math.max(0, Math.min(
-                            root.screen.width - root.width,
-                            root.offsetStartX + mouse.x - root.dragStartX));
-                        root.displayX = root.offsetX;
-                        root.offsetY = Math.max(0, Math.min(
-                            root.screen.height - root.height,
-                            root.offsetStartY + mouse.y - root.dragStartY));
+                    onReleased: {
+                        root.dragging = false;
+                        root.dragInitialized = false;
+                        root.snapIfNearEdge();
                     }
-                    onReleased: root.snapIfNearEdge()
                 }
             }
 
@@ -223,6 +227,38 @@ PanelWindow {
         }
     }
 
+    Timer {
+        interval: 32
+        repeat: true
+        running: root.dragging
+        onTriggered: {
+            if (!cursorTracker.running)
+                cursorTracker.running = true;
+        }
+    }
+    Process {
+        id: cursorTracker
+        command: ["hyprctl", "cursorpos"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const match = text.match(/(-?\d+)\s*,\s*(-?\d+)/);
+                if (!match || !root.dragging) return;
+                const cursorX = Number(match[1]) - (root.screen?.x ?? 0);
+                const cursorY = Number(match[2]) - (root.screen?.y ?? 0);
+                if (!root.dragInitialized) {
+                    root.cursorStartX = cursorX;
+                    root.cursorStartY = cursorY;
+                    root.dragInitialized = true;
+                    return;
+                }
+                root.offsetX = Math.max(0, Math.min(root.screen.width - root.width,
+                    root.offsetStartX + cursorX - root.cursorStartX));
+                root.offsetY = Math.max(0, Math.min(root.screen.height - root.height,
+                    root.offsetStartY + cursorY - root.cursorStartY));
+                root.displayX = root.offsetX;
+            }
+        }
+    }
     Timer {
         id: closeTimer
         interval: Theme.motionNormal + 30

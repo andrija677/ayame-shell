@@ -61,6 +61,10 @@ if ((${#missing[@]})); then
     done
     printf 'Packages needed: %s\n' "${missing_packages[*]}"
 
+    if [[ "$update_only" == true ]]; then
+        echo "Continuing the update without optional missing dependencies."
+        echo "Install later with: sudo pacman -S ${missing_packages[*]}"
+    else
     if [[ "$install_dependencies" != true ]]; then
         echo "Dependency installation was disabled with --no-install-deps." >&2
         exit 1
@@ -88,6 +92,7 @@ if ((${#missing[@]})); then
         printf 'Commands still missing after package installation: %s\n' \
             "${still_missing[*]}" >&2
         exit 1
+    fi
     fi
 fi
 

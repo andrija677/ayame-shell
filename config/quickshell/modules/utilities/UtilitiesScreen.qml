@@ -86,6 +86,8 @@ PanelWindow {
         if (width < 2 || height < 2) {
             selectionMode = false;
             visible = false;
+            capturePill.suppressVisibility = false;
+            capturePill.open();
             return;
         }
         const geometry = left + "," + top + " " + width + "x" + height;
@@ -115,6 +117,8 @@ PanelWindow {
                 root.selectionDragging = false;
                 root.selectionMode = false;
                 root.visible = false;
+                capturePill.suppressVisibility = false;
+                capturePill.open();
             } else {
                 root.closePanel();
             }
@@ -180,6 +184,9 @@ PanelWindow {
             }
         }
         onExited: (exitCode, exitStatus) => {
+            capturePill.suppressVisibility = false;
+            if (capturePill.opened)
+                capturePill.open();
             if (exitCode !== 0 || root.captureError.length > 0) {
                 const failure = root.captureError.length > 0
                     ? root.captureError : "Screenshot failed. Check that grim and slurp can access this session.";
@@ -417,5 +424,10 @@ PanelWindow {
     CapturePill {
         id: capturePill
         screen: root.screen
+        onAreaScreenshotRequested: delay => {
+            root.captureMode = "area";
+            root.captureDelay = delay;
+            root.capture();
+        }
     }
 }
