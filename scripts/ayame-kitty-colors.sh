@@ -13,6 +13,28 @@ done
 
 background=$1 foreground=$2 primary=$3 on_primary=$4 surface=$5
 surface_high=$6 outline=$7 error=$8 success=$9 warning=${10}
+
+# ANSI black cannot reuse a pale surface in light mode: many terminal programs
+# explicitly request color0 for text, which would then vanish into the
+# background. Detect the generated background brightness and choose readable
+# neutral slots for the active appearance.
+background_hex=${background#\#}
+red=$((16#${background_hex:0:2}))
+green=$((16#${background_hex:2:2}))
+blue=$((16#${background_hex:4:2}))
+luminance=$((299 * red + 587 * green + 114 * blue))
+if ((luminance > 128000)); then
+    ansi_black=$foreground
+    ansi_white=$outline
+    ansi_bright_black=$outline
+    ansi_bright_white=$foreground
+else
+    ansi_black=$surface
+    ansi_white=$foreground
+    ansi_bright_black=$outline
+    ansi_bright_white=$foreground
+fi
+
 temporary="$(mktemp --tmpdir="$(dirname -- "$target")" .ayame-colors.XXXXXX)"
 trap 'rm -f "$temporary"' EXIT
 printf '%s\n' \
@@ -22,10 +44,10 @@ printf '%s\n' \
     "cursor $primary" "cursor_text_color $on_primary" "url_color $primary" \
     "active_tab_background $primary" "active_tab_foreground $on_primary" \
     "inactive_tab_background $surface_high" "inactive_tab_foreground $foreground" \
-    "color0 $surface" "color1 $error" "color2 $success" "color3 $warning" \
-    "color4 $primary" "color5 $primary" "color6 $outline" "color7 $foreground" \
-    "color8 $outline" "color9 $error" "color10 $success" "color11 $warning" \
-    "color12 $primary" "color13 $primary" "color14 $outline" "color15 $foreground" \
+    "color0 $ansi_black" "color1 $error" "color2 $success" "color3 $warning" \
+    "color4 $primary" "color5 $primary" "color6 $outline" "color7 $ansi_white" \
+    "color8 $ansi_bright_black" "color9 $error" "color10 $success" "color11 $warning" \
+    "color12 $primary" "color13 $primary" "color14 $outline" "color15 $ansi_bright_white" \
     > "$temporary"
 mv -f -- "$temporary" "$target"
 trap - EXIT
