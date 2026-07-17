@@ -34,6 +34,24 @@ repository is installed automatically.
   </tr>
 </table>
 
+### Wallpaper-adaptive colors
+
+Ayame can generate a new shell and terminal palette from the active wallpaper,
+while retaining the same visual language across every surface.
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/adaptive-settings.png" alt="Ayame Settings using a blue wallpaper-generated palette">
+      <br><sub><b>Settings</b> with a cool blue wallpaper palette</sub>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/adaptive-launcher.png" alt="Ayame application launcher using a blue wallpaper-generated palette">
+      <br><sub><b>Application launcher</b> following the same generated colors</sub>
+    </td>
+  </tr>
+</table>
+
 ![Wallpaper-matched Kitty terminals](assets/screenshots/kitty.png)
 
 <p align="center"><sub><b>Kitty</b> — wallpaper-matched colors, transparency, and comfortable spacing</sub></p>
