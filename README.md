@@ -7,6 +7,37 @@ Please keep in mind that this is in beta, changes will occur in future releases.
 The project is developed and tested outside `~/.config`. Nothing in this
 repository is installed automatically.
 
+## Showcase
+
+![Ayame Shell desktop](assets/screenshots/desktop.png)
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/dashboard.png" alt="Media, calendar, events, and notification dashboard">
+      <br><sub><b>Dashboard</b> — media, calendar, events, and notifications</sub>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/quick-settings.png" alt="Ayame Quick Settings">
+      <br><sub><b>Quick Settings</b> — connectivity, power profiles, and session controls</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/ayame-settings.png" alt="Ayame Settings">
+      <br><sub><b>Ayame Settings</b> — appearance, layout, services, and updates</sub>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/application-launcher.png" alt="Ayame application launcher">
+      <br><sub><b>Application launcher</b> — searchable apps and terminal commands</sub>
+    </td>
+  </tr>
+</table>
+
+![Wallpaper-matched Kitty terminals](assets/screenshots/kitty.png)
+
+<p align="center"><sub><b>Kitty</b> — wallpaper-matched colors, transparency, and comfortable spacing</sub></p>
+
 ## Current shell
 
 Ayame currently includes a monitor-aware top bar and running-app dock, animated
