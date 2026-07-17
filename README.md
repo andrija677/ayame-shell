@@ -1,6 +1,6 @@
 # Ayame Shell
 
-An original, modular Hyprland and Quickshell desktop shell for EndeavourOS.
+An original, modular Hyprland and Quickshell desktop shell for Endeavour OS/Arch based systems.
 
 Please keep in mind that this is in beta, changes will occur in future releases.
 
