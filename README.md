@@ -115,6 +115,10 @@ Install the latest public version directly from GitHub:
 curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
 ```
 
+NOTE:Arch based distros only,Endeavour OS recommended.
+
+Future updates will allow support for more distros. (hopefully)
+
 The bootstrap downloads the complete repository into a temporary directory and
 runs the same interactive installer described below. Review
 [`bootstrap.sh`](bootstrap.sh) and [`install.sh`](install.sh) before piping them
