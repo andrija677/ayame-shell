@@ -188,19 +188,54 @@ Surface {
             }
 
             Rectangle {
-                implicitWidth: 76
-                implicitHeight: 26
+                implicitWidth: 106
+                implicitHeight: 32
                 radius: Theme.radiusPill
                 color: addPointer.containsMouse
                     ? Theme.primary : Theme.primaryContainer
+                border.width: addPointer.containsMouse ? 0 : 1
+                border.color: Theme.primary
+                scale: addPointer.pressed ? 0.94 : 1
 
-                StyledText {
+                Behavior on color { ColorAnimation { duration: Theme.motionFast } }
+                Behavior on scale {
+                    NumberAnimation { duration: Theme.motionFast; easing.type: Theme.easeEnter }
+                }
+
+                RowLayout {
                     anchors.centerIn: parent
-                    text: "+ EVENT"
-                    color: addPointer.containsMouse
-                        ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
-                    font.pixelSize: 9
-                    font.weight: Theme.fontWeightTitle
+                    spacing: Theme.space6
+
+                    Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+                        radius: Theme.radiusPill
+                        color: addPointer.containsMouse
+                            ? Theme.foregroundPrimary : Theme.primary
+                        rotation: addPointer.containsMouse ? 90 : 0
+
+                        Behavior on rotation {
+                            NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+                        }
+                        Behavior on color { ColorAnimation { duration: Theme.motionFast } }
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "+"
+                            color: addPointer.containsMouse
+                                ? Theme.primary : Theme.foregroundPrimary
+                            font.pixelSize: 15
+                            font.weight: Theme.fontWeightTitle
+                        }
+                    }
+
+                    StyledText {
+                        text: "Add Event"
+                        color: addPointer.containsMouse
+                            ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 10
+                        font.weight: Theme.fontWeightTitle
+                    }
                 }
                 MouseArea {
                     id: addPointer

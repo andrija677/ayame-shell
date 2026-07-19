@@ -9,6 +9,7 @@ PopupWindow {
 
     required property var hostWindow
     property date eventDate: new Date()
+    property bool presented: false
 
     function openFor(date) {
         eventDate = date;
@@ -16,7 +17,15 @@ PopupWindow {
         yearlyToggle.checked = false;
         reminderSelector.selectedDays = 0;
         visible = true;
+        Qt.callLater(() => presented = true);
         titleInput.forceActiveFocus();
+    }
+
+    function dismiss() {
+        if (!visible || !presented)
+            return;
+        presented = false;
+        closeTimer.restart();
     }
 
     anchor.window: hostWindow
@@ -34,6 +43,19 @@ PopupWindow {
         implicitHeight: editorColumn.implicitHeight + Theme.space24
         radius: Theme.radiusLarge
         color: Theme.surfaceContainerHigh
+        opacity: root.presented ? 1 : 0
+        scale: root.presented ? 1 : 0.92
+        transform: Translate {
+            y: root.presented ? 0 : -Theme.space12
+            Behavior on y {
+                NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+            }
+        }
+
+        Behavior on opacity { NumberAnimation { duration: Theme.motionFast } }
+        Behavior on scale {
+            NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+        }
 
         ColumnLayout {
             id: editorColumn
@@ -151,7 +173,7 @@ PopupWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.visible = false
+                        onClicked: root.dismiss()
                     }
                 }
 
@@ -161,7 +183,7 @@ PopupWindow {
                         if (EventStore.addEvent(
                                 titleInput.text, root.eventDate, yearlyToggle.checked,
                                 reminderSelector.selectedDays))
-                            root.visible = false;
+                            root.dismiss();
                     }
                     implicitWidth: 66
                     implicitHeight: 30
@@ -185,5 +207,11 @@ PopupWindow {
                 }
             }
         }
+    }
+
+    Timer {
+        id: closeTimer
+        interval: Theme.motionNormal + Theme.motionUnmapGrace
+        onTriggered: root.visible = false
     }
 }
