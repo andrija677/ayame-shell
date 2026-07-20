@@ -115,11 +115,11 @@ Install the latest public version directly from GitHub:
 curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
 ```
 
-NOTE:Arch based distros only,Endeavour OS recommended.
+NOTE:Arch based distros only,Endeavour OS recommended
 
-Also, if you previously installed another Hyprland/Quickshell dots, Ayame Shell will backup your previous configs,and replace them.
+If you have existing Hyprland or Quickshell dotfiles, Ayame Shell will automatically back them up before replacing them with its own configuration.
 
-Beware that some elements will remain when you upgrade to Ayame Shell. (will get fixed)
+Please note that some elements from your old setup, such as the Hyprland lock screen, will remain active after the upgrade. This is a known issue that will be resolved in a future update.
 
 Future updates will allow support for more distros. (hopefully)
 
