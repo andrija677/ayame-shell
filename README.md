@@ -117,6 +117,10 @@ curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstr
 
 NOTE:Arch based distros only,Endeavour OS recommended.
 
+Also, if you previously installed another Hyprland/Quickshell dots, Ayame Shell will backup your previous configs,and replace them.
+
+Beware that some elements will remain when you upgrade to Ayame Shell. (will get fixed)
+
 Future updates will allow support for more distros. (hopefully)
 
 The bootstrap downloads the complete repository into a temporary directory and
