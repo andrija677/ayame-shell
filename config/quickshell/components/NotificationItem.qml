@@ -32,6 +32,14 @@ Surface {
         }
         return visible;
     }
+    readonly property var defaultAction: {
+        const actions = notificationData.actions || [];
+        for (let i = 0; i < actions.length; ++i) {
+            if (actions[i]?.identifier === "default")
+                return actions[i];
+        }
+        return null;
+    }
 
     function actionText(action) {
         const label = (action?.text ?? "").trim();
@@ -62,6 +70,13 @@ Surface {
     function dismissNotification() {
         startExit(true);
     }
+
+    function openDefaultAction() {
+        if (!defaultAction || exiting)
+            return;
+        defaultAction.invoke();
+        dismissNotification();
+    }
     readonly property string resolvedIcon: {
         const icon = notificationData.appIcon || "";
         if (icon.startsWith("/"))
@@ -74,10 +89,12 @@ Surface {
             notificationData.desktopEntry || "dialog-information", true);
     }
 
-    readonly property real expandedHeight: notificationContent.implicitHeight + Theme.space24
+    readonly property real expandedHeight: notificationContent.implicitHeight + Theme.space16
     implicitHeight: Math.max(0, expandedHeight * (1 - exitProgress))
     radius: Theme.radiusLarge
     color: Theme.translucent(Theme.surfaceContainer, 1 - exitProgress)
+    border.width: 1
+    border.color: Theme.translucent(Theme.outlineVariant, 0.45)
     clip: true
 
     transform: Translate {
@@ -100,9 +117,16 @@ Surface {
         }
     }
 
+    MouseArea {
+        anchors.fill: parent
+        enabled: root.defaultAction !== null && !root.exiting
+        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onClicked: root.openDefaultAction()
+    }
+
     ColumnLayout {
         id: notificationContent
-        anchors { fill: parent; margins: Theme.space12 }
+        anchors { fill: parent; margins: Theme.space8 }
         spacing: Theme.space6
         opacity: 1 - root.exitProgress
 
@@ -137,8 +161,8 @@ Surface {
             }
 
             Rectangle {
-                implicitWidth: 24
-                implicitHeight: 24
+                implicitWidth: 28
+                implicitHeight: 28
                 radius: Theme.radiusPill
                 color: dismissPointer.containsMouse
                     ? Theme.surfaceContainerHigh : "transparent"
@@ -164,7 +188,7 @@ Surface {
             text: root.notificationData.body
             color: Theme.foregroundSurfaceVariant
             font.pixelSize: Theme.fontSmall
-            wrapMode: Text.Wrap
+            wrapMode: Text.WrapAnywhere
             maximumLineCount: 4
             elide: Text.ElideRight
         }
