@@ -15,12 +15,16 @@ QtObject {
             const target = group.target;
             if (!source || !target || group.state !== PwLinkState.Active)
                 continue;
-            const sourceIsMic = (source.type & PwNodeType.AudioSource) !== 0;
-            const targetIsCapture = (target.type & PwNodeType.AudioInStream) !== 0;
-            if (!sourceIsMic || !targetIsCapture || seen.indexOf(target.id) >= 0)
+            const sourceClass = source.properties?.["media.class"] || "";
+            const targetClass = target.properties?.["media.class"] || "";
+            const mic = sourceClass === "Audio/Source" ? source
+                : targetClass === "Audio/Source" ? target : null;
+            const stream = sourceClass === "Stream/Input/Audio" ? source
+                : targetClass === "Stream/Input/Audio" ? target : null;
+            if (!mic || !stream || seen.indexOf(stream.id) >= 0)
                 continue;
-            seen.push(target.id);
-            streams.push(target);
+            seen.push(stream.id);
+            streams.push(stream);
         }
         return streams;
     }
@@ -46,13 +50,16 @@ QtObject {
             const target = group.target;
             if (!source || !target || group.state !== PwLinkState.Active)
                 continue;
-            const sourceIsCamera = (source.type & PwNodeType.VideoSource) !== 0;
-            const targetIsCapture = target.isStream
-                && (target.type & PwNodeType.VideoSink) !== 0;
-            if (!sourceIsCamera || !targetIsCapture || seen.indexOf(target.id) >= 0)
+            const sourceClass = source.properties?.["media.class"] || "";
+            const targetClass = target.properties?.["media.class"] || "";
+            const camera = sourceClass === "Video/Source" ? source
+                : targetClass === "Video/Source" ? target : null;
+            const stream = sourceClass === "Stream/Input/Video" ? source
+                : targetClass === "Stream/Input/Video" ? target : null;
+            if (!camera || !stream || seen.indexOf(stream.id) >= 0)
                 continue;
-            seen.push(target.id);
-            streams.push(target);
+            seen.push(stream.id);
+            streams.push(stream);
         }
         return streams;
     }
