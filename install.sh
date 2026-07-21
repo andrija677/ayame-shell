@@ -7,12 +7,14 @@ install_dependencies=true
 replace_desktop=false
 enable_kitty=true
 update_only=false
+check_only=false
 for argument in "$@"; do
     case "$argument" in
         --yes) assume_yes=true ;;
         --no-install-deps) install_dependencies=false ;;
         --replace-desktop) replace_desktop=true ;;
         --update) assume_yes=true; install_dependencies=false; update_only=true ;;
+        --check) check_only=true; install_dependencies=false ;;
         --no-kitty) enable_kitty=false ;;
         --prefix=*) prefix="${argument#*=}" ;;
         *) echo "Unknown option: $argument" >&2; exit 2 ;;
@@ -33,7 +35,41 @@ timestamp="$(date +%Y%m%d-%H%M%S)"
 migration_backup=""
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wf-recorder wl-copy kitty matugen rofi rofimoji curl)
+os_id="unknown"
+os_name="Unknown Linux"
+os_version="unknown"
+os_codename="unknown"
+os_like=""
+if [[ -r /etc/os-release ]]; then
+    # The file is defined as shell-compatible KEY=VALUE data by os-release(5).
+    source /etc/os-release
+    os_id="${ID:-unknown}"
+    os_name="${PRETTY_NAME:-${NAME:-Unknown Linux}}"
+    os_version="${VERSION_ID:-unknown}"
+    os_codename="${UBUNTU_CODENAME:-${VERSION_CODENAME:-unknown}}"
+    os_like="${ID_LIKE:-}"
+fi
+
+package_family=unknown
+case " $os_id $os_like " in
+    *" arch "*) package_family=arch ;;
+    *" debian "*|*" ubuntu "*) package_family=debian ;;
+esac
+
+required=(qs hyprctl hyprlock hyprpaper grim slurp wf-recorder wl-copy kitty \
+    matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
+
+hyprland_version="missing"
+hyprland_compatible=false
+if command -v Hyprland >/dev/null 2>&1; then
+    hyprland_version_output="$(Hyprland --version 2>/dev/null | head -n 1 || true)"
+    if [[ "$hyprland_version_output" =~ Hyprland[[:space:]]+([0-9]+)\.([0-9]+) ]]; then
+        hyprland_version="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+        if ((BASH_REMATCH[1] > 0 || BASH_REMATCH[2] >= 55)); then
+            hyprland_compatible=true
+        fi
+    fi
+fi
 declare -A command_packages=(
     [qs]=quickshell
     [hyprctl]=hyprland
@@ -48,11 +84,69 @@ declare -A command_packages=(
     [rofi]=rofi
     [rofimoji]=rofimoji
     [curl]=curl
+    [pw-dump]=pipewire
+    [nmcli]=networkmanager
+    [notify-send]=libnotify
+    [python3]=python
 )
+if [[ "$package_family" == debian ]]; then
+    command_packages[qs]=quickshell
+    command_packages[hyprctl]=hyprland
+    command_packages[hyprlock]=hyprlock
+    command_packages[hyprpaper]=hyprpaper
+    command_packages[grim]=grim
+    command_packages[slurp]=slurp
+    command_packages[wf-recorder]=wf-recorder
+    command_packages[wl-copy]=wl-clipboard
+    command_packages[kitty]=kitty
+    command_packages[matugen]=matugen
+    command_packages[rofi]=rofi
+    command_packages[rofimoji]=rofimoji
+    command_packages[curl]=curl
+    command_packages[pw-dump]=pipewire-bin
+    command_packages[nmcli]=network-manager
+    command_packages[notify-send]=libnotify-bin
+    command_packages[python3]=python3
+fi
 missing=()
 for command_name in "${required[@]}"; do
     command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")
 done
+
+if [[ "$check_only" == true ]]; then
+    echo "Ayame Shell compatibility check"
+    echo "  System:      $os_name"
+    echo "  ID:          $os_id $os_version"
+    echo "  Base:        $os_like"
+    echo "  Codename:    $os_codename"
+    echo "  Packages:    $package_family"
+    echo "  Hyprland:    $hyprland_version (Ayame requires 0.55+)"
+    if ((${#missing[@]} == 0)); then
+        echo "  Commands:    all Ayame runtime commands are present"
+        [[ "$hyprland_compatible" == true ]] \
+            || echo "  Compatibility: Hyprland is too old for Ayame's Lua profile"
+        exit 0
+    fi
+    printf '  Missing:     %s\n' "${missing[*]}"
+    if [[ "$package_family" == debian ]]; then
+        echo "  Repository package check:"
+        for command_name in "${missing[@]}"; do
+            package_name="${command_packages[$command_name]}"
+            if apt-cache show "$package_name" >/dev/null 2>&1; then
+                printf '    %-14s %-22s available\n' "$command_name" "$package_name"
+            else
+                printf '    %-14s %-22s UNAVAILABLE\n' "$command_name" "$package_name"
+            fi
+        done
+        echo "Run 'sudo apt update' first if the package lists are stale."
+    elif [[ "$package_family" == arch ]]; then
+        echo "  Repository packages: ${missing[*]}"
+    else
+        echo "  Automatic dependency installation is not available for this system."
+    fi
+    exit 0
+fi
+
 if ((${#missing[@]})); then
     printf 'Missing required commands: %s\n' "${missing[*]}"
     missing_packages=()
@@ -65,26 +159,48 @@ if ((${#missing[@]})); then
 
     if [[ "$update_only" == true ]]; then
         echo "Continuing the update without optional missing dependencies."
-        echo "Install later with: sudo pacman -S ${missing_packages[*]}"
+        if [[ "$package_family" == arch ]]; then
+            echo "Install later with: sudo pacman -S ${missing_packages[*]}"
+        elif [[ "$package_family" == debian ]]; then
+            echo "Install later with: sudo apt install ${missing_packages[*]}"
+        fi
     else
     if [[ "$install_dependencies" != true ]]; then
         echo "Dependency installation was disabled with --no-install-deps." >&2
         exit 1
     fi
-    if ! command -v pacman >/dev/null 2>&1; then
-        echo "Automatic dependencies currently require Arch Linux or EndeavourOS with pacman." >&2
+    if [[ "$package_family" == unknown ]]; then
+        echo "Automatic dependency installation does not support $os_name yet." >&2
+        echo "Install the commands listed above, then rerun with --no-install-deps." >&2
         exit 1
     fi
     if [[ "$assume_yes" == true ]]; then
         dependency_answer=y
     else
-        read -r -p "Install the missing packages with pacman now? [y/N] " dependency_answer
+        read -r -p "Install the missing packages for $os_name now? [y/N] " dependency_answer
     fi
     if [[ ! "$dependency_answer" =~ ^[Yy]$ ]]; then
         echo "Install the listed packages, then run this installer again." >&2
         exit 1
     fi
-    sudo pacman -S --needed "${missing_packages[@]}"
+    if [[ "$package_family" == arch ]]; then
+        sudo pacman -S --needed "${missing_packages[@]}"
+    else
+        sudo apt-get update
+        unavailable_packages=()
+        for package_name in "${missing_packages[@]}"; do
+            apt-cache show "$package_name" >/dev/null 2>&1 \
+                || unavailable_packages+=("$package_name")
+        done
+        if ((${#unavailable_packages[@]})); then
+            printf 'Unavailable in %s (%s) repositories: %s\n' \
+                "$os_name" "$os_codename" "${unavailable_packages[*]}" >&2
+            echo "Ayame will not add third-party repositories or mix incompatible releases automatically." >&2
+            echo "Install a compatible Hyprland/Quickshell stack from a trusted source, then rerun this installer." >&2
+            exit 1
+        fi
+        sudo apt-get install -y "${missing_packages[@]}"
+    fi
 
     still_missing=()
     for command_name in "${required[@]}"; do
@@ -96,6 +212,20 @@ if ((${#missing[@]})); then
         exit 1
     fi
     fi
+fi
+
+# Re-read the version after dependency installation as the package manager may
+# have installed or upgraded Hyprland during this run.
+hyprland_version_output="$(Hyprland --version 2>/dev/null | head -n 1 || true)"
+hyprland_compatible=false
+if [[ "$hyprland_version_output" =~ Hyprland[[:space:]]+([0-9]+)\.([0-9]+) ]] \
+        && ((BASH_REMATCH[1] > 0 || BASH_REMATCH[2] >= 55)); then
+    hyprland_compatible=true
+fi
+if [[ "$hyprland_compatible" != true ]]; then
+    echo "Ayame requires Hyprland 0.55 or newer for its Lua configuration." >&2
+    echo "Detected: ${hyprland_version_output:-unknown version}" >&2
+    exit 1
 fi
 
 if [[ "$update_only" != true ]] \
@@ -112,6 +242,8 @@ if [[ "$update_only" != true ]] \
 fi
 
 echo "Ayame Shell installer"
+echo "  System:      $os_name ($os_id $os_version; $os_codename)"
+echo "  Packages:    $package_family"
 echo "  Source:      $source_dir"
 echo "  Destination: $prefix"
 echo "  Launcher:    $bin_dir/ayame-shell"

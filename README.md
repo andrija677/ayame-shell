@@ -1,6 +1,7 @@
 # Ayame Shell
 
-An original, modular Hyprland and Quickshell desktop shell for Endeavour OS/Arch based systems.
+An original, modular Hyprland and Quickshell desktop shell for Endeavour OS,
+Arch-based systems, and compatible Debian-based systems.
 
 Please keep in mind that this is in beta, changes will occur in future releases.
 
@@ -119,15 +120,34 @@ Install the latest public version directly from GitHub:
 curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
 ```
 
-NOTE:Arch based distros only,Endeavour OS recommended
+Arch and EndeavourOS are the primary supported platforms. **Debian-based distro
+support is currently in beta.** The same installer detects Arch, Debian, Ubuntu,
+Linux Mint, Zorin OS, and related distributions automatically through
+`/etc/os-release`, then selects `pacman` or `apt` package mappings.
+
+Ubuntu-derived point releases may not provide a sufficiently recent Hyprland,
+Quickshell, Hyprlock, Hyprpaper, Matugen, or Rofimoji. Ayame checks repository
+availability and stops safely when the compatible core stack cannot be obtained;
+it never adds an untrusted PPA or mixes packages from another distribution
+release. Linux Mint 22 support is therefore experimental and currently expects
+those unavailable core components to have been provisioned from a trusted,
+compatible source.
+
+Run a read-only compatibility report before installing:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash -s -- --check
+```
+
+This downloads Ayame into a temporary directory and reports OS detection,
+missing commands, mapped package names, and APT availability without installing
+packages or changing desktop configuration.
 
 If you choose desktop replacement, Ayame backs up existing Hyprland and
 Quickshell dotfiles before installing its standalone configuration. Conflicting
 notification services are recoverably masked so they cannot race Ayame for the
 notification D-Bus name, and uninstall or migration rollback restores their
 previous enabled/running state.
-
-Future updates will allow support for more distros. (hopefully)
 
 The bootstrap downloads the complete repository into a temporary directory and
 runs the same interactive installer described below. Review
@@ -148,9 +168,11 @@ Ayame installation, installs under `~/.local/share/ayame-shell`, creates the
 source line. Ordinary installation never replaces existing Quickshell, Hyprlock,
 or Hypridle files. Ayame launches its own installed Hyprlock configuration
 explicitly, so a user's global lock configuration remains untouched.
-On EndeavourOS and Arch Linux it offers to install missing core packages with
-`pacman`, including Hyprland, Quickshell, Hyprlock, the screenshot tools, and
-Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
+On EndeavourOS and Arch Linux it offers to install missing packages with
+`pacman`. On detected Debian-family systems it verifies candidate package names
+with APT before asking to install them. This includes the newer Ayame runtime
+requirements for NetworkManager, PipeWire inspection, desktop notifications,
+and Python. Pass `--no-install-deps` to require a pre-provisioned system instead.
 When Hyprland has no user configuration yet, the installer can create a minimal
 Hyprland 0.55 Lua profile that loads Ayame and starts it only for Hyprland logins. It does not
 autostart Ayame in KDE Plasma or other desktop sessions.
