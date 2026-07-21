@@ -179,7 +179,8 @@ Rectangle {
                 StyledText {
                     width: parent.width
                     visible: (root.connectedDevice?.address || "").length > 0
-                    text: "Device  •  " + root.connectedDevice.address
+                    text: root.connectedDevice
+                        ? "Device  •  " + root.connectedDevice.address : ""
                     color: Theme.outline
                     font.pixelSize: 10
                     wrapMode: Text.WordWrap
