@@ -422,13 +422,13 @@ PanelWindow {
                     text: "↑↓  Navigate"
                     color: Theme.outline
                     font.pixelSize: 9
-                    font.family: Theme.fontFamilyNumeric
+                    font.family: Theme.fontFamily
                 }
                 StyledText {
                     text: "Enter  Open"
                     color: Theme.outline
                     font.pixelSize: 9
-                    font.family: Theme.fontFamilyNumeric
+                    font.family: Theme.fontFamily
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                 }
@@ -436,7 +436,7 @@ PanelWindow {
                     text: "/  Command"
                     color: Theme.outline
                     font.pixelSize: 9
-                    font.family: Theme.fontFamilyNumeric
+                    font.family: Theme.fontFamily
                 }
             }
         }

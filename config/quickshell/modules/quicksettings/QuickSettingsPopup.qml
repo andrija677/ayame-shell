@@ -303,15 +303,9 @@ PanelWindow {
                         : root.networkLimited ? "Limited internet access"
                         : Networking.wifiHardwareEnabled && Networking.wifiEnabled
                             ? "Wi-Fi enabled • not connected" : "Offline"
-                checked: Networking.wifiHardwareEnabled
-                    ? Networking.wifiEnabled : SessionService.networkingEnabled
+                checked: SessionService.networkingEnabled
                 interactive: !SessionService.networkingBusy
-                onActivated: {
-                    if (Networking.wifiHardwareEnabled)
-                        Networking.wifiEnabled = !checked;
-                    else
-                        SessionService.toggleNetworking();
-                }
+                onActivated: SessionService.toggleNetworking()
             }
 
             QuickToggleTile {
