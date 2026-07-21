@@ -34,12 +34,16 @@ Rectangle {
     readonly property bool limited: Networking.connectivity
         === NetworkConnectivity.Limited
         || Networking.connectivity === NetworkConnectivity.Portal
-    readonly property int signalPercent: Math.round(
+    readonly property int signalPercent: wifiSignalPercent(
         connectedWifi?.signalStrength ?? 0
     )
     readonly property color iconColor: online
         ? Theme.foregroundSurfaceVariant
         : limited ? Theme.warning : Theme.error
+
+    function wifiSignalPercent(strength) {
+        return Math.round(Math.max(0, Math.min(1, Number(strength) || 0)) * 100);
+    }
 
     function nonWifiConnectionLabel(device) {
         const name = (device?.name || "").toLowerCase();

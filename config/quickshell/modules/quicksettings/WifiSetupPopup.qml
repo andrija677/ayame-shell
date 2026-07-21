@@ -26,6 +26,10 @@ PanelWindow {
         return items;
     }
 
+    function signalPercent(strength) {
+        return Math.round(Math.max(0, Math.min(1, Number(strength) || 0)) * 100);
+    }
+
     function openPanel() {
         closeTimer.stop();
         selectedNetwork = null;
@@ -213,8 +217,8 @@ PanelWindow {
                         anchors { fill: parent; margins: Theme.space8 }
                         spacing: Theme.space8
                         StyledText {
-                            text: modelData.signalStrength >= 67 ? "󰤨"
-                                : modelData.signalStrength >= 34 ? "󰤥" : "󰤟"
+                            text: root.signalPercent(modelData.signalStrength) >= 67 ? "󰤨"
+                                : root.signalPercent(modelData.signalStrength) >= 34 ? "󰤥" : "󰤟"
                             color: modelData.connected ? Theme.primary
                                 : Theme.foregroundSurfaceVariant
                             font.pixelSize: 17
@@ -231,9 +235,9 @@ PanelWindow {
                             StyledText {
                                 text: modelData.connected ? "Connected"
                                     : modelData.stateChanging ? "Connecting…"
-                                    : modelData.known ? "Saved • " + Math.round(modelData.signalStrength) + "%"
+                                    : modelData.known ? "Saved • " + root.signalPercent(modelData.signalStrength) + "%"
                                     : WifiSecurityType.toString(modelData.security)
-                                        + " • " + Math.round(modelData.signalStrength) + "%"
+                                        + " • " + root.signalPercent(modelData.signalStrength) + "%"
                                 color: Theme.foregroundSurfaceVariant
                                 font.pixelSize: Theme.fontSmall
                             }

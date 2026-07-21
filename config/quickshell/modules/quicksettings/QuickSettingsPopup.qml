@@ -67,6 +67,10 @@ PanelWindow {
     readonly property bool networkLimited: Networking.connectivity
         === NetworkConnectivity.Limited
         || Networking.connectivity === NetworkConnectivity.Portal
+
+    function wifiSignalPercent(strength) {
+        return Math.round(Math.max(0, Math.min(1, Number(strength) || 0)) * 100);
+    }
     readonly property int connectedBluetoothCount: {
         let count = 0;
         for (let device of Bluetooth.devices.values) {
@@ -398,7 +402,7 @@ PanelWindow {
                 subtitle: SessionService.networkingBusy ? "Switching…"
                     : !SessionService.networkingEnabled ? "All connections disabled"
                     : root.connectedWifi
-                        ? "Wi-Fi • " + Math.round(root.connectedWifi.signalStrength) + "% signal"
+                        ? "Wi-Fi • " + root.wifiSignalPercent(root.connectedWifi.signalStrength) + "% signal"
                         : root.networkOnline
                             ? root.nonWifiConnectionLabel(root.connectedDevice)
                         : root.networkLimited ? "Limited internet access"
