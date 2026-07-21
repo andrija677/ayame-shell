@@ -285,7 +285,7 @@ for workspace = 1, 5 do
     hl.bind("SUPER + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace }), { description = "Move window to workspace " .. workspace })
 end
 hl.bind("Print", hl.dsp.exec_cmd(screenshot .. " desktop 0"), { description = "Capture desktop" })
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd(screenshot .. " area 0"), { description = "Capture area" })
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd(ayame .. " ipc call capture area || " .. screenshot .. " area 0"), { description = "Capture area" })
 hl.bind("SUPER + Print", hl.dsp.exec_cmd(screenshot .. " monitor 0 ${monitor:-AUTO}"), { description = "Capture monitor" })
 hl.bind("SUPER + SHIFT + R", hl.dsp.exec_cmd(recorder .. " toggle desktop none AUTO 0"), { description = "Toggle screen recording" })
 EOF

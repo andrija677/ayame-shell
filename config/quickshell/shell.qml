@@ -13,6 +13,7 @@ ShellRoot {
     id: root
 
     signal launcherRequested(string action)
+    signal areaCaptureRequested()
 
     readonly property var appearanceService: AppearanceService
     readonly property var sessionService: SessionService
@@ -22,6 +23,11 @@ ShellRoot {
         function toggle(): void { root.launcherRequested("toggle"); }
         function open(): void { root.launcherRequested("open"); }
         function close(): void { root.launcherRequested("close"); }
+    }
+
+    IpcHandler {
+        target: "capture"
+        function area(): void { root.areaCaptureRequested(); }
     }
 
     // Hyprland does not emit continuously updated geometry during a pointer
@@ -42,6 +48,7 @@ ShellRoot {
             TopBar {
                 required property var modelData
                 screen: modelData
+                shellController: root
             }
         }
     }

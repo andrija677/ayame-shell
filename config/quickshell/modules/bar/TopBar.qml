@@ -17,6 +17,8 @@ import "../utilities"
 PanelWindow {
     id: bar
 
+    required property var shellController
+
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
     readonly property int activeWorkspaceId:
         Math.max(1, hyprlandMonitor?.activeWorkspace?.id || 1)
@@ -332,5 +334,13 @@ PanelWindow {
     UtilitiesScreen {
         id: utilities
         screen: bar.screen
+    }
+
+    Connections {
+        target: bar.shellController
+        function onAreaCaptureRequested() {
+            if (Hyprland.focusedMonitor === bar.hyprlandMonitor)
+                utilities.startAreaScreenshot(0);
+        }
     }
 }

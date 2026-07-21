@@ -29,5 +29,5 @@ for workspace = 1, 5 do
     hl.bind("SUPER + SHIFT + " .. workspace, hl.dsp.window.move({ workspace = workspace }))
 end
 hl.bind("Print", hl.dsp.exec_cmd(screenshot .. " desktop 0"))
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd(screenshot .. " area 0"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd(ayame .. " ipc call capture area || " .. screenshot .. " area 0"))
 hl.bind("SUPER + Print", hl.dsp.exec_cmd(screenshot .. " monitor 0 AUTO"))

@@ -26,26 +26,42 @@ PanelWindow {
     property bool selectionDragging: false
     property string selectionPurpose: "screenshot"
     property string pendingRecordingAudio: "none"
-    readonly property var bindings: [
-        { keys: "SUPER", action: "Open launcher when released" },
-        { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
-        { keys: "CTRL + ALT + T", action: "Open Kitty (VM fallback)" },
-        { keys: "SUPER + 1…5", action: "Switch workspace" },
-        { keys: "SUPER + SHIFT + 1…5", action: "Move window to workspace" },
-        { keys: "SUPER + F", action: "Toggle fullscreen" },
-        { keys: "SUPER + SHIFT + F", action: "Toggle floating / unlock window" },
-        { keys: "SUPER + LEFT DRAG", action: "Move a floating window anywhere" },
-        { keys: "SUPER + RIGHT DRAG", action: "Resize a floating window" },
-        { keys: "SUPER + Q", action: "Close the active window" },
-        { keys: "PRINT", action: "Capture the full desktop" },
-        { keys: "SHIFT + PRINT", action: "Select an area to capture" },
-        { keys: "SUPER + PRINT", action: "Capture the active monitor" },
-        { keys: "SUPER + SHIFT + R", action: "Start or stop screen recording" }
+    readonly property var bindingGroups: [
+        { title: "Shell & Apps", entries: [
+            { keys: "SUPER", action: "Open the app launcher" },
+            { keys: "SUPER + ENTER", action: "Open Kitty terminal" },
+            { keys: "CTRL + ALT + T", action: "Open a recovery terminal" },
+            { keys: "SUPER + .", action: "Open the emoji picker" }
+        ] },
+        { title: "Windows", entries: [
+            { keys: "SUPER + Q", action: "Close the active window" },
+            { keys: "SUPER + F", action: "Toggle fullscreen" },
+            { keys: "SUPER + SHIFT + F", action: "Toggle floating" },
+            { keys: "SUPER + LEFT DRAG", action: "Move a window" },
+            { keys: "SUPER + RIGHT DRAG", action: "Resize a window" }
+        ] },
+        { title: "Workspaces", entries: [
+            { keys: "SUPER + 1…5", action: "Switch workspace" },
+            { keys: "SUPER + SHIFT + 1…5", action: "Move window to workspace" }
+        ] },
+        { title: "Quick Capture", entries: [
+            { keys: "PRINT", action: "Capture the full desktop" },
+            { keys: "SHIFT + PRINT", action: "Select an area" },
+            { keys: "SUPER + PRINT", action: "Capture the active monitor" },
+            { keys: "SUPER + SHIFT + R", action: "Start or stop recording" }
+        ] }
     ]
 
     function openCapturePill() {
         closePanel();
         capturePill.open();
+    }
+
+    function startAreaScreenshot(delay = 0) {
+        selectionPurpose = "screenshot";
+        captureMode = "area";
+        captureDelay = delay;
+        capture();
     }
 
     function openPage(targetPage) {
@@ -204,10 +220,9 @@ PanelWindow {
             if (exitCode !== 0 || root.captureError.length > 0) {
                 const failure = root.captureError.length > 0
                     ? root.captureError : "Screenshot failed. Check that grim and slurp can access this session.";
-                Qt.callLater(() => {
-                    root.openPage("capture");
-                    root.status = failure;
-                });
+                capturePill.error = failure;
+                capturePill.suppressVisibility = false;
+                capturePill.open();
             }
         }
     }
@@ -239,7 +254,7 @@ PanelWindow {
             RowLayout {
                 Layout.fillWidth: true
                 StyledText {
-                    text: root.page === "keys" ? "Keybinds" : "Screenshot"
+                    text: "Keybinds"
                     font.pixelSize: 24
                     font.weight: Theme.fontWeightDisplay
                     Layout.fillWidth: true
@@ -254,79 +269,82 @@ PanelWindow {
                         }
                     }
                 }
-                Repeater {
-                    model: [{ label: "Keys", value: "keys" }, { label: "Capture", value: "capture" }]
-                    Rectangle {
-                        required property var modelData
-                        implicitWidth: 76; implicitHeight: 30; radius: Theme.radiusPill
-                        color: root.page === modelData.value ? Theme.primary : Theme.surfaceContainerHigh
-                        StyledText { anchors.centerIn: parent; text: parent.modelData.label; font.pixelSize: 9; font.weight: Theme.fontWeightTitle }
-                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.page = parent.modelData.value }
-                    }
+                StyledText {
+                    text: "Ayame shortcuts"
+                    color: Theme.foregroundSurfaceVariant
+                    font.pixelSize: Theme.fontSmall
                 }
             }
 
-            ColumnLayout {
+            GridLayout {
                 Layout.fillWidth: true
-                visible: root.page === "keys"
-                spacing: Theme.space4
+                columns: 2
+                columnSpacing: Theme.space12
+                rowSpacing: Theme.space12
+
                 Repeater {
-                    model: root.bindings
-                    Surface {
+                    model: root.bindingGroups
+
+                    ColumnLayout {
                         required property var modelData
                         Layout.fillWidth: true
-                        implicitHeight: 42
-                        color: Theme.surfaceContainer
-                        RowLayout {
-                            anchors { fill: parent; leftMargin: Theme.space12; rightMargin: Theme.space12 }
-                            StyledText { text: parent.parent.modelData.keys; color: Theme.primary; font.family: Theme.fontFamilyNumeric; font.pixelSize: 10; font.weight: Theme.fontWeightLabel; Layout.preferredWidth: 180 }
-                            StyledText { text: parent.parent.modelData.action; Layout.fillWidth: true }
+                        Layout.alignment: Qt.AlignTop
+                        spacing: Theme.space4
+
+                        StyledText {
+                            text: parent.modelData.title.toUpperCase()
+                            color: Theme.primary
+                            font.pixelSize: 10
+                            font.weight: Theme.fontWeightTitle
+                            Layout.leftMargin: Theme.space4
+                        }
+
+                        Repeater {
+                            model: parent.modelData.entries
+
+                            Surface {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                implicitHeight: 48
+                                color: Theme.surfaceContainer
+
+                                ColumnLayout {
+                                    anchors {
+                                        fill: parent
+                                        leftMargin: Theme.space12
+                                        rightMargin: Theme.space12
+                                    }
+                                    spacing: 0
+
+                                    StyledText {
+                                        text: parent.parent.modelData.keys
+                                        color: Theme.primary
+                                        font.family: Theme.fontFamilyNumeric
+                                        font.pixelSize: 10
+                                        font.weight: Theme.fontWeightLabel
+                                    }
+                                    StyledText {
+                                        text: parent.parent.modelData.action
+                                        color: Theme.foregroundSurfaceVariant
+                                        font.pixelSize: Theme.fontSmall
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            ColumnLayout {
+            StyledText {
                 Layout.fillWidth: true
-                visible: root.page === "capture"
-                spacing: Theme.space12
-                StyledText { text: "What to Capture"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
-                RowLayout {
-                    Layout.fillWidth: true; spacing: Theme.space8
-                    Repeater {
-                        model: [{ label: "Desktop", value: "desktop" }, { label: "Monitor", value: "monitor" }, { label: "Area", value: "area" }]
-                        QuickToggleTile {
-                            required property var modelData
-                            Layout.fillWidth: true
-                            title: modelData.label
-                            subtitle: root.captureMode === modelData.value ? "Selected" : ""
-                            checked: root.captureMode === modelData.value
-                            onActivated: root.captureMode = modelData.value
-                        }
-                    }
-                }
-                StyledText { text: "Countdown"; color: Theme.primary; font.pixelSize: 10; font.weight: Theme.fontWeightTitle }
-                RowLayout {
-                    Layout.fillWidth: true; spacing: Theme.space8
-                    Repeater {
-                        model: [{ label: "Instant", value: 0 }, { label: "3 Seconds", value: 3 }, { label: "5 Seconds", value: 5 }]
-                        Rectangle {
-                            required property var modelData
-                            Layout.fillWidth: true; implicitHeight: 38; radius: Theme.radiusPill
-                            color: root.captureDelay === modelData.value ? Theme.primary : Theme.surfaceContainerHigh
-                            StyledText { anchors.centerIn: parent; text: parent.modelData.label; font.pixelSize: 9; font.weight: Theme.fontWeightTitle }
-                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.captureDelay = parent.modelData.value }
-                        }
-                    }
-                }
-                Rectangle {
-                    Layout.fillWidth: true; implicitHeight: 44; radius: Theme.radiusPill; color: capturePointer.containsMouse ? Theme.primary : Theme.primaryContainer
-                    StyledText { anchors.centerIn: parent; text: "Take Screenshot"; font.weight: Theme.fontWeightTitle }
-                    MouseArea { id: capturePointer; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.capture() }
-                }
+                text: "Open Screenshot from Quick Settings for capture modes, countdowns, and audio recording."
+                color: Theme.foregroundSurfaceVariant
+                font.pixelSize: Theme.fontSmall
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
             }
-
-            StyledText { Layout.fillWidth: true; visible: root.status.length > 0; text: root.status; color: Theme.foregroundSurfaceVariant; font.pixelSize: Theme.fontSmall; horizontalAlignment: Text.AlignHCenter }
         }
     }
 
@@ -448,10 +466,7 @@ PanelWindow {
         id: capturePill
         screen: root.screen
         onAreaScreenshotRequested: delay => {
-            root.selectionPurpose = "screenshot";
-            root.captureMode = "area";
-            root.captureDelay = delay;
-            root.capture();
+            root.startAreaScreenshot(delay);
         }
         onAreaRecordingRequested: (audio, delay) => {
             root.selectionPurpose = "recording";
