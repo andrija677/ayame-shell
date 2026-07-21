@@ -42,7 +42,7 @@ PanelWindow {
         top: Theme.barHeight + Theme.outerMargin + Theme.space4
         right: Theme.outerMargin
     }
-    implicitWidth: 380
+    implicitWidth: Math.min(440, screen.width - Theme.outerMargin * 2)
     implicitHeight: toastItem.implicitHeight
     exclusiveZone: -1
     exclusionMode: ExclusionMode.Ignore
@@ -83,6 +83,7 @@ PanelWindow {
         id: toastItem
         width: parent.width
         notification: root.currentNotification
+        bodyLineLimit: 3
         visible: root.currentNotification !== null
         opacity: root.toastOpen ? 1 : 0
         x: root.toastOpen ? 0 : Theme.space24

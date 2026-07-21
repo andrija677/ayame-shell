@@ -8,6 +8,7 @@ Surface {
     id: root
 
     required property var notification
+    property int bodyLineLimit: 4
     signal dismissed()
     property bool exiting: false
     property bool dismissAfterExit: false
@@ -188,8 +189,8 @@ Surface {
             text: root.notificationData.body
             color: Theme.foregroundSurfaceVariant
             font.pixelSize: Theme.fontSmall
-            wrapMode: Text.WrapAnywhere
-            maximumLineCount: 4
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            maximumLineCount: root.bodyLineLimit
             elide: Text.ElideRight
         }
 
