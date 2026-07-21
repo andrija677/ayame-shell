@@ -44,6 +44,13 @@ PanelWindow {
         }
         return null;
     }
+    readonly property var wifiDevice: {
+        for (const device of Networking.devices.values) {
+            if (device.type === DeviceType.Wifi)
+                return device;
+        }
+        return null;
+    }
     readonly property bool networkOnline: Networking.connectivity
         === NetworkConnectivity.Full
     readonly property bool networkLimited: Networking.connectivity
@@ -308,6 +315,34 @@ PanelWindow {
                 onActivated: SessionService.toggleNetworking()
             }
 
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: root.wifiDevice ? 48 : 0
+                visible: root.wifiDevice !== null
+                color: wifiNetworksPointer.containsMouse
+                    ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    StyledText { text: "Wi-Fi networks"; Layout.fillWidth: true }
+                    StyledText {
+                        text: Networking.wifiEnabled ? "BROWSE  ›" : "TURN ON  ›"
+                        color: Theme.primary
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+                }
+                MouseArea {
+                    id: wifiNetworksPointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.closePanel();
+                        wifiSetup.openPanel();
+                    }
+                }
+            }
+
             QuickToggleTile {
                 Layout.fillWidth: true
                 visible: root.bluetoothAdapter !== null
@@ -320,6 +355,34 @@ PanelWindow {
                 interactive: root.bluetoothAdapter !== null
                 onActivated: root.bluetoothAdapter.enabled
                     = !root.bluetoothAdapter.enabled
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: root.bluetoothAdapter ? 48 : 0
+                visible: root.bluetoothAdapter !== null
+                color: bluetoothDevicesPointer.containsMouse
+                    ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    StyledText { text: "Bluetooth devices"; Layout.fillWidth: true }
+                    StyledText {
+                        text: "MANAGE  ›"
+                        color: Theme.primary
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+                }
+                MouseArea {
+                    id: bluetoothDevicesPointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.closePanel();
+                        bluetoothSetup.openPanel();
+                    }
+                }
             }
 
             RowLayout {
@@ -474,5 +537,16 @@ PanelWindow {
             closeTimer.stop();
             root.visible = false;
         }
+    }
+
+    WifiSetupPopup {
+        id: wifiSetup
+        hostWindow: root.hostWindow
+        wifiDevice: root.wifiDevice
+    }
+    BluetoothSetupPopup {
+        id: bluetoothSetup
+        hostWindow: root.hostWindow
+        adapter: root.bluetoothAdapter
     }
 }
