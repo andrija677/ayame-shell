@@ -1,92 +1,76 @@
 pragma Singleton
 
 import QtQuick
-import Quickshell.Services.Pipewire
+import Quickshell.Io
 
 QtObject {
     id: root
 
-    readonly property var activeStreams: {
-        Pipewire.linkGroups.values;
-        const streams = [];
-        const seen = [];
-        for (const group of Pipewire.linkGroups.values) {
-            const source = group.source;
-            const target = group.target;
-            if (!source || !target || group.state !== PwLinkState.Active)
-                continue;
-            const sourceClass = source.properties?.["media.class"] || "";
-            const targetClass = target.properties?.["media.class"] || "";
-            const mic = sourceClass === "Audio/Source" ? source
-                : targetClass === "Audio/Source" ? target : null;
-            const stream = sourceClass === "Stream/Input/Audio" ? source
-                : targetClass === "Stream/Input/Audio" ? target : null;
-            if (!mic || !stream || seen.indexOf(stream.id) >= 0)
-                continue;
-            seen.push(stream.id);
-            streams.push(stream);
-        }
-        return streams;
-    }
-    readonly property bool active: activeStreams.length > 0
-    readonly property string appName: {
-        if (!active)
-            return "";
-        const stream = activeStreams[0];
-        return stream.properties?.["application.name"]
-            || stream.properties?.["media.name"]
-            || stream.description
-            || stream.nickname
-            || stream.name
-            || "Microphone";
-    }
-    readonly property int extraAppCount: Math.max(0, activeStreams.length - 1)
-    readonly property var activeCameraStreams: {
-        Pipewire.linkGroups.values;
-        const streams = [];
-        const seen = [];
-        for (const group of Pipewire.linkGroups.values) {
-            const source = group.source;
-            const target = group.target;
-            if (!source || !target || group.state !== PwLinkState.Active)
-                continue;
-            const sourceClass = source.properties?.["media.class"] || "";
-            const targetClass = target.properties?.["media.class"] || "";
-            const camera = sourceClass === "Video/Source" ? source
-                : targetClass === "Video/Source" ? target : null;
-            const stream = sourceClass === "Stream/Input/Video" ? source
-                : targetClass === "Stream/Input/Video" ? target : null;
-            if (!camera || !stream || seen.indexOf(stream.id) >= 0)
-                continue;
-            seen.push(stream.id);
-            streams.push(stream);
-        }
-        return streams;
-    }
-    readonly property bool cameraActive: activeCameraStreams.length > 0
-    readonly property string cameraAppName: {
-        if (!cameraActive)
-            return "";
-        const stream = activeCameraStreams[0];
-        return stream.properties?.["application.name"]
-            || stream.properties?.["media.name"]
-            || stream.description
-            || stream.nickname
-            || stream.name
-            || "Camera";
-    }
-    readonly property int extraCameraAppCount:
-        Math.max(0, activeCameraStreams.length - 1)
+    property var microphoneApps: []
+    property var cameraApps: []
+    readonly property bool active: microphoneApps.length > 0
+    readonly property string appName: active ? microphoneApps[0] : ""
+    readonly property int extraAppCount: Math.max(0, microphoneApps.length - 1)
+    readonly property bool cameraActive: cameraApps.length > 0
+    readonly property string cameraAppName: cameraActive ? cameraApps[0] : ""
+    readonly property int extraCameraAppCount: Math.max(0, cameraApps.length - 1)
 
-    property PwObjectTracker tracker: PwObjectTracker {
-        objects: {
-            const tracked = [];
-            for (const group of Pipewire.linkGroups.values) {
-                tracked.push(group);
-                if (group.source) tracked.push(group.source);
-                if (group.target) tracked.push(group.target);
-            }
-            return tracked;
+    function appLabel(props, fallback) {
+        return props["application.name"]
+            || props["application.process.binary"]
+            || props["media.name"]
+            || props["node.description"]
+            || props["node.nick"]
+            || props["node.name"]
+            || fallback;
+    }
+
+    function uniqueRunningApps(objects, mediaClass, fallback) {
+        const apps = [];
+        for (const object of objects) {
+            if (object?.type !== "PipeWire:Interface:Node"
+                    || object.info?.state !== "running")
+                continue;
+            const props = object.info?.props ?? {};
+            if (props["media.class"] !== mediaClass)
+                continue;
+            const label = appLabel(props, fallback);
+            if (apps.indexOf(label) < 0)
+                apps.push(label);
+        }
+        return apps;
+    }
+
+    function updateSnapshot(text) {
+        try {
+            const objects = JSON.parse(text);
+            microphoneApps = uniqueRunningApps(
+                objects, "Stream/Input/Audio", "Microphone"
+            );
+            cameraApps = uniqueRunningApps(
+                objects, "Stream/Input/Video", "Camera"
+            );
+        } catch (error) {
+            // Keep the previous good snapshot if PipeWire changes mid-dump.
+        }
+    }
+
+    property Process snapshotProcess: Process {
+        id: snapshotProcess
+        command: ["pw-dump"]
+        stdout: StdioCollector {
+            onStreamFinished: root.updateSnapshot(text)
+        }
+    }
+
+    property Timer refreshTimer: Timer {
+        interval: 1000
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            if (!snapshotProcess.running)
+                snapshotProcess.running = true;
         }
     }
 }

@@ -17,6 +17,7 @@ hypr_fragment="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ayame-shell.lua"
 kitty_main="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 kitty_fragment="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/ayame-shell.conf"
 sudoers_file="/etc/sudoers.d/ayame-hyprshutdown-${USER}"
+shell_service="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/ayame-shell.service"
 
 echo "This removes Ayame's installed files and generated Hyprland Lua loader."
 if [[ "$assume_yes" != true ]]; then
@@ -27,6 +28,10 @@ fi
 if [[ -x "$prefix/scripts/ayame-session-takeover.sh" ]]; then
     "$prefix/scripts/ayame-session-takeover.sh" restore
 fi
+
+systemctl --user disable --now ayame-shell.service >/dev/null 2>&1 || true
+rm -f "$shell_service"
+systemctl --user daemon-reload
 
 if [[ -f "$hypr_main" ]]; then
     temporary="$(mktemp)"

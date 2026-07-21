@@ -105,6 +105,10 @@ qs --path "$HOME/Projects/ayame-shell/config/quickshell"
 Stop it with `Ctrl+C` in the same terminal. This command does not modify the
 live Hyprland or Quickshell configuration.
 
+Installed sessions launch Ayame through `ayame-shell.service`. If Quickshell
+crashes unexpectedly, systemd starts it again after two seconds. A deliberate
+clean exit remains stopped until the next login or manual service start.
+
 ## Install
 
 ### Quick install
