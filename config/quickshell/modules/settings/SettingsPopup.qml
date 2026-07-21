@@ -131,7 +131,8 @@ PanelWindow {
             rightMargin: Theme.outerMargin
         }
         width: 460
-        implicitHeight: content.implicitHeight + Theme.space24
+        height: Math.min(settingsContent.implicitHeight + Theme.space24,
+            root.height - Theme.space24)
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
@@ -145,10 +146,21 @@ PanelWindow {
             yScale: 0.88 + 0.12 * motion.value
         }
 
-        ColumnLayout {
-            id: content
+        Flickable {
+            id: settingsFlickable
             anchors { fill: parent; margins: Theme.space12 }
-            spacing: Theme.space12
+            contentWidth: width
+            contentHeight: settingsContent.implicitHeight
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+            interactive: contentHeight > height
+            clip: true
+
+            ColumnLayout {
+                id: settingsContent
+                width: settingsFlickable.width
+                    - (settingsFlickable.interactive ? Theme.space8 : 0)
+                spacing: Theme.space12
 
             RowLayout {
                 Layout.fillWidth: true
@@ -180,7 +192,7 @@ PanelWindow {
                 font.weight: Theme.fontWeightTitle
             }
 
-            Surface {
+                Surface {
                 Layout.fillWidth: true
                 implicitHeight: 62
                 color: Theme.surfaceContainer
@@ -569,6 +581,32 @@ PanelWindow {
                         }
                     }
                 }
+                }
+            }
+        }
+
+        Rectangle {
+            id: scrollTrack
+            anchors {
+                top: settingsFlickable.top
+                bottom: settingsFlickable.bottom
+                right: settingsFlickable.right
+            }
+            width: 4
+            radius: Theme.radiusPill
+            color: Theme.translucent(Theme.outlineVariant, 0.35)
+            visible: settingsFlickable.interactive
+
+            Rectangle {
+                width: parent.width
+                height: Math.max(40, parent.height
+                    * settingsFlickable.height / settingsFlickable.contentHeight)
+                y: settingsFlickable.contentY
+                    / Math.max(1, settingsFlickable.contentHeight
+                        - settingsFlickable.height)
+                    * (parent.height - height)
+                radius: Theme.radiusPill
+                color: Theme.primary
             }
         }
     }
