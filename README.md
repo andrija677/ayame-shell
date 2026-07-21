@@ -1,7 +1,7 @@
 # Ayame Shell
 
-An original, modular Hyprland and Quickshell desktop shell for Endeavour OS,
-Arch-based systems, and compatible Debian-based systems.
+An original, modular Hyprland and Quickshell desktop shell for EndeavourOS and
+Arch-based systems. Debian-family compatibility detection is in beta.
 
 Please keep in mind that this is in beta, changes will occur in future releases.
 
@@ -120,18 +120,24 @@ Install the latest public version directly from GitHub:
 curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
 ```
 
-Arch and EndeavourOS are the primary supported platforms. **Debian-based distro
-support is currently in beta.** The same installer detects Arch, Debian, Ubuntu,
-Linux Mint, Zorin OS, and related distributions automatically through
-`/etc/os-release`, then selects `pacman` or `apt` package mappings.
+**EndeavourOS and Arch Linux are currently the supported installation
+platforms.** Debian-family installation is not generally supported yet; its
+automatic detection and dependency audit are available for beta testing. The
+same installer recognizes Debian, Ubuntu, Linux Mint, Zorin OS, and related
+distributions through `/etc/os-release`, then checks the appropriate `apt`
+package mappings without assuming they exist.
 
 Ubuntu-derived point releases may not provide a sufficiently recent Hyprland,
 Quickshell, Hyprlock, Hyprpaper, Matugen, or Rofimoji. Ayame checks repository
 availability and stops safely when the compatible core stack cannot be obtained;
 it never adds an untrusted PPA or mixes packages from another distribution
-release. Linux Mint 22 support is therefore experimental and currently expects
-those unavailable core components to have been provisioned from a trusted,
-compatible source.
+release.
+
+**Linux Mint 22.x is currently unsupported for a full Ayame installation.** A
+real Linux Mint 22.3/Noble test confirmed that its official repositories do not
+provide Ayame's required Quickshell, Hyprland 0.55+, Hyprlock, Hyprpaper,
+Matugen, or Rofimoji packages. The compatibility checker works there, but the
+installer will stop rather than add a third-party PPA or mix Ubuntu releases.
 
 Run a read-only compatibility report before installing:
 
