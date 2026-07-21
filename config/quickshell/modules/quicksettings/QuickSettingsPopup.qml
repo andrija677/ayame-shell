@@ -223,15 +223,25 @@ PanelWindow {
                         spacing: Theme.space8
 
                         Rectangle {
-                            implicitWidth: 42
-                            implicitHeight: 24
+                            implicitWidth: 32
+                            implicitHeight: 32
                             radius: Theme.radiusPill
-                            color: mutePointer.containsMouse
-                                ? Theme.surfaceContainerHigh : "transparent"
+                            color: root.audio?.muted
+                                ? Theme.error
+                                : mutePointer.containsMouse
+                                    ? Theme.primaryContainer
+                                    : Theme.surfaceContainerHigh
+                            scale: mutePointer.pressed ? 0.9 : 1
+                            Behavior on scale {
+                                NumberAnimation { duration: Theme.motionFast }
+                            }
                             StyledText {
                                 anchors.centerIn: parent
-                                text: root.audio?.muted ? "ON" : "MUTE"
-                                font.pixelSize: 9
+                                text: root.audio?.muted ? "󰝟" : "󰕾"
+                                color: root.audio?.muted
+                                    ? Theme.foregroundPrimary
+                                    : Theme.foregroundSurface
+                                font.pixelSize: 15
                                 font.weight: Theme.fontWeightTitle
                             }
                             MouseArea {
