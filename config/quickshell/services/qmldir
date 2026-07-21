@@ -6,3 +6,4 @@ singleton SessionService 1.0 SessionService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton WallpaperService 1.0 WallpaperService.qml
 singleton RecordingService 1.0 RecordingService.qml
+singleton MicrophoneService 1.0 MicrophoneService.qml

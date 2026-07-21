@@ -22,6 +22,17 @@ PanelWindow {
     readonly property bool open: panelOpen || settingsPanel.panelOpen
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property var audio: sink?.audio ?? null
+    readonly property var audioSinks: {
+        Pipewire.nodes.values;
+        const sinks = [];
+        for (const node of Pipewire.nodes.values) {
+            if (node.ready && node.audio
+                    && (node.type & PwNodeType.AudioSink) !== 0)
+                sinks.push(node);
+        }
+        sinks.sort((a, b) => a.description.localeCompare(b.description));
+        return sinks;
+    }
     readonly property var battery: UPower.displayDevice
     readonly property bool batteryAvailable: battery?.isPresent
         && battery?.isLaptopBattery
@@ -75,6 +86,7 @@ PanelWindow {
     }
     property bool panelOpen: false
     property bool keepAwake: false
+    property bool outputsOpen: false
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -141,7 +153,7 @@ PanelWindow {
         }
     }
 
-    PwObjectTracker { objects: root.sink ? [root.sink] : [] }
+    PwObjectTracker { objects: root.audioSinks }
 
     IdleInhibitor {
         window: root.hostWindow
@@ -205,8 +217,13 @@ PanelWindow {
 
             Surface {
                 Layout.fillWidth: true
-                implicitHeight: 82
+                implicitHeight: 82 + (root.outputsOpen
+                    ? root.audioSinks.length * 34 + Theme.space8 : 0)
                 color: Theme.surfaceContainer
+
+                Behavior on implicitHeight {
+                    NumberAnimation { duration: Theme.motionNormal; easing.type: Theme.easeEnter }
+                }
 
                 ColumnLayout {
                     anchors { fill: parent; margins: Theme.space12 }
@@ -222,6 +239,28 @@ PanelWindow {
                                 ? Theme.error : Theme.foregroundSurfaceVariant
                             font.pixelSize: Theme.fontSmall
                             font.weight: Theme.fontWeightLabel
+                        }
+                        Rectangle {
+                            visible: root.audioSinks.length > 1
+                            implicitWidth: 78
+                            implicitHeight: 24
+                            radius: Theme.radiusPill
+                            color: outputPointer.containsMouse || root.outputsOpen
+                                ? Theme.primaryContainer : Theme.surfaceContainerHigh
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: root.outputsOpen ? "OUTPUTS  ⌃" : "OUTPUTS  ⌄"
+                                color: Theme.foregroundPrimaryContainer
+                                font.pixelSize: 9
+                                font.weight: Theme.fontWeightTitle
+                            }
+                            MouseArea {
+                                id: outputPointer
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.outputsOpen = !root.outputsOpen
+                            }
                         }
                     }
 
@@ -292,6 +331,51 @@ PanelWindow {
                                 onPositionChanged: event => {
                                     if (pressed)
                                         root.setVolumeFromX(event.x);
+                                }
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: root.outputsOpen
+                        spacing: Theme.space4
+
+                        Repeater {
+                            model: root.audioSinks
+
+                            Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true
+                                implicitHeight: 30
+                                radius: Theme.radiusMedium
+                                color: modelData === Pipewire.defaultAudioSink
+                                    ? Theme.primaryContainer
+                                    : sinkPointer.containsMouse
+                                        ? Theme.surfaceContainerHigh : "transparent"
+                                RowLayout {
+                                    anchors { fill: parent; leftMargin: Theme.space8; rightMargin: Theme.space8 }
+                                    StyledText {
+                                        text: modelData === Pipewire.defaultAudioSink ? "●" : "○"
+                                        color: Theme.primary
+                                        font.pixelSize: 9
+                                    }
+                                    StyledText {
+                                        Layout.fillWidth: true
+                                        text: modelData.description || modelData.nickname || modelData.name
+                                        elide: Text.ElideRight
+                                        font.pixelSize: Theme.fontSmall
+                                    }
+                                }
+                                MouseArea {
+                                    id: sinkPointer
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        Pipewire.preferredDefaultAudioSink = modelData;
+                                        root.outputsOpen = false;
+                                    }
                                 }
                             }
                         }

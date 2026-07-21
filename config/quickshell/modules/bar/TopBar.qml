@@ -146,7 +146,7 @@ PanelWindow {
 
                 Surface {
                     anchors {
-                        right: systemPill.left
+                        right: privacyIndicators.left
                         rightMargin: Theme.space8 * bar.recordingProgress
                         verticalCenter: parent.verticalCenter
                     }
@@ -176,6 +176,19 @@ PanelWindow {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: RecordingService.stop()
                     }
+                }
+
+                Row {
+                    id: privacyIndicators
+                    anchors {
+                        right: systemPill.left
+                        rightMargin: Theme.space8
+                        verticalCenter: parent.verticalCenter
+                    }
+                    spacing: Theme.space4
+
+                    MicrophoneIndicator { }
+                    CameraIndicator { }
                 }
 
                 Surface {
