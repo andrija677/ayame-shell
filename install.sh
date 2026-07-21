@@ -209,8 +209,27 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
     "$prefix/scripts/ayame-emoji-picker.sh" \
     "$prefix/scripts/ayame-logout.sh" \
+    "$prefix/scripts/ayame-session-takeover.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
+
+if [[ "$replace_desktop" == true ]]; then
+    "$prefix/scripts/ayame-session-takeover.sh" apply
+fi
+
+lock_wallpaper="$prefix/assets/wallpapers/ayame-default.jpg"
+wallpaper_state="${XDG_STATE_HOME:-$HOME/.local/state}/ayame-shell/wallpaper.path"
+if [[ -f "$wallpaper_state" ]]; then
+    saved_wallpaper="$(head -n 1 "$wallpaper_state")"
+    [[ -f "$saved_wallpaper" ]] && lock_wallpaper="$saved_wallpaper"
+fi
+lock_config="$prefix/config/hyprlock/hyprlock.conf"
+temporary_lock="$(mktemp)"
+awk -v wallpaper="$lock_wallpaper" \
+    '$0 ~ /^\$wallpaper = / { print "$wallpaper = " wallpaper; next } { print }' \
+    "$lock_config" >"$temporary_lock"
+install -m 0644 "$temporary_lock" "$lock_config"
+rm -f "$temporary_lock"
 
 if [[ "$enable_kitty" == true ]]; then
     install -m 0644 "$prefix/config/kitty/ayame-shell.conf" "$kitty_fragment"
@@ -253,6 +272,7 @@ local screenshot = "$prefix/scripts/ayame-screenshot.sh"
 local recorder = "$prefix/scripts/ayame-record.sh"
 local wallpaper = "$prefix/scripts/ayame-wallpaper.sh"
 local emoji_picker = "$prefix/scripts/ayame-emoji-picker.sh"
+local lock_config = "$prefix/config/hyprlock/hyprlock.conf"
 
 hl.config({
     decoration = {
@@ -274,6 +294,7 @@ end)
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(ayame .. " ipc call launcher toggle"), { release = true, description = "Open Ayame launcher" })
 hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("kitty"), { description = "Open Kitty terminal" })
 hl.bind("SUPER + PERIOD", hl.dsp.exec_cmd(emoji_picker), { description = "Open emoji picker" })
+hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock --config " .. lock_config), { description = "Lock with Ayame" })
 hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("kitty"), { description = "Open Kitty terminal (VM fallback)" })
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }), { description = "Toggle fullscreen" })
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })

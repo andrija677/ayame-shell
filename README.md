@@ -117,9 +117,11 @@ curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstr
 
 NOTE:Arch based distros only,Endeavour OS recommended
 
-If you have existing Hyprland or Quickshell dotfiles, Ayame Shell will automatically back them up before replacing them with its own configuration.
-
-Please note that some elements from your old setup, such as the Hyprland lock screen, will remain active after the upgrade. This is a known issue that will be resolved in a future update.
+If you choose desktop replacement, Ayame backs up existing Hyprland and
+Quickshell dotfiles before installing its standalone configuration. Conflicting
+notification services are recoverably masked so they cannot race Ayame for the
+notification D-Bus name, and uninstall or migration rollback restores their
+previous enabled/running state.
 
 Future updates will allow support for more distros. (hopefully)
 
@@ -139,7 +141,9 @@ From the cloned repository, run:
 The installer checks dependencies, previews its destination, backs up an existing
 Ayame installation, installs under `~/.local/share/ayame-shell`, creates the
 `~/.local/bin/ayame-shell` launcher, and optionally adds one backed-up Hyprland
-source line. It never replaces existing Quickshell, Hyprlock, or Hypridle files.
+source line. Ordinary installation never replaces existing Quickshell, Hyprlock,
+or Hypridle files. Ayame launches its own installed Hyprlock configuration
+explicitly, so a user's global lock configuration remains untouched.
 On EndeavourOS and Arch Linux it offers to install missing core packages with
 `pacman`, including Hyprland, Quickshell, Hyprlock, the screenshot tools, and
 Kitty. Pass `--no-install-deps` to require a pre-provisioned system instead.
@@ -148,7 +152,8 @@ Hyprland 0.55 Lua profile that loads Ayame and starts it only for Hyprland login
 autostart Ayame in KDE Plasma or other desktop sessions.
 Autostart waits briefly for the graphical session and records diagnostics under
 `~/.local/state/ayame-shell/startup.log`. Super+Enter opens Kitty, with
-Ctrl+Alt+T available as a VM-friendly fallback.
+Ctrl+Alt+T available as a VM-friendly fallback. Super+L opens Ayame's lock screen
+using the current Ayame wallpaper.
 A separately included Kitty fragment provides the Ayame Violet
 terminal palette, spacing, transparency, and Ctrl+V clipboard paste without
 replacing an existing Kitty configuration.
@@ -172,7 +177,9 @@ curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstr
 This previews detected configs, moves the active `hypr` and `quickshell` roots
 (including symlinks) into one timestamped state backup, installs a standalone
 Ayame profile, and prints the path to a generated rollback script. Supporting
-ML4W, Waybar, SwayNC, Hyprlock, and UWSM data is detected but left untouched.
+ML4W, Waybar, Hyprlock, and UWSM data is detected but left untouched. Known
+standalone notification daemons are stopped and user-masked with their previous
+state recorded for uninstall or rollback.
 The running session is never terminated by the installer; switch after logout.
 
 See [docs/TESTING.md](docs/TESTING.md) for troubleshooting and rollback steps.

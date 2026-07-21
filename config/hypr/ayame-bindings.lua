@@ -3,6 +3,7 @@ local project = os.getenv("HOME") .. "/Projects/ayame-shell"
 local ayame = "qs --path " .. project .. "/config/quickshell"
 local screenshot = project .. "/scripts/ayame-screenshot.sh"
 local wallpaper = project .. "/scripts/ayame-wallpaper.sh"
+local lock_config = project .. "/config/hyprlock/hyprlock.conf"
 
 hl.config({
     misc = {
@@ -19,6 +20,7 @@ end)
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(ayame .. " ipc call launcher toggle"), { release = true })
 hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("kitty"))
 hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd("kitty"))
+hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock --config " .. lock_config))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("SUPER + Q", hl.dsp.window.close())

@@ -221,9 +221,14 @@ Hyprlock may write ordinary lifecycle messages to stderr, so Ayame uses its exit
 code—not stderr presence—to detect failure. A successful unlock leaves the power
 surface unmapped; only a nonzero exit reopens it with diagnostic text.
 
-The Hyprlock configuration is self-contained and currently reads ML4W's local
-blurred-wallpaper cache, matching Ayame's development environment. It provides a
+The Hyprlock configuration is self-contained. Installation generates its
+wallpaper path from Ayame's persisted wallpaper, falling back to the bundled
+default artwork. It provides a
 centered clock, date, greeting, and rounded password surface using the same
-Adwaita Sans typography and violet fallback palette. Installation work will
-generate its wallpaper path and colors; the repository never overwrites the live
-`~/.config/hyprlock.conf`.
+Adwaita Sans typography and violet fallback palette. Ayame launches this owned
+configuration explicitly and never overwrites the live `~/.config/hyprlock.conf`.
+
+Desktop replacement also takes recoverable ownership of notifications. Known
+standalone user services such as SwayNC, Dunst, Mako, and Fnott are stopped and
+masked after their prior enabled/running state is recorded under Ayame's state
+directory. Uninstall and generated migration rollback restore that state.

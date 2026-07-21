@@ -326,8 +326,15 @@ After a successful unlock, the power surface must remain completely absent rathe
 than flashing behind Hyprlock or replaying a close transition. Normal Hyprlock
 stderr output must not be presented as an error; a nonzero exit may reopen the
 surface with its diagnostic text.
-Inspect the project lock configuration directly rather than copying it over the
-user's live Hyprlock configuration.
+Confirm Super+L and the power action both use Ayame's installed lock design and
+current persisted wallpaper. The user's live Hyprlock configuration must remain
+untouched.
+
+For desktop-replacement migration, start a known notification daemon such as
+SwayNC before installation. Confirm replacement records and user-masks the
+service, Ayame owns `org.freedesktop.Notifications` after the next login, and no
+legacy popup appears. Run uninstall or the generated rollback script and confirm
+the daemon's previous enabled/running state is restored.
 
 If the terminal was closed, list Quickshell instances first:
 

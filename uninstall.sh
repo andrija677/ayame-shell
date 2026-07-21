@@ -24,6 +24,10 @@ if [[ "$assume_yes" != true ]]; then
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
 fi
 
+if [[ -x "$prefix/scripts/ayame-session-takeover.sh" ]]; then
+    "$prefix/scripts/ayame-session-takeover.sh" restore
+fi
+
 if [[ -f "$hypr_main" ]]; then
     temporary="$(mktemp)"
     awk -v fragment="$hypr_fragment" \
