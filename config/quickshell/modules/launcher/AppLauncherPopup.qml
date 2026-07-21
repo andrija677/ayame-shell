@@ -168,6 +168,13 @@ PanelWindow {
         radius: Theme.radiusLarge
         color: Theme.surface
 
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: Theme.motionNormal
+                easing.type: Theme.easeEnter
+            }
+        }
+
         transform: Scale {
             origin.x: launcherSurface.width / 2
             origin.y: launcherSurface.height
@@ -334,6 +341,49 @@ PanelWindow {
                 }
                 Keys.onReturnPressed: root.launch(root.filteredApps[currentIndex])
                 Keys.onEnterPressed: root.launch(root.filteredApps[currentIndex])
+
+                Behavior on implicitHeight {
+                    NumberAnimation {
+                        duration: Theme.motionNormal
+                        easing.type: Theme.easeEnter
+                    }
+                }
+
+                add: Transition {
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "opacity,scale"
+                            from: 0
+                            to: 1
+                            duration: Theme.motionNormal
+                            easing.type: Theme.easeEnter
+                        }
+                    }
+                }
+
+                remove: Transition {
+                    ParallelAnimation {
+                        NumberAnimation {
+                            property: "opacity"
+                            to: 0
+                            duration: Theme.motionFast
+                        }
+                        NumberAnimation {
+                            property: "scale"
+                            to: 0.94
+                            duration: Theme.motionNormal
+                            easing.type: Theme.easeExit
+                        }
+                    }
+                }
+
+                displaced: Transition {
+                    NumberAnimation {
+                        properties: "x,y"
+                        duration: Theme.motionNormal
+                        easing.type: Theme.easeEnter
+                    }
+                }
 
                 delegate: Rectangle {
                     id: appDelegate
