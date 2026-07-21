@@ -42,7 +42,7 @@ Surface {
         anchors.centerIn: parent
         text: Qt.formatDateTime(clock.date,
             ShellConfig.clockFormat === "12h" ? "h:mm AP" : "HH:mm")
-        font.family: Theme.fontFamilyNumeric
+        font.family: Theme.fontFamily
         color: Theme.foregroundSurface
         opacity: root.expanded ? 0 : 1
         y: root.expanded ? Theme.space4 : 0
@@ -64,6 +64,7 @@ Surface {
         opacity: root.expanded ? 1 : 0
         y: root.expanded ? 0 : -Theme.space4
         scale: root.expanded ? 1 : 0.92
+        font.family: Theme.fontFamily
         font.pixelSize: Theme.fontNormal
         font.weight: Theme.fontWeightLabel
 

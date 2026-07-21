@@ -41,7 +41,7 @@ Rectangle {
     StyledText {
         anchors.centerIn: parent
         text: root.workspaceId
-        font.family: Theme.fontFamilyNumeric
+        font.family: Theme.fontFamily
         color: root.active
             ? Theme.foregroundPrimary
             : Theme.foregroundSurfaceVariant
