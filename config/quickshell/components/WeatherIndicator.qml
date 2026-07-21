@@ -30,8 +30,7 @@ Rectangle {
             : WeatherService.loading ? "WEATHER…" : "WEATHER"
         color: WeatherService.error.length > 0
             ? Theme.warning : Theme.foregroundSurfaceVariant
-        font.family: WeatherService.hasData
-            ? Theme.fontFamilyNumeric : Theme.fontFamily
+        font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSmall
         font.weight: Theme.fontWeightLabel
     }
