@@ -43,8 +43,10 @@ PanelWindow {
         right: true
     }
 
-    implicitHeight: Theme.barHeight
-        + (ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0)
+    // Keep the layer-surface geometry stable when changing styles. Some
+    // compositors retain the previous buffer until another pointer-driven
+    // frame if a PanelWindow is resized live.
+    implicitHeight: Theme.barHeight + Theme.outerMargin
     visible: ShellConfig.barEnabled
     color: "transparent"
     exclusiveZone: implicitHeight
@@ -56,6 +58,7 @@ PanelWindow {
             leftMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
             rightMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
             topMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
+            bottomMargin: ShellConfig.barStyle === "floating" ? 0 : Theme.outerMargin
         }
         radius: ShellConfig.barStyle === "floating" ? Theme.radiusLarge : 0
         color: ShellConfig.barStyle === "minimal" ? "transparent" : Theme.surface
