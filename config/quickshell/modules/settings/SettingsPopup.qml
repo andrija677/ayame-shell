@@ -339,10 +339,77 @@ PanelWindow {
             }
 
             StyledText {
-                text: "Shell Layout"
+                text: "UI Interface"
                 color: Theme.primary
                 font.pixelSize: 10
                 font.weight: Theme.fontWeightTitle
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 62
+                color: Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Theme.space2
+                        StyledText { text: "Top-bar style"; font.weight: Theme.fontWeightLabel }
+                        StyledText {
+                            text: "Changes apply instantly"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                        }
+                    }
+                    Repeater {
+                        model: [
+                            { label: "Float", value: "floating" },
+                            { label: "Edge", value: "edge" },
+                            { label: "Minimal", value: "minimal" }
+                        ]
+                        Rectangle {
+                            required property var modelData
+                            implicitWidth: modelData.value === "minimal" ? 64 : 50
+                            implicitHeight: 28
+                            radius: Theme.radiusPill
+                            color: ShellConfig.barStyle === modelData.value
+                                ? Theme.primary : Theme.outlineVariant
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: parent.modelData.label
+                                color: ShellConfig.barStyle === parent.modelData.value
+                                    ? Theme.foregroundPrimary : Theme.foregroundSurfaceVariant
+                                font.pixelSize: 9
+                                font.weight: Theme.fontWeightTitle
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: ShellConfig.barStyle = parent.modelData.value
+                            }
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Top bar"
+                    subtitle: checked ? "Visible" : "Hidden"
+                    checked: ShellConfig.barEnabled
+                    onActivated: ShellConfig.barEnabled = !checked
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Workspaces"
+                    subtitle: checked ? "Visible in bar" : "Hidden from bar"
+                    checked: ShellConfig.workspacesEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.workspacesEnabled = !checked
+                }
             }
 
             Surface {
@@ -398,6 +465,90 @@ PanelWindow {
                     subtitle: checked ? "Visible in bar" : "Hidden from bar"
                     checked: ShellConfig.activeWindowEnabled
                     onActivated: ShellConfig.activeWindowEnabled = !checked
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Clock"
+                    subtitle: checked ? "Visible in bar" : "Hidden from bar"
+                    checked: ShellConfig.clockEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.clockEnabled = !checked
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Dashboard"
+                    subtitle: checked ? "Clock opens dashboard" : "Dashboard hidden"
+                    checked: ShellConfig.dashboardEnabled
+                    interactive: ShellConfig.clockEnabled && ShellConfig.barEnabled
+                    onActivated: ShellConfig.dashboardEnabled = !checked
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Weather"
+                    subtitle: checked ? "Visible in bar" : "Hidden from bar"
+                    checked: ShellConfig.weatherEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.weatherEnabled = !checked
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Audio"
+                    subtitle: checked ? "Volume control shown" : "Hidden from bar"
+                    checked: ShellConfig.audioEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.audioEnabled = !checked
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Network"
+                    subtitle: checked ? "Connection shown" : "Hidden from bar"
+                    checked: ShellConfig.networkEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.networkEnabled = !checked
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Battery"
+                    subtitle: checked ? "Shown when available" : "Hidden from bar"
+                    checked: ShellConfig.batteryEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.batteryEnabled = !checked
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "System tray"
+                    subtitle: checked ? "App indicators shown" : "Hidden from bar"
+                    checked: ShellConfig.trayEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.trayEnabled = !checked
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    title: "Quick settings"
+                    subtitle: checked ? "Control button shown" : "Hidden from bar"
+                    checked: ShellConfig.quickSettingsEnabled
+                    interactive: ShellConfig.barEnabled
+                    onActivated: ShellConfig.quickSettingsEnabled = !checked
                 }
             }
 

@@ -43,7 +43,8 @@ PanelWindow {
         right: true
     }
 
-    implicitHeight: Theme.barHeight + Theme.outerMargin
+    implicitHeight: Theme.barHeight
+        + (ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0)
     visible: ShellConfig.barEnabled
     color: "transparent"
     exclusiveZone: implicitHeight
@@ -52,12 +53,12 @@ PanelWindow {
     Surface {
         anchors {
             fill: parent
-            leftMargin: Theme.outerMargin
-            rightMargin: Theme.outerMargin
-            topMargin: Theme.outerMargin
+            leftMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
+            rightMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
+            topMargin: ShellConfig.barStyle === "floating" ? Theme.outerMargin : 0
         }
-        radius: Theme.radiusLarge
-        color: Theme.surface
+        radius: ShellConfig.barStyle === "floating" ? Theme.radiusLarge : 0
+        color: ShellConfig.barStyle === "minimal" ? "transparent" : Theme.surface
 
         RowLayout {
             anchors {

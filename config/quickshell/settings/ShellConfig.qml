@@ -10,6 +10,7 @@ QtObject {
     property bool ready: false
 
     property alias barEnabled: values.barEnabled
+    property alias barStyle: values.barStyle
     property alias dockEnabled: values.dockEnabled
     property alias dockAutoHide: values.dockAutoHide
     property alias pinnedDockApps: values.pinnedDockApps
@@ -97,6 +98,7 @@ QtObject {
 
     function resetDefaults() {
         values.barEnabled = true;
+        values.barStyle = "floating";
         values.dockEnabled = true;
         values.dockAutoHide = false;
         values.pinnedDockApps = "";
@@ -154,6 +156,7 @@ QtObject {
             id: values
 
             property bool barEnabled: true
+            property string barStyle: "floating"
             property bool dockEnabled: true
             property bool dockAutoHide: false
             property string pinnedDockApps: ""
