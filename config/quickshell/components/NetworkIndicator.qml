@@ -6,7 +6,15 @@ import "../theme"
 Rectangle {
     id: root
 
+    signal quickSettingsRequested()
     required property var hostWindow
+    readonly property var connectedDevice: {
+        for (const device of Networking.devices.values) {
+            if (device.connected)
+                return device;
+        }
+        return null;
+    }
     readonly property var connectedWifi: {
         const devices = Networking.devices.values;
         for (let device of devices) {
@@ -170,10 +178,37 @@ Rectangle {
                 }
                 StyledText {
                     width: parent.width
-                    text: "Connection controls will live in Quick Settings"
+                    visible: (root.connectedDevice?.address || "").length > 0
+                    text: "Device  •  " + root.connectedDevice.address
                     color: Theme.outline
                     font.pixelSize: 10
                     wrapMode: Text.WordWrap
+                }
+                Rectangle {
+                    width: parent.width
+                    implicitHeight: 30
+                    radius: Theme.radiusPill
+                    color: detailsPointer.containsMouse
+                        ? Theme.primary : Theme.primaryContainer
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: "OPEN QUICK SETTINGS"
+                        color: detailsPointer.containsMouse
+                            ? Theme.foregroundPrimary
+                            : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    MouseArea {
+                        id: detailsPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            details.visible = false;
+                            root.quickSettingsRequested();
+                        }
+                    }
                 }
             }
         }

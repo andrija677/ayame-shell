@@ -26,6 +26,29 @@ PanelWindow {
     readonly property bool batteryAvailable: battery?.isPresent
         && battery?.isLaptopBattery
     readonly property var bluetoothAdapter: Bluetooth.defaultAdapter
+    readonly property var connectedWifi: {
+        for (const device of Networking.devices.values) {
+            if (device.type !== DeviceType.Wifi)
+                continue;
+            for (const network of device.networks.values) {
+                if (network.connected)
+                    return network;
+            }
+        }
+        return null;
+    }
+    readonly property var connectedDevice: {
+        for (const device of Networking.devices.values) {
+            if (device.connected)
+                return device;
+        }
+        return null;
+    }
+    readonly property bool networkOnline: Networking.connectivity
+        === NetworkConnectivity.Full
+    readonly property bool networkLimited: Networking.connectivity
+        === NetworkConnectivity.Limited
+        || Networking.connectivity === NetworkConnectivity.Portal
     readonly property int connectedBluetoothCount: {
         let count = 0;
         for (let device of Bluetooth.devices.values) {
@@ -261,21 +284,24 @@ PanelWindow {
 
             QuickToggleTile {
                 Layout.fillWidth: true
-                title: "Networking"
+                title: root.connectedWifi?.name || "Network"
                 subtitle: SessionService.networkingBusy ? "Switching…"
-                    : checked ? "Connections enabled" : "All connections disabled"
-                checked: SessionService.networkingEnabled
+                    : !SessionService.networkingEnabled ? "All connections disabled"
+                    : root.connectedWifi
+                        ? "Wi-Fi • " + Math.round(root.connectedWifi.signalStrength) + "% signal"
+                        : root.networkOnline ? "Connected • wired or virtual"
+                        : root.networkLimited ? "Limited internet access"
+                        : Networking.wifiHardwareEnabled && Networking.wifiEnabled
+                            ? "Wi-Fi enabled • not connected" : "Offline"
+                checked: Networking.wifiHardwareEnabled
+                    ? Networking.wifiEnabled : SessionService.networkingEnabled
                 interactive: !SessionService.networkingBusy
-                onActivated: SessionService.toggleNetworking()
-            }
-
-            QuickToggleTile {
-                Layout.fillWidth: true
-                visible: Networking.wifiHardwareEnabled
-                title: "Wi-Fi"
-                subtitle: checked ? "Wireless enabled" : "Wireless disabled"
-                checked: Networking.wifiEnabled
-                onActivated: Networking.wifiEnabled = !checked
+                onActivated: {
+                    if (Networking.wifiHardwareEnabled)
+                        Networking.wifiEnabled = !checked;
+                    else
+                        SessionService.toggleNetworking();
+                }
             }
 
             QuickToggleTile {
@@ -366,29 +392,6 @@ PanelWindow {
                                 }
                             }
                         }
-                    }
-                }
-            }
-
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: 62
-                color: Theme.surfaceContainer
-                RowLayout {
-                    anchors { fill: parent; margins: Theme.space12 }
-                    StyledText { text: "Network"; Layout.fillWidth: true }
-                    StyledText {
-                        text: Networking.connectivity === NetworkConnectivity.Full
-                            ? "CONNECTED"
-                            : Networking.connectivity === NetworkConnectivity.Limited
-                                || Networking.connectivity === NetworkConnectivity.Portal
-                                ? "LIMITED" : "OFFLINE"
-                        color: Networking.connectivity === NetworkConnectivity.Full
-                            ? Theme.success
-                            : Networking.connectivity === NetworkConnectivity.None
-                                ? Theme.error : Theme.warning
-                        font.pixelSize: Theme.fontSmall
-                        font.weight: Theme.fontWeightLabel
                     }
                 }
             }

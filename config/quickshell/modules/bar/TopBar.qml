@@ -201,6 +201,7 @@ PanelWindow {
                         NetworkIndicator {
                             visible: ShellConfig.networkEnabled
                             hostWindow: bar
+                            onQuickSettingsRequested: quickSettings.openPanel()
                         }
 
                         WeatherIndicator {
