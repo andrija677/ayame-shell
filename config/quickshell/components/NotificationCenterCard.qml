@@ -7,6 +7,20 @@ import "../theme"
 Surface {
     id: root
 
+    property bool clearing: false
+
+    function clearWithAnimation() {
+        if (clearing || NotificationService.count === 0)
+            return;
+        clearing = true;
+        for (let i = 0; i < notificationRepeater.count; ++i) {
+            const item = notificationRepeater.itemAt(i);
+            if (item)
+                item.startExit(false);
+        }
+        clearTimer.restart();
+    }
+
     readonly property var recentNotifications: {
         NotificationService.count;
         const items = NotificationService.displayNotifications;
@@ -16,6 +30,22 @@ Surface {
     Layout.fillWidth: true
     implicitHeight: notificationColumn.implicitHeight + Theme.space24
     color: Theme.surfaceContainer
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: Theme.motionNormal
+            easing.type: Theme.easeEnter
+        }
+    }
+
+    Timer {
+        id: clearTimer
+        interval: Math.max(1, Theme.motionNormal)
+        onTriggered: {
+            NotificationService.clearAll();
+            root.clearing = false;
+        }
+    }
 
     ColumnLayout {
         id: notificationColumn
@@ -41,7 +71,8 @@ Surface {
                     anchors { fill: parent; margins: -Theme.space8 }
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: NotificationService.clearAll()
+                    enabled: !root.clearing
+                    onClicked: root.clearWithAnimation()
                 }
             }
         }
@@ -85,6 +116,7 @@ Surface {
         }
 
         Repeater {
+            id: notificationRepeater
             model: root.recentNotifications
 
             NotificationItem {

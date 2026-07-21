@@ -9,6 +9,9 @@ Surface {
 
     required property var notification
     signal dismissed()
+    property bool exiting: false
+    property bool dismissAfterExit: false
+    property real exitProgress: 0
     readonly property var notificationData: notification?.payload ?? notification ?? ({
         appIcon: "", desktopEntry: "", summary: "", appName: "",
         body: "", actions: []
@@ -35,7 +38,7 @@ Surface {
         return label.length > 0 ? label.toUpperCase() : "OPEN";
     }
 
-    function dismissNotification() {
+    function finishDismiss() {
         if (notification?.dismiss) {
             notification.dismiss();
         } else {
@@ -44,6 +47,20 @@ Surface {
                 notificationData.tracked = false;
         }
         dismissed();
+    }
+
+    function startExit(dismissAfter = false) {
+        if (exiting)
+            return;
+        dismissAfterExit = dismissAfter;
+        exiting = true;
+        exitProgress = 1;
+        if (dismissAfter)
+            exitTimer.restart();
+    }
+
+    function dismissNotification() {
+        startExit(true);
     }
     readonly property string resolvedIcon: {
         const icon = notificationData.appIcon || "";
@@ -57,14 +74,37 @@ Surface {
             notificationData.desktopEntry || "dialog-information", true);
     }
 
-    implicitHeight: notificationContent.implicitHeight + Theme.space24
+    readonly property real expandedHeight: notificationContent.implicitHeight + Theme.space24
+    implicitHeight: Math.max(0, expandedHeight * (1 - exitProgress))
     radius: Theme.radiusLarge
-    color: Theme.surfaceContainer
+    color: Theme.translucent(Theme.surfaceContainer, 1 - exitProgress)
+    clip: true
+
+    transform: Translate {
+        x: root.exitProgress * Theme.space24
+    }
+
+    Behavior on exitProgress {
+        NumberAnimation {
+            duration: Theme.motionNormal
+            easing.type: Theme.easeExit
+        }
+    }
+
+    Timer {
+        id: exitTimer
+        interval: Math.max(1, Theme.motionNormal)
+        onTriggered: {
+            if (root.dismissAfterExit)
+                root.finishDismiss();
+        }
+    }
 
     ColumnLayout {
         id: notificationContent
         anchors { fill: parent; margins: Theme.space12 }
         spacing: Theme.space6
+        opacity: 1 - root.exitProgress
 
         RowLayout {
             Layout.fillWidth: true
