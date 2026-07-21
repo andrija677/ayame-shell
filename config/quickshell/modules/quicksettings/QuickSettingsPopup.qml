@@ -131,6 +131,15 @@ PanelWindow {
         audio.volume = Math.max(0, Math.min(1, position / volumeTrack.width));
     }
 
+    function nonWifiConnectionLabel(device) {
+        const name = (device?.name || "").toLowerCase();
+        if (/^(enp|eno|ens|eth)/.test(name))
+            return "Connected • wired";
+        if (/^(br-|docker|podman|virbr|vnet|tun|tap|wg|tailscale)/.test(name))
+            return "Connected • virtual";
+        return "Connected";
+    }
+
     screen: hostWindow.screen
     anchors { top: true; bottom: true; left: true; right: true }
     exclusiveZone: 0
@@ -390,7 +399,8 @@ PanelWindow {
                     : !SessionService.networkingEnabled ? "All connections disabled"
                     : root.connectedWifi
                         ? "Wi-Fi • " + Math.round(root.connectedWifi.signalStrength) + "% signal"
-                        : root.networkOnline ? "Connected • wired or virtual"
+                        : root.networkOnline
+                            ? root.nonWifiConnectionLabel(root.connectedDevice)
                         : root.networkLimited ? "Limited internet access"
                         : Networking.wifiHardwareEnabled && Networking.wifiEnabled
                             ? "Wi-Fi enabled • not connected" : "Offline"

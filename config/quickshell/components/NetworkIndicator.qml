@@ -41,6 +41,15 @@ Rectangle {
         ? Theme.foregroundSurfaceVariant
         : limited ? Theme.warning : Theme.error
 
+    function nonWifiConnectionLabel(device) {
+        const name = (device?.name || "").toLowerCase();
+        if (/^(enp|eno|ens|eth)/.test(name))
+            return "Connected  •  wired";
+        if (/^(br-|docker|podman|virbr|vnet|tun|tap|wg|tailscale)/.test(name))
+            return "Connected  •  virtual";
+        return "Connected";
+    }
+
     implicitWidth: Theme.itemHeight
     implicitHeight: Theme.itemHeight
     radius: Theme.radiusPill
@@ -170,7 +179,8 @@ Rectangle {
                     width: parent.width
                     text: root.connectedWifi
                         ? "Wi-Fi  •  " + root.signalPercent + "% signal"
-                        : root.online ? "Connected  •  non-Wi-Fi"
+                        : root.online
+                            ? root.nonWifiConnectionLabel(root.connectedDevice)
                         : root.limited ? "Limited internet access"
                         : "Offline"
                     color: root.iconColor
