@@ -13,7 +13,27 @@ Surface {
         appIcon: "", desktopEntry: "", summary: "", appName: "",
         body: "", actions: []
     })
-    readonly property var safeActions: notificationData.actions || []
+    readonly property var visibleActions: {
+        const actions = notificationData.actions || [];
+        const visible = [];
+        for (let i = 0; i < actions.length; ++i) {
+            const action = actions[i];
+            const label = (action?.text ?? "").trim();
+            // The freedesktop notification specification permits a default
+            // action with an empty label. It opens the notification's app or
+            // associated content, so give it a useful label instead of
+            // drawing an unexplained empty pill. Ignore any other malformed,
+            // unlabeled actions.
+            if (label.length > 0 || action?.identifier === "default")
+                visible.push(action);
+        }
+        return visible;
+    }
+
+    function actionText(action) {
+        const label = (action?.text ?? "").trim();
+        return label.length > 0 ? label.toUpperCase() : "OPEN";
+    }
 
     function dismissNotification() {
         if (notification?.dismiss) {
@@ -111,11 +131,11 @@ Surface {
 
         RowLayout {
             Layout.fillWidth: true
-            visible: root.safeActions.length > 0
+            visible: root.visibleActions.length > 0
             spacing: Theme.space6
 
             Repeater {
-                model: root.safeActions
+                model: root.visibleActions
 
                 Rectangle {
                     required property var modelData
@@ -127,7 +147,7 @@ Surface {
                     StyledText {
                         id: actionLabel
                         anchors.centerIn: parent
-                        text: parent.modelData.text.toUpperCase()
+                        text: root.actionText(parent.modelData)
                         color: actionPointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 9
