@@ -609,6 +609,49 @@ PanelWindow {
                 color: Theme.primary
             }
         }
+
+        Rectangle {
+            anchors {
+                top: settingsFlickable.top
+                left: settingsFlickable.left
+                right: settingsFlickable.right
+            }
+            height: 38
+            radius: Theme.radiusMedium
+            color: Theme.surface
+            opacity: settingsFlickable.interactive
+                ? Math.min(1, settingsFlickable.contentY / 32) : 0
+            visible: opacity > 0
+            z: 3
+
+            RowLayout {
+                anchors {
+                    fill: parent
+                    leftMargin: Theme.space4
+                    rightMargin: Theme.space8
+                }
+                StyledText {
+                    text: "Ayame Settings"
+                    font.pixelSize: Theme.fontTitle
+                    font.weight: Theme.fontWeightTitle
+                    Layout.fillWidth: true
+                }
+                StyledText {
+                    text: "Close"
+                    color: stickyClosePointer.containsMouse
+                        ? Theme.primary : Theme.outline
+                    font.pixelSize: 9
+                    font.weight: Theme.fontWeightTitle
+                    MouseArea {
+                        id: stickyClosePointer
+                        anchors { fill: parent; margins: -Theme.space8 }
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.closePanel()
+                    }
+                }
+            }
+        }
     }
 
     WallpaperPickerPopup { id: wallpaperPicker; hostWindow: root.hostWindow }
