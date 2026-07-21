@@ -35,8 +35,10 @@ Surface {
         return minutes + ":" + String(whole % 60).padStart(2, "0");
     }
 
-    implicitHeight: 124
+    implicitHeight: 112
     color: Theme.surfaceContainer
+    border.width: 1
+    border.color: Theme.translucent(Theme.outlineVariant, 0.35)
 
     Timer {
         id: progressTimer
@@ -50,14 +52,14 @@ Surface {
     RowLayout {
         anchors {
             fill: parent
-            margins: Theme.space12
+            margins: Theme.space8
         }
         spacing: Theme.space12
 
         ClippingRectangle {
             Layout.alignment: Qt.AlignTop
-            implicitWidth: 76
-            implicitHeight: 76
+            implicitWidth: 68
+            implicitHeight: 68
             radius: Theme.radiusMedium
             color: Theme.surfaceContainerHigh
 

@@ -33,13 +33,15 @@ Surface {
         monthTransition.restart();
     }
 
-    implicitHeight: 350
+    implicitHeight: 334
     color: Theme.surfaceContainer
+    border.width: 1
+    border.color: Theme.translucent(Theme.outlineVariant, 0.35)
 
     ColumnLayout {
         anchors {
             fill: parent
-            margins: Theme.space12
+            margins: Theme.space8
         }
         spacing: Theme.space8
 
@@ -131,7 +133,7 @@ Surface {
                         EventStore.eventsForDate(cellDate).length > 0
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 26
+                    Layout.preferredHeight: 24
                     radius: Theme.radiusPill
                     color: isToday ? Theme.primary : "transparent"
                     border.width: selected && !isToday ? 1 : 0

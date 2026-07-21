@@ -12,6 +12,8 @@ Surface {
         ? eventColumn.implicitHeight + Theme.space24 : 0
     visible: upcoming.length > 0
     color: Theme.surfaceContainer
+    border.width: visible ? 1 : 0
+    border.color: Theme.translucent(Theme.outlineVariant, 0.35)
 
     ColumnLayout {
         id: eventColumn

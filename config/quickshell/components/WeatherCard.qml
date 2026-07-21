@@ -9,6 +9,8 @@ Surface {
     visible: WeatherService.configured
     implicitHeight: visible ? weatherContent.implicitHeight + Theme.space24 : 0
     color: Theme.surfaceContainer
+    border.width: 1
+    border.color: Theme.translucent(Theme.outlineVariant, 0.35)
 
     ColumnLayout {
         id: weatherContent

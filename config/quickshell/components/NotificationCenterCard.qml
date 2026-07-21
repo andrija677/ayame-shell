@@ -28,8 +28,10 @@ Surface {
     }
 
     Layout.fillWidth: true
-    implicitHeight: notificationColumn.implicitHeight + Theme.space24
+    implicitHeight: notificationColumn.implicitHeight + Theme.space16
     color: Theme.surfaceContainer
+    border.width: 1
+    border.color: Theme.translucent(Theme.outlineVariant, 0.35)
 
     Behavior on implicitHeight {
         NumberAnimation {
@@ -49,8 +51,8 @@ Surface {
 
     ColumnLayout {
         id: notificationColumn
-        anchors { fill: parent; margins: Theme.space12 }
-        spacing: Theme.space8
+        anchors { fill: parent; margins: Theme.space8 }
+        spacing: Theme.space6
 
         RowLayout {
             Layout.fillWidth: true
@@ -79,7 +81,7 @@ Surface {
 
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: 34
+            implicitHeight: 30
             radius: Theme.radiusPill
             color: dndPointer.containsMouse
                 ? Theme.surfaceContainerHigh : Theme.surface
