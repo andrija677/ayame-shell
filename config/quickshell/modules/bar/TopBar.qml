@@ -187,8 +187,8 @@ PanelWindow {
                     }
                     spacing: Theme.space4
 
-                    MicrophoneIndicator { }
-                    CameraIndicator { }
+                    MicrophoneIndicator { hostWindow: bar }
+                    CameraIndicator { hostWindow: bar }
                 }
 
                 Surface {
