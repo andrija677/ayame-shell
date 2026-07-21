@@ -11,6 +11,7 @@ PanelWindow {
     id: root
 
     property bool panelOpen: false
+    property var recentAppIds: []
     MotionProgress { id: motion; open: root.panelOpen }
     readonly property bool commandMode: search.text.startsWith("/")
     readonly property string commandText: commandMode
@@ -28,9 +29,22 @@ PanelWindow {
             return (entry.name + " " + entry.genericName + " "
                 + entry.keywords.join(" ")).toLowerCase().includes(needle);
         });
-        apps.sort((a, b) => a.name.localeCompare(b.name));
+        apps.sort((a, b) => {
+            if (needle.length === 0 && recentAppIds.length > 0) {
+                const aRecent = recentAppIds.indexOf(a.id);
+                const bRecent = recentAppIds.indexOf(b.id);
+                if (aRecent >= 0 || bRecent >= 0) {
+                    if (aRecent < 0) return 1;
+                    if (bRecent < 0) return -1;
+                    return aRecent - bRecent;
+                }
+            }
+            return a.name.localeCompare(b.name);
+        });
         return apps.slice(0, 10);
     }
+    readonly property bool showingRecents: !commandMode
+        && search.text.trim().length === 0 && recentAppIds.length > 0
 
     function toggle() {
         if (panelOpen)
@@ -58,6 +72,11 @@ PanelWindow {
     function launch(entry) {
         if (!entry)
             return;
+        const id = entry.id || "";
+        if (id.length > 0) {
+            const recents = recentAppIds.filter(recentId => recentId !== id);
+            recentAppIds = [id].concat(recents).slice(0, 5);
+        }
         entry.execute();
         closePanel();
     }
@@ -164,7 +183,7 @@ PanelWindow {
             RowLayout {
                 Layout.fillWidth: true
                 StyledText {
-                    text: "Applications"
+                    text: root.showingRecents ? "Recent Applications" : "Applications"
                     font.pixelSize: Theme.fontTitle
                     font.weight: Theme.fontWeightTitle
                     Layout.fillWidth: true
@@ -181,8 +200,10 @@ PanelWindow {
                 Layout.fillWidth: true
                 implicitHeight: 42
                 radius: Theme.radiusMedium
-                color: Theme.surfaceContainer
+                color: root.commandMode
+                    ? Theme.primaryContainer : Theme.surfaceContainer
                 border.color: search.activeFocus ? Theme.primary : Theme.outlineVariant
+                border.width: root.commandMode ? 2 : 1
 
                 Canvas {
                     anchors {
@@ -391,6 +412,32 @@ PanelWindow {
                 color: Theme.foregroundSurfaceVariant
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Theme.fontSmall
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                visible: !root.commandMode && root.filteredApps.length > 0
+
+                StyledText {
+                    text: "↑↓  Navigate"
+                    color: Theme.outline
+                    font.pixelSize: 9
+                    font.family: Theme.fontFamilyNumeric
+                }
+                StyledText {
+                    text: "Enter  Open"
+                    color: Theme.outline
+                    font.pixelSize: 9
+                    font.family: Theme.fontFamilyNumeric
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                StyledText {
+                    text: "/  Command"
+                    color: Theme.outline
+                    font.pixelSize: 9
+                    font.family: Theme.fontFamilyNumeric
+                }
             }
         }
     }
