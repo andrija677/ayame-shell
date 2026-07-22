@@ -64,6 +64,14 @@ PanelWindow {
             if (Quickshell.screens.length === 1 || focusedName === ownName)
                 root.showNotification(notification);
         }
+        function onPopupsCleared() {
+            expireTimer.stop();
+            closeTimer.stop();
+            root.queue = [];
+            root.toastOpen = false;
+            root.currentNotification = null;
+            root.visible = false;
+        }
     }
 
     Timer { id: expireTimer; onTriggered: root.closeToast() }

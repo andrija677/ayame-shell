@@ -10,6 +10,7 @@ QtObject {
     id: root
 
     signal popupRequested(var notification)
+    signal popupsCleared()
 
     readonly property var server: serverLoader.item
     readonly property var notifications: server?.trackedNotifications ?? null
@@ -73,14 +74,12 @@ QtObject {
     }
 
     function clearAll() {
-        // trackedNotifications is a live model. Dismissing an item mutates its
-        // values array immediately, so iterate over a stable snapshot.
-        const items = (notifications?.values ?? []).slice();
-        for (let i = items.length - 1; i >= 0; --i) {
-            items[i].tracked = false;
-        }
+        // Saved history and transient popup state belong to Ayame. Do not
+        // mutate the server's live native objects here: clients may still own
+        // them, and untracking the entire model can disrupt future delivery.
         historyAdapter.entries = [];
         historyFile.writeAdapter();
+        popupsCleared();
     }
 
     property FileView historyFile: FileView {
