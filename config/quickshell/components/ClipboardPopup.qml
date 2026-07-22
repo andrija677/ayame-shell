@@ -89,12 +89,12 @@ PanelWindow {
                     anchors { left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter }
                     anchors.leftMargin: 38; anchors.rightMargin: Theme.space12
                     color: Theme.foregroundSurface; selectionColor: Theme.primaryContainer
-                    font.family: Theme.fontFamily; font.pixelSize: Theme.fontBody
+                    font.family: Theme.fontFamily; font.pixelSize: Theme.fontNormal
                     clip: true
                     onTextChanged: root.query = text
                     StyledText {
                         visible: parent.text.length === 0; text: "Search clipboard"
-                        color: Theme.outline; font.pixelSize: Theme.fontBody
+                        color: Theme.outline; font.pixelSize: Theme.fontNormal
                     }
                 }
             }
