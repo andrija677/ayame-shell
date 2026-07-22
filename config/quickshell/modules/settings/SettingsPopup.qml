@@ -18,6 +18,13 @@ PanelWindow {
     property bool otherQuickshellDetected: false
     property bool updateBusy: false
     property string updateStatus: "Install the newest version from GitHub :3"
+    property string activeCategory: "appearance"
+    readonly property var categoryModel: [
+        { label: "Appearance", value: "appearance" },
+        { label: "Interface", value: "interface" },
+        { label: "Services", value: "services" },
+        { label: "System", value: "system" }
+    ]
 
     MotionProgress { id: motion; open: root.panelOpen }
 
@@ -79,6 +86,28 @@ PanelWindow {
             return;
         updateStatus = "Downloading and installing…";
         updateProcess.running = true;
+    }
+
+    function openCategory(category) {
+        activeCategory = category;
+        const target = category === "appearance" ? appearanceHeading
+            : category === "interface" ? interfaceHeading
+            : category === "services" ? servicesHeading : diagnosticsHeading;
+        categoryScroll.stop();
+        categoryScroll.from = settingsFlickable.contentY;
+        categoryScroll.to = Math.max(0, Math.min(
+            settingsFlickable.contentHeight - settingsFlickable.height,
+            target.y - Theme.space8
+        ));
+        categoryScroll.start();
+    }
+
+    NumberAnimation {
+        id: categoryScroll
+        target: settingsFlickable
+        property: "contentY"
+        duration: Theme.motionNormal
+        easing.type: Theme.easeEnter
     }
 
     screen: hostWindow.screen
@@ -185,7 +214,38 @@ PanelWindow {
                 }
             }
 
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space6
+                Repeater {
+                    model: root.categoryModel
+                    Rectangle {
+                        required property var modelData
+                        Layout.fillWidth: true
+                        implicitHeight: 30
+                        radius: Theme.radiusPill
+                        color: root.activeCategory === modelData.value
+                            ? Theme.primaryContainer : Theme.surfaceContainer
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: parent.modelData.label
+                            color: root.activeCategory === parent.modelData.value
+                                ? Theme.foregroundPrimaryContainer
+                                : Theme.foregroundSurfaceVariant
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.openCategory(parent.modelData.value)
+                        }
+                    }
+                }
+            }
+
             StyledText {
+                id: appearanceHeading
                 text: "Appearance"
                 color: Theme.primary
                 font.pixelSize: 10
@@ -339,6 +399,7 @@ PanelWindow {
             }
 
             StyledText {
+                id: interfaceHeading
                 text: "UI Interface"
                 color: Theme.primary
                 font.pixelSize: 10
@@ -570,6 +631,7 @@ PanelWindow {
             }
 
             StyledText {
+                id: servicesHeading
                 text: "Services"
                 color: Theme.primary
                 font.pixelSize: 10
@@ -672,6 +734,7 @@ PanelWindow {
             }
 
             StyledText {
+                id: diagnosticsHeading
                 text: "Diagnostics"
                 color: Theme.primary
                 font.pixelSize: 10
@@ -815,7 +878,7 @@ PanelWindow {
                 left: settingsFlickable.left
                 right: settingsFlickable.right
             }
-            height: 38
+            height: 74
             radius: Theme.radiusMedium
             color: Theme.surface
             opacity: settingsFlickable.interactive
@@ -823,30 +886,59 @@ PanelWindow {
             visible: opacity > 0
             z: 3
 
-            RowLayout {
-                anchors {
-                    fill: parent
-                    leftMargin: Theme.space4
-                    rightMargin: Theme.space8
-                }
-                StyledText {
-                    text: "Ayame Settings"
-                    font.pixelSize: Theme.fontTitle
-                    font.weight: Theme.fontWeightTitle
+            ColumnLayout {
+                anchors { fill: parent; margins: Theme.space4 }
+                spacing: Theme.space4
+                RowLayout {
                     Layout.fillWidth: true
+                    StyledText {
+                        text: "Ayame Settings"
+                        font.pixelSize: Theme.fontTitle
+                        font.weight: Theme.fontWeightTitle
+                        Layout.fillWidth: true
+                    }
+                    StyledText {
+                        text: "Close"
+                        color: stickyClosePointer.containsMouse
+                            ? Theme.primary : Theme.outline
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                        MouseArea {
+                            id: stickyClosePointer
+                            anchors { fill: parent; margins: -Theme.space8 }
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.closePanel()
+                        }
+                    }
                 }
-                StyledText {
-                    text: "Close"
-                    color: stickyClosePointer.containsMouse
-                        ? Theme.primary : Theme.outline
-                    font.pixelSize: 9
-                    font.weight: Theme.fontWeightTitle
-                    MouseArea {
-                        id: stickyClosePointer
-                        anchors { fill: parent; margins: -Theme.space8 }
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.closePanel()
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: Theme.space4
+                    Repeater {
+                        model: root.categoryModel
+                        Rectangle {
+                            required property var modelData
+                            Layout.fillWidth: true
+                            implicitHeight: 26
+                            radius: Theme.radiusPill
+                            color: root.activeCategory === modelData.value
+                                ? Theme.primaryContainer : Theme.surfaceContainer
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: parent.modelData.label
+                                color: root.activeCategory === parent.modelData.value
+                                    ? Theme.foregroundPrimaryContainer
+                                    : Theme.foregroundSurfaceVariant
+                                font.pixelSize: 8
+                                font.weight: Theme.fontWeightTitle
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.openCategory(parent.modelData.value)
+                            }
+                        }
                     }
                 }
             }
