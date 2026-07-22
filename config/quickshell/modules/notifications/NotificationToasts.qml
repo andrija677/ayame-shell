@@ -14,6 +14,11 @@ PanelWindow {
     property var currentNotification: null
     property var queue: []
     property bool toastOpen: false
+    readonly property var emptyNotification: ({
+        appIcon: "", desktopEntry: "", summary: "", appName: "",
+        body: "", urgency: NotificationUrgency.Normal,
+        expireTimeout: 6000, actions: []
+    })
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
 
     function showNotification(notification) {
@@ -54,7 +59,9 @@ PanelWindow {
     Connections {
         target: NotificationService
         function onPopupRequested(notification) {
-            if (Hyprland.focusedMonitor === root.hyprlandMonitor)
+            const focusedName = Hyprland.focusedMonitor?.name ?? "";
+            const ownName = root.hyprlandMonitor?.name ?? root.screen.name;
+            if (Quickshell.screens.length === 1 || focusedName === ownName)
                 root.showNotification(notification);
         }
     }
@@ -74,15 +81,10 @@ PanelWindow {
         }
     }
 
-    Connections {
-        target: root.currentNotification
-        function onClosed(reason) { root.closeToast(); }
-    }
-
     NotificationItem {
         id: toastItem
         width: parent.width
-        notification: root.currentNotification
+        notification: root.currentNotification ?? root.emptyNotification
         bodyLineLimit: 3
         visible: root.currentNotification !== null
         opacity: root.toastOpen ? 1 : 0

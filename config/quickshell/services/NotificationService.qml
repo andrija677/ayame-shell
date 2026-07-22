@@ -15,28 +15,36 @@ QtObject {
     readonly property var notifications: server?.trackedNotifications ?? null
     readonly property var history: historyAdapter.entries ?? []
     readonly property int count: history.length
-    readonly property var displayNotifications: {
-        const liveItems = notifications?.values ?? [];
-        const usedLive = [];
-        return history.map(record => {
-            let live = null;
-            for (let i = liveItems.length - 1; i >= 0; --i) {
-                const candidate = liveItems[i];
-                if (usedLive.indexOf(i) < 0
-                        && candidate.summary === record.summary
-                        && candidate.appName === record.appName
-                        && candidate.body === record.body) {
-                    live = candidate;
-                    usedLive.push(i);
-                    break;
+    // History cards use immutable records. Native notification objects can be
+    // destroyed at any time by their client and must not be retained by UI.
+    readonly property var displayNotifications: history.map(record => ({
+        historyId: record.id,
+        payload: record,
+        dismiss: () => root.dismissHistory(record.id)
+    }))
+
+    function popupSnapshot(notification) {
+        const actions = [];
+        for (const action of notification.actions ?? []) {
+            const nativeAction = action;
+            actions.push({
+                identifier: action.identifier ?? "",
+                text: action.text ?? "",
+                invoke: () => {
+                    try { nativeAction.invoke(); } catch (error) { }
                 }
-            }
-            return {
-                historyId: record.id,
-                payload: live ?? record,
-                dismiss: () => root.dismissHistory(record.id, live)
-            };
-        });
+            });
+        }
+        return {
+            appIcon: notification.appIcon ?? "",
+            desktopEntry: notification.desktopEntry ?? "",
+            summary: notification.summary ?? "",
+            appName: notification.appName ?? "",
+            body: notification.body ?? "",
+            urgency: notification.urgency,
+            expireTimeout: notification.expireTimeout ?? 6000,
+            actions: actions
+        };
     }
 
     function saveNotification(notification) {
@@ -59,11 +67,7 @@ QtObject {
         historyFile.writeAdapter();
     }
 
-    function dismissHistory(historyId, liveNotification) {
-        if (liveNotification) {
-            liveNotification.dismiss();
-            liveNotification.tracked = false;
-        }
+    function dismissHistory(historyId) {
         historyAdapter.entries = history.filter(entry => entry.id !== historyId);
         historyFile.writeAdapter();
     }
@@ -73,7 +77,6 @@ QtObject {
         // values array immediately, so iterate over a stable snapshot.
         const items = (notifications?.values ?? []).slice();
         for (let i = items.length - 1; i >= 0; --i) {
-            items[i].dismiss();
             items[i].tracked = false;
         }
         historyAdapter.entries = [];
@@ -113,7 +116,7 @@ QtObject {
                     notification.tracked = true;
                     root.saveNotification(notification);
                     if (!ShellConfig.doNotDisturb)
-                        root.popupRequested(notification);
+                        root.popupRequested(root.popupSnapshot(notification));
                 }
             }
         }
