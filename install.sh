@@ -56,8 +56,8 @@ case " $os_id $os_like " in
     *" debian "*|*" ubuntu "*) package_family=debian ;;
 esac
 
-required=(qs hyprctl hyprlock hyprpaper grim slurp wf-recorder wl-copy kitty \
-    matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
+required=(qs hyprctl hyprlock hyprpaper grim slurp wf-recorder wl-copy wl-paste \
+    cliphist kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
 
 hyprland_version="missing"
 hyprland_compatible=false
@@ -79,6 +79,8 @@ declare -A command_packages=(
     [slurp]=slurp
     [wf-recorder]=wf-recorder
     [wl-copy]=wl-clipboard
+    [wl-paste]=wl-clipboard
+    [cliphist]=cliphist
     [kitty]=kitty
     [matugen]=matugen
     [rofi]=rofi
@@ -98,6 +100,8 @@ if [[ "$package_family" == debian ]]; then
     command_packages[slurp]=slurp
     command_packages[wf-recorder]=wf-recorder
     command_packages[wl-copy]=wl-clipboard
+    command_packages[wl-paste]=wl-clipboard
+    command_packages[cliphist]=cliphist
     command_packages[kitty]=kitty
     command_packages[matugen]=matugen
     command_packages[rofi]=rofi
@@ -345,6 +349,7 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-emoji-picker.sh" \
     "$prefix/scripts/ayame-logout.sh" \
     "$prefix/scripts/ayame-doctor.sh" \
+    "$prefix/scripts/ayame-clipboard.sh" \
     "$prefix/scripts/ayame-session-takeover.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
@@ -415,6 +420,22 @@ ExecStart=$bin_dir/ayame-shell --autostart
 Restart=on-failure
 RestartSec=2
 TimeoutStopSec=5
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+cat > "$user_systemd_dir/ayame-clipboard.service" <<EOF
+[Unit]
+Description=Ayame privacy-aware clipboard history
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=$prefix/scripts/ayame-clipboard.sh watch
+Restart=on-failure
+RestartSec=2
 
 [Install]
 WantedBy=graphical-session.target

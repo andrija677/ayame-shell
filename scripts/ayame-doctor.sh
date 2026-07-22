@@ -91,7 +91,7 @@ else
     row idle "Idle management" unavailable "Install hypridle"
 fi
 
-required=(grim slurp wf-recorder wl-copy kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
+required=(grim slurp wf-recorder wl-copy wl-paste cliphist kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
 missing=()
 for command_name in "${required[@]}"; do
     command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")

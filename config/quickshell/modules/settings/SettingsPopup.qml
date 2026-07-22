@@ -670,6 +670,25 @@ PanelWindow {
                 wrapMode: Text.WordWrap
             }
 
+            QuickToggleTile {
+                Layout.fillWidth: true
+                title: "Clipboard history"
+                subtitle: checked ? "Text and images • stored locally" : "Off by default for privacy"
+                checked: ShellConfig.clipboardHistoryEnabled
+                onActivated: {
+                    ShellConfig.clipboardHistoryEnabled = !checked;
+                    ClipboardService.applyEnabled();
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                text: "Password-manager clipboard entries are always excluded."
+                color: Theme.foregroundSurfaceVariant
+                font.pixelSize: 10
+                wrapMode: Text.WordWrap
+            }
+
             Surface {
                 Layout.fillWidth: true
                 implicitHeight: 66

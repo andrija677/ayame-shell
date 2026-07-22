@@ -7,3 +7,4 @@ singleton NotificationService 1.0 NotificationService.qml
 singleton WallpaperService 1.0 WallpaperService.qml
 singleton RecordingService 1.0 RecordingService.qml
 singleton MicrophoneService 1.0 MicrophoneService.qml
+singleton ClipboardService 1.0 ClipboardService.qml

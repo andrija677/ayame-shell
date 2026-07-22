@@ -616,6 +616,16 @@ PanelWindow {
 
                 QuickActionButton {
                     Layout.fillWidth: true
+                    icon: "󰅌"
+                    label: "Clipboard"
+                    onActivated: {
+                        root.closePanel();
+                        clipboardPanel.openPanel();
+                    }
+                }
+
+                QuickActionButton {
+                    Layout.fillWidth: true
                     icon: "󰐥"
                     label: "Power"
                     danger: true
@@ -647,4 +657,5 @@ PanelWindow {
         hostWindow: root.hostWindow
         adapter: root.bluetoothAdapter
     }
+    ClipboardPopup { id: clipboardPanel; hostWindow: root.hostWindow }
 }

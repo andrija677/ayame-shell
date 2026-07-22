@@ -44,6 +44,7 @@ QtObject {
     property alias weatherTemperatureUnit: values.weatherTemperatureUnit
     property alias notificationServerEnabled: values.notificationServerEnabled
     property alias doNotDisturb: values.doNotDisturb
+    property alias clipboardHistoryEnabled: values.clipboardHistoryEnabled
 
     function save() {
         saveTimer.restart();
@@ -132,6 +133,7 @@ QtObject {
         values.weatherTemperatureUnit = "celsius";
         values.notificationServerEnabled = false;
         values.doNotDisturb = false;
+        values.clipboardHistoryEnabled = false;
         save();
     }
 
@@ -190,6 +192,7 @@ QtObject {
             property string weatherTemperatureUnit: "celsius"
             property bool notificationServerEnabled: false
             property bool doNotDisturb: false
+            property bool clipboardHistoryEnabled: false
         }
     }
 }
