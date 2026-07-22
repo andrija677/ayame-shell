@@ -672,6 +672,54 @@ PanelWindow {
             }
 
             StyledText {
+                text: "Diagnostics"
+                color: Theme.primary
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightTitle
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 66
+                color: Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: Theme.space2
+                        StyledText { text: "Ayame health"; font.weight: Theme.fontWeightLabel }
+                        StyledText {
+                            text: "Services, dependencies and feature support"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 92
+                        implicitHeight: 30
+                        radius: Theme.radiusPill
+                        color: diagnosticsPointer.containsMouse
+                            ? Theme.primary : Theme.primaryContainer
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "RUN CHECK"
+                            color: diagnosticsPointer.containsMouse
+                                ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: diagnosticsPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: diagnostics.openPanel()
+                        }
+                    }
+                }
+            }
+
+            StyledText {
                 text: "Updates"
                 color: Theme.primary
                 font.pixelSize: 10
@@ -812,4 +860,5 @@ PanelWindow {
         wallpaperPicker: wallpaperPicker
     }
     WeatherSetupPopup { id: weatherSetup; hostWindow: root.hostWindow }
+    DiagnosticsPopup { id: diagnostics; hostWindow: root.hostWindow }
 }

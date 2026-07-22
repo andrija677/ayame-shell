@@ -344,6 +344,7 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-wallpaper.sh" \
     "$prefix/scripts/ayame-emoji-picker.sh" \
     "$prefix/scripts/ayame-logout.sh" \
+    "$prefix/scripts/ayame-doctor.sh" \
     "$prefix/scripts/ayame-session-takeover.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
@@ -388,6 +389,10 @@ fi
 
 cat > "$bin_dir/ayame-shell" <<EOF
 #!/usr/bin/env bash
+if [[ "\${1:-}" == "doctor" ]]; then
+    shift
+    exec "$prefix/scripts/ayame-doctor.sh" "\${1:-status}"
+fi
 if [[ "\${1:-}" == "--autostart" ]]; then
     shift
     state_dir="\${XDG_STATE_HOME:-\$HOME/.local/state}/ayame-shell"
