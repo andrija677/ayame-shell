@@ -119,7 +119,8 @@ PanelWindow {
                     implicitHeight: modelData.kind === "image" ? 112 : 70
                     color: Theme.surfaceContainer
                     RowLayout {
-                        anchors { fill: parent; margins: Theme.space10 }; spacing: Theme.space10
+                        anchors { fill: parent; margins: Theme.space10 }
+                        spacing: Theme.space10
                         Image {
                             visible: parent.parent.modelData.kind === "image"
                             Layout.preferredWidth: visible ? 92 : 0; Layout.fillHeight: true
