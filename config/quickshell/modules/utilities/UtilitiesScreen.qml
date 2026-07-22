@@ -172,7 +172,13 @@ PanelWindow {
             }
         }
     }
-    Timer { id: captureAfterSelection; interval: 140; onTriggered: captureProcess.running = true }
+    Timer {
+        id: captureAfterSelection
+        // The script adds a second guard immediately before Grim. This first
+        // delay gives the layer surface time to submit its unmap transaction.
+        interval: 180
+        onTriggered: captureProcess.running = true
+    }
     Timer {
         interval: 40
         repeat: true

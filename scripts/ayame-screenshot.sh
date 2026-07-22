@@ -9,6 +9,7 @@ mkdir -p "$directory"
 output="$directory/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 screenshot_icon="$script_dir/../assets/icons/screenshot.svg"
+selector_settle_delay="0.20"
 
 if [[ "$delay" =~ ^[0-9]+$ ]] && (( delay > 0 )); then
     sleep "$delay"
@@ -34,6 +35,10 @@ case "$mode" in
             echo "Invalid screenshot geometry: $geometry" >&2
             exit 2
         }
+        # Allow the QML selection layer to fully unmap before Grim asks the
+        # compositor for the next frame. Without this, its size badge can be
+        # retained in the captured buffer on some Hyprland/GPU combinations.
+        sleep "$selector_settle_delay"
         grim -g "$geometry" "$output"
         ;;
     area)
@@ -54,6 +59,9 @@ case "$mode" in
             echo "Area selector returned an empty region" >&2
             exit 1
         }
+        # Slurp has exited, but its final overlay buffer may still be present
+        # for one compositor frame.
+        sleep "$selector_settle_delay"
         grim -g "$geometry" "$output"
         ;;
     *)

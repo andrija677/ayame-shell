@@ -99,6 +99,7 @@ case "$action" in
                 geometry=$(slurp -d -b '#00000099' -c '#ff6b81ff' -s '#ff6b8144' -w 3) || exit 0
                 [[ -n "$geometry" ]] || exit 0
                 args+=(-g "$geometry")
+                selector_used=true
                 ;;
             geometry)
                 geometry="$monitor"
@@ -107,9 +108,14 @@ case "$action" in
                     exit 2
                 }
                 args+=(-g "$geometry")
+                selector_used=true
                 ;;
             *) echo "Unknown recording mode: $mode" >&2; exit 2 ;;
         esac
+        if [[ "${selector_used:-false}" == true ]]; then
+            # Keep the selection badge out of the recording's opening frames.
+            sleep 0.20
+        fi
         case "$audio" in
             none) ;;
             microphone) args+=(-a) ;;
