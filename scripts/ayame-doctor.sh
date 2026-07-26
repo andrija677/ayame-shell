@@ -92,7 +92,11 @@ else
 fi
 
 if command -v jq >/dev/null 2>&1; then
-    row displays "Display controls" healthy "Monitor modes and scaling available"
+    if hyprctl monitors -j 2>/dev/null | jq -e 'length > 0' >/dev/null; then
+        row displays "Display controls" healthy "Monitor modes and scaling available"
+    else
+        row displays "Display controls" error "Ayame cannot reach the current Hyprland session"
+    fi
 else
     row displays "Display controls" unavailable "Install jq"
 fi

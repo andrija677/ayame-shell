@@ -475,7 +475,10 @@ hl.config({
 
 hl.on("hyprland.start", function()
     hl.exec_cmd(wallpaper .. " start")
-    hl.exec_cmd("systemctl --user start ayame-shell.service")
+    -- The user manager survives logout on many distributions and can retain
+    -- the previous Hyprland socket. Refresh it before starting Ayame so
+    -- workspace clicks, monitor discovery, and shell IPC use this session.
+    hl.exec_cmd("systemctl --user import-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE; dbus-update-activation-environment --systemd HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE; systemctl --user restart ayame-shell.service")
 end)
 
 hl.bind("SUPER + SUPER_L", hl.dsp.exec_cmd(ayame .. " ipc call launcher toggle"), { release = true, description = "Open Ayame launcher" })

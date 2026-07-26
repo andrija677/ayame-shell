@@ -24,8 +24,12 @@ case "${1:-status}" in
             && printf 'nightlight|1|0\n' || printf 'nightlight|0|0\n'
         command -v hypridle >/dev/null 2>&1 \
             && printf 'idle|1|0\n' || printf 'idle|0|0\n'
-        command -v jq >/dev/null 2>&1 \
-            && printf 'display|1|0\n' || printf 'display|0|0\n'
+        if command -v jq >/dev/null 2>&1 \
+                && hyprctl monitors -j 2>/dev/null | jq -e 'length > 0' >/dev/null; then
+            printf 'display|1|0\n'
+        else
+            printf 'display|0|0\n'
+        fi
         ;;
     brightness)
         value="${2:?missing brightness percentage}"
