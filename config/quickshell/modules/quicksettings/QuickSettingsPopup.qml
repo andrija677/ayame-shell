@@ -49,11 +49,17 @@ PanelWindow {
         return null;
     }
     readonly property var connectedDevice: {
+        let fallback = null;
         for (const device of Networking.devices.values) {
-            if (device.connected)
+            if (!device.connected)
+                continue;
+            const name = (device.name || "").toLowerCase();
+            if (/^(wl|wlan)/.test(name) || /^(enp|eno|ens|eth)/.test(name))
                 return device;
+            if (name !== "lo" && !fallback)
+                fallback = device;
         }
-        return null;
+        return fallback;
     }
     readonly property var wifiDevice: {
         for (const device of Networking.devices.values) {
@@ -206,7 +212,7 @@ PanelWindow {
                 + (Theme.space8 + Theme.space4) * motion.value
             rightMargin: Theme.outerMargin
         }
-        width: 340
+        width: Math.min(340, root.width - Theme.space16)
         height: Math.min(content.implicitHeight + Theme.space24,
             root.height - Theme.space24 * 2)
         opacity: motion.value
@@ -560,7 +566,7 @@ PanelWindow {
                 QuickToggleTile {
                     Layout.fillWidth: true
                     title: "Keep awake"
-                    subtitle: checked ? "Screen stays on" : "Normal idle rules"
+                    subtitle: checked ? "Screen stays on" : "Uses idle rules"
                     checked: root.keepAwake
                     onActivated: root.keepAwake = !checked
                 }
@@ -569,7 +575,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     title: "Gaming mode"
                     subtitle: SessionService.gameModeBusy ? "Switching…"
-                        : checked ? "Effects reduced" : "Normal desktop"
+                        : checked ? "Effects reduced" : "Standard mode"
                     checked: SessionService.gameMode
                     interactive: !SessionService.gameModeBusy
                     onActivated: SessionService.toggleGameMode()
@@ -717,7 +723,32 @@ PanelWindow {
                 }
             }
         }
-    }
+        }
+
+        Rectangle {
+            anchors {
+                top: quickSettingsFlickable.top
+                bottom: quickSettingsFlickable.bottom
+                right: quickSettingsFlickable.right
+            }
+            width: 3
+            radius: Theme.radiusPill
+            color: Theme.translucent(Theme.outlineVariant, 0.3)
+            visible: quickSettingsFlickable.interactive
+
+            Rectangle {
+                width: parent.width
+                height: Math.max(36, parent.height
+                    * quickSettingsFlickable.height
+                    / quickSettingsFlickable.contentHeight)
+                y: quickSettingsFlickable.contentY
+                    / Math.max(1, quickSettingsFlickable.contentHeight
+                        - quickSettingsFlickable.height)
+                    * (parent.height - height)
+                radius: Theme.radiusPill
+                color: Theme.primary
+            }
+        }
     }
 
     SettingsPopup {

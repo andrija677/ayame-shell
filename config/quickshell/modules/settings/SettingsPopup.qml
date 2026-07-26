@@ -102,6 +102,18 @@ PanelWindow {
         categoryScroll.start();
     }
 
+    function updateCategoryFromScroll() {
+        const probe = settingsFlickable.contentY + 88;
+        if (probe >= systemControlsHeading.y)
+            activeCategory = "system";
+        else if (probe >= servicesHeading.y)
+            activeCategory = "services";
+        else if (probe >= interfaceHeading.y)
+            activeCategory = "interface";
+        else
+            activeCategory = "appearance";
+    }
+
     NumberAnimation {
         id: categoryScroll
         target: settingsFlickable
@@ -159,7 +171,7 @@ PanelWindow {
                 + (Theme.space8 + Theme.space4) * motion.value
             rightMargin: Theme.outerMargin
         }
-        width: 460
+        width: Math.min(460, root.width - Theme.space16)
         height: Math.min(settingsContent.implicitHeight + Theme.space24,
             root.height - Theme.space24)
         opacity: motion.value
@@ -184,6 +196,7 @@ PanelWindow {
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
             clip: true
+            onContentYChanged: root.updateCategoryFromScroll()
 
             ColumnLayout {
                 id: settingsContent
@@ -1028,7 +1041,10 @@ PanelWindow {
             }
             height: 74
             radius: Theme.radiusMedium
-            color: Theme.surface
+            color: Theme.blend(Theme.baseSurface, Theme.primary,
+                Theme.surfaceTintAmount)
+            border.width: 1
+            border.color: Theme.outlineVariant
             opacity: settingsFlickable.interactive
                 ? Math.min(1, settingsFlickable.contentY / 32) : 0
             visible: opacity > 0

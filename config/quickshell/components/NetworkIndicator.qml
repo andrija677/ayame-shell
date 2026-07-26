@@ -9,11 +9,17 @@ Rectangle {
     signal quickSettingsRequested()
     required property var hostWindow
     readonly property var connectedDevice: {
+        let fallback = null;
         for (const device of Networking.devices.values) {
-            if (device.connected)
+            if (!device.connected)
+                continue;
+            const name = (device.name || "").toLowerCase();
+            if (/^(wl|wlan)/.test(name) || /^(enp|eno|ens|eth)/.test(name))
                 return device;
+            if (name !== "lo" && !fallback)
+                fallback = device;
         }
-        return null;
+        return fallback;
     }
     readonly property var connectedWifi: {
         const devices = Networking.devices.values;
