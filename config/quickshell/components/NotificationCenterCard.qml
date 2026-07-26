@@ -28,7 +28,7 @@ Surface {
     }
 
     Layout.fillWidth: true
-    implicitHeight: notificationColumn.implicitHeight + Theme.space16
+    implicitHeight: notificationColumn.implicitHeight + Theme.space24
     color: Theme.surfaceContainer
     border.width: 1
     border.color: Theme.translucent(Theme.outlineVariant, 0.35)
@@ -51,13 +51,13 @@ Surface {
 
     ColumnLayout {
         id: notificationColumn
-        anchors { fill: parent; margins: Theme.space8 }
-        spacing: Theme.space6
+        anchors { fill: parent; margins: Theme.space12 }
+        spacing: Theme.space8
 
         RowLayout {
             Layout.fillWidth: true
             StyledText {
-                text: "Notifications"
+                text: "Notification Center"
                 font.pixelSize: Theme.fontTitle
                 font.weight: Theme.fontWeightLabel
                 Layout.fillWidth: true
@@ -88,11 +88,28 @@ Surface {
             RowLayout {
                 anchors { fill: parent; leftMargin: Theme.space12; rightMargin: Theme.space12 }
                 StyledText { text: "Do Not Disturb"; Layout.fillWidth: true }
-                StyledText {
-                    text: ShellConfig.doNotDisturb ? "ON" : "OFF"
-                    color: ShellConfig.doNotDisturb ? Theme.primary : Theme.outline
-                    font.pixelSize: 10
-                    font.weight: Theme.fontWeightTitle
+                Rectangle {
+                    implicitWidth: 34
+                    implicitHeight: 20
+                    radius: Theme.radiusPill
+                    color: ShellConfig.doNotDisturb
+                        ? Theme.primary : Theme.outlineVariant
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: ShellConfig.doNotDisturb ? parent.width - width - 3 : 3
+                        width: 14
+                        height: 14
+                        radius: 7
+                        color: ShellConfig.doNotDisturb
+                            ? Theme.foregroundPrimary
+                            : Theme.foregroundSurfaceVariant
+                        Behavior on x {
+                            NumberAnimation {
+                                duration: Theme.motionNormal
+                                easing.type: Theme.easeEnter
+                            }
+                        }
+                    }
                 }
             }
             MouseArea {
@@ -104,17 +121,42 @@ Surface {
             }
         }
 
-        StyledText {
+        Item {
             Layout.fillWidth: true
+            implicitHeight: 64
             visible: !ShellConfig.notificationServerEnabled
                 || NotificationService.count === 0
-            text: !ShellConfig.notificationServerEnabled
-                ? "Enable Ayame notifications in Settings when it owns the session"
-                : "You're all caught up"
-            color: Theme.foregroundSurfaceVariant
-            font.pixelSize: Theme.fontSmall
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: parent.width
+                spacing: Theme.space2
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: ShellConfig.notificationServerEnabled ? "✓" : "󰂛"
+                    color: Theme.primary
+                    font.pixelSize: 17
+                    font.weight: Theme.fontWeightTitle
+                }
+                StyledText {
+                    Layout.fillWidth: true
+                    text: !ShellConfig.notificationServerEnabled
+                        ? "Ayame notifications are disabled"
+                        : "You're all caught up"
+                    color: Theme.foregroundSurface
+                    font.weight: Theme.fontWeightLabel
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                StyledText {
+                    Layout.fillWidth: true
+                    text: !ShellConfig.notificationServerEnabled
+                        ? "Enable them from Ayame Settings"
+                        : "New notifications will appear here"
+                    color: Theme.foregroundSurfaceVariant
+                    font.pixelSize: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+            }
         }
 
         Repeater {

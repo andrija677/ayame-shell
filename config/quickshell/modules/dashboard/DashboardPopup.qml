@@ -84,11 +84,13 @@ PanelWindow {
             topMargin: -Theme.space4
                 + (Theme.space8 + Theme.space4) * motion.value
         }
-        width: 390
-        implicitHeight: content.implicitHeight + Theme.space16
+        width: Math.min(390, root.width - Theme.space24)
+        height: Math.min(content.implicitHeight + Theme.space16,
+            root.height - Theme.barHeight - Theme.space24)
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
+        clip: true
 
         MouseArea { anchors.fill: parent }
 
@@ -100,34 +102,63 @@ PanelWindow {
             yScale: 0.82 + 0.18 * motion.value
         }
 
-        ColumnLayout {
-            id: content
+        Flickable {
+            id: dashboardFlickable
+            anchors { fill: parent; margins: Theme.space8 }
+            contentWidth: width
+            contentHeight: content.implicitHeight
+            clip: true
+            interactive: contentHeight > height
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: content
+                width: dashboardFlickable.width
+                spacing: Theme.space8
+
+                StyledText {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    text: Qt.formatDateTime(dashboardClock.date, "dddd, d MMMM")
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: Theme.fontTitle
+                    font.weight: Theme.fontWeightTitle
+                }
+
+                MediaCard { Layout.fillWidth: true }
+                WeatherCard { Layout.fillWidth: true }
+                CalendarCard {
+                    Layout.fillWidth: true
+                    hostWindow: root.hostWindow
+                }
+                UpcomingEventsCard { Layout.fillWidth: true }
+
+                NotificationCenterCard { Layout.fillWidth: true }
+            }
+        }
+
+        Rectangle {
             anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: Theme.space8
+                top: dashboardFlickable.top
+                bottom: dashboardFlickable.bottom
+                right: dashboardFlickable.right
             }
-            spacing: Theme.space8
+            width: 3
+            radius: Theme.radiusPill
+            color: Theme.translucent(Theme.outlineVariant, 0.3)
+            visible: dashboardFlickable.interactive
 
-            StyledText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatDateTime(dashboardClock.date, "dddd, d MMMM")
-                horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: Theme.fontTitle
-                font.weight: Theme.fontWeightTitle
+            Rectangle {
+                width: parent.width
+                height: Math.max(36, parent.height
+                    * dashboardFlickable.height / dashboardFlickable.contentHeight)
+                y: dashboardFlickable.contentY
+                    / Math.max(1, dashboardFlickable.contentHeight
+                        - dashboardFlickable.height)
+                    * (parent.height - height)
+                radius: Theme.radiusPill
+                color: Theme.primary
             }
-
-            MediaCard { Layout.fillWidth: true }
-            WeatherCard { Layout.fillWidth: true }
-            CalendarCard {
-                Layout.fillWidth: true
-                hostWindow: root.hostWindow
-            }
-            UpcomingEventsCard { Layout.fillWidth: true }
-
-            NotificationCenterCard { Layout.fillWidth: true }
         }
     }
 
