@@ -453,6 +453,13 @@ local recorder = "$prefix/scripts/ayame-record.sh"
 local wallpaper = "$prefix/scripts/ayame-wallpaper.sh"
 local emoji_picker = "$prefix/scripts/ayame-emoji-picker.sh"
 local lock_config = "$prefix/config/hyprlock/hyprlock.conf"
+local monitor_state = (os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")) .. "/ayame-shell/monitors.lua"
+
+local monitor_file = io.open(monitor_state, "r")
+if monitor_file then
+    monitor_file:close()
+    dofile(monitor_state)
+end
 
 hl.config({
     decoration = {

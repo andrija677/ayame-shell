@@ -32,6 +32,8 @@ fi
 check "Whitespace and patch artifacts" git -C "$root" diff --check
 check "System control status contract" sh -c \
     "'$root/scripts/ayame-system-controls.sh' status | grep -q '^display|[01]|'"
+check "Safe persistent monitor rules" grep -q 'let the next normal Hyprland login apply it' \
+    "$root/scripts/ayame-system-controls.sh"
 check "Diagnostics contract" sh -c \
     "'$root/scripts/ayame-doctor.sh' status | awk -F'|' 'NF != 4 { exit 1 }'"
 

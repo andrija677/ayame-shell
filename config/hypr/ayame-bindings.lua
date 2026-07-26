@@ -4,6 +4,13 @@ local ayame = "qs --path " .. project .. "/config/quickshell"
 local screenshot = project .. "/scripts/ayame-screenshot.sh"
 local wallpaper = project .. "/scripts/ayame-wallpaper.sh"
 local lock_config = project .. "/config/hyprlock/hyprlock.conf"
+local monitor_state = (os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")) .. "/ayame-shell/monitors.lua"
+
+local monitor_file = io.open(monitor_state, "r")
+if monitor_file then
+    monitor_file:close()
+    dofile(monitor_state)
+end
 
 hl.config({
     misc = {

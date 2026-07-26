@@ -14,6 +14,7 @@ PanelWindow {
     property var modes: []
     property string selectedMode: ""
     property real selectedScale: 1
+    property string applyStatus: ""
 
     function openPanel() {
         closeTimer.stop(); visible = true; panelOpen = true;
@@ -24,6 +25,7 @@ PanelWindow {
         selectedDisplay = display;
         selectedMode = display.width + "x" + display.height + "@" + display.rate;
         selectedScale = display.scale;
+        applyStatus = "";
         modeProcess.command = [SystemControlService.script, "display-modes", display.name];
         modeProcess.running = true;
     }
@@ -56,7 +58,19 @@ PanelWindow {
     }
     Process {
         id: applyProcess
+        stdout: StdioCollector {
+            onStreamFinished: if (text.trim() === "saved")
+                root.applyStatus = "Saved • applies after logging out and back in";
+        }
+        stderr: StdioCollector {
+            onStreamFinished: if (text.trim().length)
+                root.applyStatus = "Could not apply • " + text.trim();
+        }
         onRunningChanged: if (!running) SystemControlService.refreshDisplays()
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0 && root.applyStatus.length === 0)
+                root.applyStatus = "Could not apply display settings";
+        }
     }
 
     Surface {
@@ -148,12 +162,24 @@ PanelWindow {
                     }
                 }
                 QuickActionButton {
-                    Layout.fillWidth: true; icon: "✓"; label: "Apply display settings"; primary: true
+                    Layout.fillWidth: true
+                    icon: "✓"
+                    label: "Save for next login"
+                    primary: true
                     onActivated: {
-                        applyProcess.command = [SystemControlService.script, "display-apply",
+                        root.applyStatus = "Saving…";
+                        applyProcess.command = [SystemControlService.script, "display-save",
                             root.selectedDisplay.name, root.selectedMode, String(root.selectedScale)];
                         applyProcess.running = true;
                     }
+                }
+                StyledText {
+                    Layout.fillWidth: true
+                    text: root.applyStatus
+                    visible: text.length > 0
+                    color: text.startsWith("Could not") ? Theme.error : Theme.success
+                    font.pixelSize: Theme.fontSmall
+                    horizontalAlignment: Text.AlignHCenter
                 }
             }
         }

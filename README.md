@@ -69,7 +69,8 @@ while Quick Settings focuses on live device and session controls.
 Hardware-aware controls cover monitor resolution, refresh rate and scaling,
 Night Light, screen timeout and automatic locking, plus screen and keyboard
 brightness when the machine exposes those devices. Unsupported controls stay
-hidden. Clipboard history is opt-in, stores text and image previews locally,
+hidden. Display-mode changes are saved for the next login instead of risking a
+live compositor restart. Clipboard history is opt-in, stores text and image previews locally,
 and excludes password-manager payloads.
 An opt-in notification server provides queued popups, native actions, dashboard
 history, dismiss/clear controls, and Do Not Disturb without taking ownership from
