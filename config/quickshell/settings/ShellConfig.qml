@@ -45,6 +45,12 @@ QtObject {
     property alias notificationServerEnabled: values.notificationServerEnabled
     property alias doNotDisturb: values.doNotDisturb
     property alias clipboardHistoryEnabled: values.clipboardHistoryEnabled
+    property alias nightLightEnabled: values.nightLightEnabled
+    property alias nightLightTemperature: values.nightLightTemperature
+    property alias idleEnabled: values.idleEnabled
+    property alias idleTimeoutSeconds: values.idleTimeoutSeconds
+    property alias idleLockEnabled: values.idleLockEnabled
+    property alias onboardingCompleted: values.onboardingCompleted
 
     function save() {
         saveTimer.restart();
@@ -134,6 +140,12 @@ QtObject {
         values.notificationServerEnabled = false;
         values.doNotDisturb = false;
         values.clipboardHistoryEnabled = false;
+        values.nightLightEnabled = false;
+        values.nightLightTemperature = 4500;
+        values.idleEnabled = false;
+        values.idleTimeoutSeconds = 600;
+        values.idleLockEnabled = true;
+        values.onboardingCompleted = false;
         save();
     }
 
@@ -193,6 +205,12 @@ QtObject {
             property bool notificationServerEnabled: false
             property bool doNotDisturb: false
             property bool clipboardHistoryEnabled: false
+            property bool nightLightEnabled: false
+            property int nightLightTemperature: 4500
+            property bool idleEnabled: false
+            property int idleTimeoutSeconds: 600
+            property bool idleLockEnabled: true
+            property bool onboardingCompleted: false
         }
     }
 }

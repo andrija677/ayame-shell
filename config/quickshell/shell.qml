@@ -6,6 +6,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "modules/bar"
 import "modules/dock"
+import "components"
 import "services"
 import "settings"
 
@@ -64,4 +65,6 @@ ShellRoot {
             }
         }
     }
+
+    OnboardingPopup {}
 }

@@ -92,7 +92,7 @@ PanelWindow {
         activeCategory = category;
         const target = category === "appearance" ? appearanceHeading
             : category === "interface" ? interfaceHeading
-            : category === "services" ? servicesHeading : diagnosticsHeading;
+            : category === "services" ? servicesHeading : systemControlsHeading;
         categoryScroll.stop();
         categoryScroll.from = settingsFlickable.contentY;
         categoryScroll.to = Math.max(0, Math.min(
@@ -754,6 +754,135 @@ PanelWindow {
 
             StyledText {
                 id: diagnosticsHeading
+                visible: false
+                text: ""
+            }
+
+            StyledText {
+                id: systemControlsHeading
+                text: "System"
+                color: Theme.primary
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightTitle
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space8
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    visible: SystemControlService.nightLightAvailable
+                    title: "Night Light"
+                    subtitle: checked ? ShellConfig.nightLightTemperature + " K" : "Natural display colors"
+                    checked: ShellConfig.nightLightEnabled
+                    onActivated: {
+                        ShellConfig.nightLightEnabled = !checked;
+                        SystemControlService.applyNightLight();
+                    }
+                }
+                QuickToggleTile {
+                    Layout.fillWidth: true
+                    visible: SystemControlService.idleAvailable
+                    title: "Screen timeout"
+                    subtitle: checked
+                        ? Math.round(ShellConfig.idleTimeoutSeconds / 60) + " minutes"
+                        : "Disabled"
+                    checked: ShellConfig.idleEnabled
+                    onActivated: {
+                        ShellConfig.idleEnabled = !checked;
+                        SystemControlService.applyIdle();
+                    }
+                }
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 74
+                visible: SystemControlService.nightLightAvailable
+                color: Theme.surfaceContainer
+                ColumnLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space6
+                    StyledText { text: "Night Light warmth"; font.weight: Theme.fontWeightLabel }
+                    RowLayout {
+                        Layout.fillWidth: true; spacing: Theme.space4
+                        Repeater {
+                            model: [
+                                { label: "Warm", value: 3500 },
+                                { label: "Balanced", value: 4500 },
+                                { label: "Gentle", value: 5500 }
+                            ]
+                            Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true; implicitHeight: 26; radius: Theme.radiusPill
+                                color: ShellConfig.nightLightTemperature === modelData.value
+                                    ? Theme.primary : Theme.outlineVariant
+                                StyledText { anchors.centerIn: parent; text: parent.modelData.label; font.pixelSize: 9; font.weight: Theme.fontWeightTitle }
+                                MouseArea {
+                                    anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        ShellConfig.nightLightTemperature = parent.modelData.value;
+                                        if (ShellConfig.nightLightEnabled)
+                                            SystemControlService.applyNightLight();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 108
+                visible: SystemControlService.idleAvailable
+                color: Theme.surfaceContainer
+                ColumnLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space6
+                    StyledText { text: "Automatic screen timeout"; font.weight: Theme.fontWeightLabel }
+                    RowLayout {
+                        Layout.fillWidth: true; spacing: Theme.space4
+                        Repeater {
+                            model: [
+                                { label: "5 min", value: 300 },
+                                { label: "10 min", value: 600 },
+                                { label: "20 min", value: 1200 },
+                                { label: "30 min", value: 1800 }
+                            ]
+                            Rectangle {
+                                required property var modelData
+                                Layout.fillWidth: true; implicitHeight: 26; radius: Theme.radiusPill
+                                color: ShellConfig.idleTimeoutSeconds === modelData.value
+                                    ? Theme.primary : Theme.outlineVariant
+                                StyledText { anchors.centerIn: parent; text: parent.modelData.label; font.pixelSize: 9; font.weight: Theme.fontWeightTitle }
+                                MouseArea {
+                                    anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        ShellConfig.idleTimeoutSeconds = parent.modelData.value;
+                                        if (ShellConfig.idleEnabled)
+                                            SystemControlService.applyIdle();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    QuickToggleTile {
+                        Layout.fillWidth: true
+                        implicitHeight: 48
+                        title: "Lock before turning the display off"
+                        subtitle: checked ? "Authentication required on return" : "Display only"
+                        checked: ShellConfig.idleLockEnabled
+                        onActivated: {
+                            ShellConfig.idleLockEnabled = !checked;
+                            if (ShellConfig.idleEnabled)
+                                SystemControlService.applyIdle();
+                        }
+                    }
+                }
+            }
+
+            StyledText {
                 text: "Diagnostics"
                 color: Theme.primary
                 font.pixelSize: 10

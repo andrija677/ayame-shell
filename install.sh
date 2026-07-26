@@ -350,6 +350,8 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-logout.sh" \
     "$prefix/scripts/ayame-doctor.sh" \
     "$prefix/scripts/ayame-clipboard.sh" \
+    "$prefix/scripts/ayame-system-controls.sh" \
+    "$prefix/scripts/ayame-smoke-test.sh" \
     "$prefix/scripts/ayame-session-takeover.sh" \
     "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"

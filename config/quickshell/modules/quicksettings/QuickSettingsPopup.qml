@@ -135,6 +135,16 @@ PanelWindow {
         audio.volume = Math.max(0, Math.min(1, position / volumeTrack.width));
     }
 
+    function setBrightnessFromX(position) {
+        SystemControlService.setBrightness(Math.max(1,
+            Math.min(100, position / brightnessTrack.width * 100)));
+    }
+
+    function setKeyboardBrightnessFromX(position) {
+        SystemControlService.setKeyboardBrightness(Math.max(0,
+            Math.min(100, position / keyboardTrack.width * 100)));
+    }
+
     function nonWifiConnectionLabel(device) {
         const name = (device?.name || "").toLowerCase();
         if (/^(enp|eno|ens|eth)/.test(name))
@@ -396,6 +406,60 @@ PanelWindow {
                 }
             }
 
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: SystemControlService.brightnessAvailable ? 66 : 0
+                visible: SystemControlService.brightnessAvailable
+                color: Theme.surfaceContainer
+                ColumnLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+                    RowLayout {
+                        Layout.fillWidth: true
+                        StyledText { text: "Screen brightness"; Layout.fillWidth: true }
+                        StyledText { text: SystemControlService.brightness + "%"; color: Theme.foregroundSurfaceVariant; font.pixelSize: Theme.fontSmall }
+                    }
+                    Rectangle {
+                        id: brightnessTrack
+                        Layout.fillWidth: true; implicitHeight: 6; radius: 3; color: Theme.outlineVariant
+                        Rectangle { width: parent.width * SystemControlService.brightness / 100; height: parent.height; radius: parent.radius; color: Theme.primary }
+                        MouseArea {
+                            anchors { fill: parent; margins: -Theme.space8 }
+                            cursorShape: Qt.PointingHandCursor
+                            onPressed: event => root.setBrightnessFromX(event.x)
+                            onPositionChanged: event => { if (pressed) root.setBrightnessFromX(event.x); }
+                        }
+                    }
+                }
+            }
+
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: SystemControlService.keyboardBacklightAvailable ? 66 : 0
+                visible: SystemControlService.keyboardBacklightAvailable
+                color: Theme.surfaceContainer
+                ColumnLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+                    RowLayout {
+                        Layout.fillWidth: true
+                        StyledText { text: "Keyboard backlight"; Layout.fillWidth: true }
+                        StyledText { text: SystemControlService.keyboardBrightness + "%"; color: Theme.foregroundSurfaceVariant; font.pixelSize: Theme.fontSmall }
+                    }
+                    Rectangle {
+                        id: keyboardTrack
+                        Layout.fillWidth: true; implicitHeight: 6; radius: 3; color: Theme.outlineVariant
+                        Rectangle { width: parent.width * SystemControlService.keyboardBrightness / 100; height: parent.height; radius: parent.radius; color: Theme.primary }
+                        MouseArea {
+                            anchors { fill: parent; margins: -Theme.space8 }
+                            cursorShape: Qt.PointingHandCursor
+                            onPressed: event => root.setKeyboardBrightnessFromX(event.x)
+                            onPositionChanged: event => { if (pressed) root.setKeyboardBrightnessFromX(event.x); }
+                        }
+                    }
+                }
+            }
+
             QuickToggleTile {
                 Layout.fillWidth: true
                 title: root.connectedWifi?.name || "Network"
@@ -626,6 +690,17 @@ PanelWindow {
 
                 QuickActionButton {
                     Layout.fillWidth: true
+                    visible: SystemControlService.displaysAvailable
+                    icon: "󰍹"
+                    label: "Displays"
+                    onActivated: {
+                        root.closePanel();
+                        displayPanel.openPanel();
+                    }
+                }
+
+                QuickActionButton {
+                    Layout.fillWidth: true
                     icon: "󰐥"
                     label: "Power"
                     danger: true
@@ -658,4 +733,5 @@ PanelWindow {
         adapter: root.bluetoothAdapter
     }
     ClipboardPopup { id: clipboardPanel; hostWindow: root.hostWindow }
+    DisplayPopup { id: displayPanel; hostWindow: root.hostWindow }
 }

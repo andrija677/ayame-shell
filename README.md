@@ -66,6 +66,11 @@ wallpaper-following palettes generated locally by Matugen, with a manual image
 override and the original Ayame Violet fallback. A dedicated Settings surface
 owns persistent light/dark appearance, tint, blur, motion, density, and layout,
 while Quick Settings focuses on live device and session controls.
+Hardware-aware controls cover monitor resolution, refresh rate and scaling,
+Night Light, screen timeout and automatic locking, plus screen and keyboard
+brightness when the machine exposes those devices. Unsupported controls stay
+hidden. Clipboard history is opt-in, stores text and image previews locally,
+and excludes password-manager payloads.
 An opt-in notification server provides queued popups, native actions, dashboard
 history, dismiss/clear controls, and Do Not Disturb without taking ownership from
 the user's current notification daemon during previews.
@@ -74,8 +79,14 @@ the desktop, active monitor, or selected area instantly or after a countdown.
 The searchable application launcher can be opened from the dock and exposes a
 compositor-safe IPC toggle for an optional keyboard binding.
 Fresh installations start with Ayame's bundled CC0 anime wallpaper; existing
-wallpaper choices are preserved. Press `Super + .` to open the emoji picker,
+wallpaper choices are preserved. A keyboard-navigable welcome introduces the
+essential shortcuts and customization surfaces on first run. Press `Super + .`
+to open the emoji picker,
 then paste the copied emoji normally.
+
+Run `ayame-shell doctor` for capability and service diagnostics, or
+`scripts/ayame-smoke-test.sh --live` from a checkout for parser, contract,
+notification, and service regression checks.
 
 The Screenshot action in Quick Settings opens a movable capture pill that
 slides in from the left. It supports desktop, monitor, and area screenshots;

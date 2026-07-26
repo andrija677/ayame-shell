@@ -91,6 +91,12 @@ else
     row idle "Idle management" unavailable "Install hypridle"
 fi
 
+if command -v jq >/dev/null 2>&1; then
+    row displays "Display controls" healthy "Monitor modes and scaling available"
+else
+    row displays "Display controls" unavailable "Install jq"
+fi
+
 required=(grim slurp wf-recorder wl-copy wl-paste cliphist kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
 missing=()
 for command_name in "${required[@]}"; do
