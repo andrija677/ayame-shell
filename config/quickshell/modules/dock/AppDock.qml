@@ -17,7 +17,7 @@ PanelWindow {
         const entries = {};
         const encountered = [];
         for (let id of favorites) {
-            entries[id] = { id: id, toplevel: null };
+            entries[id] = { id: id, toplevel: null, windowCount: 0 };
             encountered.push(id);
         }
         const windows = Hyprland.toplevels.values;
@@ -29,10 +29,16 @@ PanelWindow {
             if (!id)
                 continue;
             if (!entries[id]) {
-                entries[id] = { id: id, toplevel: candidate };
+                entries[id] = { id: id, toplevel: candidate, windowCount: 1 };
                 encountered.push(id);
-            } else if (!entries[id].toplevel || candidate.activated) {
-                entries[id] = { id: id, toplevel: candidate };
+            } else {
+                const preferred = !entries[id].toplevel || candidate.activated
+                    ? candidate : entries[id].toplevel;
+                entries[id] = {
+                    id: id,
+                    toplevel: preferred,
+                    windowCount: entries[id].windowCount + 1
+                };
             }
         }
         const order = ShellConfig.dockOrder();
@@ -345,8 +351,10 @@ PanelWindow {
 
                 DockItem {
                     required property var modelData
+                    hostWindow: dock
                     desktopId: modelData.id
                     toplevel: modelData.toplevel
+                    windowCount: modelData.windowCount
                     dockController: dock
                 }
             }

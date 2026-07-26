@@ -9,7 +9,9 @@ Rectangle {
 
     property var toplevel: null
     property var dockController: null
+    required property var hostWindow
     property string desktopId: ""
+    property int windowCount: 0
     readonly property string appId: desktopId.length > 0 ? desktopId
         : toplevel?.wayland?.appId || toplevel?.lastIpcObject?.class || ""
     readonly property var desktopEntry: desktopId.length > 0
@@ -19,6 +21,7 @@ Rectangle {
     readonly property bool active: toplevel?.activated || false
     readonly property bool urgent: toplevel?.urgent || false
     readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
+    readonly property string displayName: desktopEntry?.name || appId || "Application"
     property bool pinChanging: false
     property real dragOffset: 0
     property real pressSceneX: 0
@@ -140,9 +143,9 @@ Rectangle {
             bottom: parent.bottom
             bottomMargin: 2
         }
-        width: root.active ? 16 : 5
+        width: root.active ? 18 : 7
         height: 3
-        visible: root.toplevel !== null && root.toplevel !== undefined
+        visible: root.windowCount > 0
         radius: 2
         color: root.urgent ? Theme.error
             : root.active ? Theme.primary : Theme.outline
@@ -162,6 +165,8 @@ Rectangle {
             ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 
         onPressed: event => {
+            tooltipDelay.stop();
+            tooltipOpen = false;
             dragReturn.stop();
             root.dragOffset = 0;
             root.dragInProgress = false;
@@ -227,6 +232,61 @@ Rectangle {
             root.dragInProgress = false;
             root.z = 0;
             dragReturn.restart();
+        }
+
+        onEntered: tooltipDelay.restart()
+        onExited: {
+            tooltipDelay.stop();
+            tooltipOpen = false;
+        }
+    }
+
+    property bool tooltipOpen: false
+
+    Timer {
+        id: tooltipDelay
+        interval: 420
+        onTriggered: root.tooltipOpen = true
+    }
+
+    PopupWindow {
+        anchor.window: root.hostWindow
+        anchor.rect.x: root.mapToItem(null, 0, 0).x
+            - width / 2 + root.width / 2
+        anchor.rect.y: root.mapToItem(null, 0, 0).y - height - Theme.space4
+        implicitWidth: Math.min(280,
+            Math.max(110, tooltipContent.implicitWidth + Theme.space24))
+        implicitHeight: tooltipContent.implicitHeight + Theme.space12
+        color: "transparent"
+        grabFocus: false
+        visible: root.tooltipOpen && pointer.containsMouse
+
+        Surface {
+            anchors.fill: parent
+            radius: Theme.radiusMedium
+            color: Theme.surfaceContainerHigh
+
+            Column {
+                id: tooltipContent
+                anchors.centerIn: parent
+                spacing: 1
+
+                StyledText {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: root.displayName
+                    font.pixelSize: Theme.fontSmall
+                    font.weight: Theme.fontWeightLabel
+                }
+
+                StyledText {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    visible: root.windowCount > 0
+                    text: root.windowCount === 1 ? "1 window"
+                        : root.windowCount + " windows"
+                    color: Theme.foregroundSurfaceVariant
+                    font.pixelSize: 9
+                }
+            }
         }
     }
 }

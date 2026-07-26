@@ -45,6 +45,8 @@ PanelWindow {
     }
     readonly property bool showingRecents: !commandMode
         && search.text.trim().length === 0 && recentAppIds.length > 0
+    readonly property real listHeightLimit: Math.max(92, Math.min(460,
+        height - Theme.dockHeight - Theme.outerMargin * 4 - 142))
 
     function toggle() {
         if (panelOpen)
@@ -190,10 +192,17 @@ PanelWindow {
             RowLayout {
                 Layout.fillWidth: true
                 StyledText {
-                    text: root.showingRecents ? "Recent Applications" : "Applications"
+                    text: "Applications"
                     font.pixelSize: Theme.fontTitle
                     font.weight: Theme.fontWeightTitle
                     Layout.fillWidth: true
+                }
+                StyledText {
+                    visible: root.showingRecents
+                    text: "Recent first"
+                    color: Theme.primary
+                    font.pixelSize: 9
+                    font.weight: Theme.fontWeightLabel
                 }
                 StyledText {
                     text: "Esc to Close"
@@ -316,7 +325,7 @@ PanelWindow {
             ListView {
                 id: appList
                 Layout.fillWidth: true
-                implicitHeight: Math.min(contentHeight, 460)
+                implicitHeight: Math.min(contentHeight, root.listHeightLimit)
                 clip: true
                 spacing: Theme.space4
                 model: root.filteredApps
@@ -389,6 +398,8 @@ PanelWindow {
                     id: appDelegate
                     required property var modelData
                     required property int index
+                    readonly property bool isRecent: root.showingRecents
+                        && root.recentAppIds.indexOf(modelData.id) >= 0
                     width: ListView.view.width
                     height: 46
                     radius: Theme.radiusMedium
@@ -441,6 +452,13 @@ PanelWindow {
                                 elide: Text.ElideRight
                                 Layout.fillWidth: true
                             }
+                        }
+                        StyledText {
+                            visible: appDelegate.isRecent
+                            text: "Recent"
+                            color: Theme.primary
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightLabel
                         }
                     }
 
