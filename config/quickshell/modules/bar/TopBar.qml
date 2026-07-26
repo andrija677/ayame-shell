@@ -25,8 +25,10 @@ PanelWindow {
     readonly property int workspacePageStart: activeWorkspaceId <= 5 ? 1
         : 6 + Math.floor((activeWorkspaceId - 6) / 6) * 6
     readonly property int workspacePageSize: workspacePageStart === 1 ? 5 : 6
-    readonly property int balancedSideWidth: Math.max(240,
-        Math.min(560, Math.floor((width - 320) / 2)))
+    readonly property bool narrowLayout: width < 900
+    readonly property bool veryNarrowLayout: width < 700
+    readonly property int balancedSideWidth: Math.max(144,
+        Math.min(560, Math.floor((width - 104) / 2)))
     property bool trayExpanded: false
     property real recordingProgress: RecordingService.recording ? 1 : 0
 
@@ -113,6 +115,7 @@ PanelWindow {
                         bottom: parent.bottom
                     }
                     visible: ShellConfig.activeWindowEnabled
+                        && !bar.narrowLayout
                         && Hyprland.focusedMonitor === bar.hyprlandMonitor
                         && windowTitle.length > 0
                 }
@@ -224,6 +227,7 @@ PanelWindow {
                         WeatherIndicator {
                             id: weatherIndicator
                             visible: ShellConfig.weatherEnabled
+                                && !bar.veryNarrowLayout
                             hostWindow: bar
                         }
 
