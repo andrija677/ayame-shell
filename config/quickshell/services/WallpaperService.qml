@@ -9,15 +9,23 @@ QtObject {
     id: root
     property string error: ""
     property bool applying: false
+    property string sourcePath: ""
+    property string pendingPath: ""
     readonly property string defaultWallpaper:
         Quickshell.shellDir + "/../../assets/wallpapers/ayame-default.jpg"
 
     function apply(path) {
         const clean = (path || "").trim();
-        if (clean.length === 0 || setter.running) return;
+        if (clean.length === 0) return;
+        ShellConfig.dynamicColorWallpaper = clean;
+        if (setter.running) {
+            pendingPath = clean;
+            applying = true;
+            return;
+        }
         error = "";
         applying = true;
-        ShellConfig.dynamicColorWallpaper = clean;
+        sourcePath = clean;
         setter.command = [Quickshell.shellDir + "/../../scripts/ayame-wallpaper.sh", "set", clean];
         setter.running = true;
     }
@@ -28,7 +36,26 @@ QtObject {
             onStreamFinished: root.error = text.trim()
         }
         onRunningChanged: {
-            if (!running) root.applying = false;
+            if (running) return;
+            if (root.pendingPath.length > 0
+                    && root.pendingPath !== root.sourcePath) {
+                root.queuedPath = root.pendingPath;
+                root.pendingPath = "";
+                queuedApply.restart();
+                return;
+            }
+            root.pendingPath = "";
+            root.applying = false;
+        }
+    }
+
+    property string queuedPath: ""
+    property Timer queuedApply: Timer {
+        interval: 1
+        onTriggered: {
+            const path = root.queuedPath;
+            root.queuedPath = "";
+            root.apply(path);
         }
     }
 

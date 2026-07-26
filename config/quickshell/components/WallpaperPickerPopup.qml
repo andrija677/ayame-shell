@@ -22,14 +22,14 @@ PopupWindow {
         ShellConfig.dynamicColorWallpaper = path;
         WallpaperService.apply(path);
         DynamicPalette.followWallpaper(path);
-        visible = false;
     }
 
     anchor.window: hostWindow
     anchor.rect.x: Math.round((hostWindow.width - width) / 2)
-    anchor.rect.y: hostWindow.height + 72
-    implicitWidth: 440
-    implicitHeight: 480
+    anchor.rect.y: hostWindow.height + Theme.space24
+    implicitWidth: Math.min(540, hostWindow.screen.width - Theme.space24 * 2)
+    implicitHeight: Math.min(590,
+        hostWindow.screen.height - hostWindow.height - Theme.space24 * 3)
     color: "transparent"
     grabFocus: true
     visible: false
@@ -44,15 +44,26 @@ PopupWindow {
 
             RowLayout {
                 Layout.fillWidth: true
-                StyledText {
+
+                ColumnLayout {
                     Layout.fillWidth: true
-                    text: "Choose wallpaper"
-                    font.pixelSize: Theme.fontTitle
-                    font.weight: Theme.fontWeightTitle
+                    spacing: 0
+                    StyledText {
+                        text: "Wallpaper & colors"
+                        font.pixelSize: Theme.fontTitle
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    StyledText {
+                        text: "Choose an image and Ayame creates its UI palette"
+                        color: Theme.foregroundSurfaceVariant
+                        font.pixelSize: Theme.fontSmall
+                    }
                 }
+
                 StyledText {
                     text: "Close"
-                    color: closePointer.containsMouse ? Theme.primary : Theme.outline
+                    color: closePointer.containsMouse
+                        ? Theme.primary : Theme.outline
                     font.pixelSize: 9
                     font.weight: Theme.fontWeightTitle
                     MouseArea {
@@ -65,54 +76,264 @@ PopupWindow {
                 }
             }
 
-            StyledText {
+            Surface {
                 Layout.fillWidth: true
-                text: "Images in Pictures and Downloads"
-                color: Theme.foregroundSurfaceVariant
-                font.pixelSize: Theme.fontSmall
+                implicitHeight: 66
+                color: Theme.surfaceContainer
+
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    spacing: Theme.space8
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 1
+                        StyledText {
+                            text: DynamicPalette.generating
+                                ? "Creating wallpaper palette…"
+                                : DynamicPalette.active
+                                    ? "Wallpaper colors active"
+                                    : "Ayame Violet active"
+                            font.weight: Theme.fontWeightLabel
+                        }
+                        StyledText {
+                            Layout.fillWidth: true
+                            text: DynamicPalette.error.length > 0
+                                ? DynamicPalette.error
+                                : DynamicPalette.active
+                                    ? ShellConfig.dynamicColorStyle
+                                        + " • updates with every selection"
+                                    : "Select any wallpaper to enable automatic colors"
+                            color: DynamicPalette.error.length > 0
+                                ? Theme.warning : Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    Rectangle {
+                        implicitWidth: 92
+                        implicitHeight: 28
+                        radius: Theme.radiusPill
+                        color: violetPointer.containsMouse
+                            ? Theme.primary : Theme.outlineVariant
+                        visible: DynamicPalette.active
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "AYAME VIOLET"
+                            color: violetPointer.containsMouse
+                                ? Theme.foregroundPrimary
+                                : Theme.foregroundSurfaceVariant
+                            font.pixelSize: 8
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: violetPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: DynamicPalette.disable()
+                        }
+                    }
+                }
             }
 
-            ListView {
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Theme.space6
+
+                StyledText {
+                    text: "Palette style"
+                    color: Theme.foregroundSurfaceVariant
+                    font.pixelSize: Theme.fontSmall
+                    font.weight: Theme.fontWeightLabel
+                }
+
+                Repeater {
+                    model: [
+                        { label: "Tonal", value: "tonal" },
+                        { label: "Vibrant", value: "vibrant" },
+                        { label: "Expressive", value: "expressive" }
+                    ]
+
+                    Rectangle {
+                        required property var modelData
+                        Layout.fillWidth: true
+                        implicitHeight: 30
+                        radius: Theme.radiusPill
+                        color: ShellConfig.dynamicColorStyle === modelData.value
+                            ? Theme.primary
+                            : stylePointer.containsMouse
+                                ? Theme.surfaceContainer
+                                : Theme.outlineVariant
+                        scale: stylePointer.pressed ? 0.96 : 1
+
+                        Behavior on color {
+                            ColorAnimation { duration: Theme.motionFast }
+                        }
+                        Behavior on scale {
+                            NumberAnimation { duration: Theme.motionFast }
+                        }
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: parent.modelData.label
+                            color: ShellConfig.dynamicColorStyle
+                                    === parent.modelData.value
+                                ? Theme.foregroundPrimary
+                                : Theme.foregroundSurfaceVariant
+                            font.pixelSize: 9
+                            font.weight: Theme.fontWeightTitle
+                        }
+
+                        MouseArea {
+                            id: stylePointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                ShellConfig.dynamicColorStyle
+                                    = parent.modelData.value;
+                                if (ShellConfig.dynamicColorWallpaper.length > 0) {
+                                    ShellConfig.dynamicColorMode = "automatic";
+                                    DynamicPalette.followWallpaper(
+                                        ShellConfig.dynamicColorWallpaper);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                text: "Pictures and Downloads"
+                color: Theme.primary
+                font.pixelSize: 10
+                font.weight: Theme.fontWeightTitle
+            }
+
+            GridView {
+                id: wallpaperGrid
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                spacing: Theme.space8
+                cellWidth: width / 2
+                cellHeight: 126
                 model: root.wallpapers
+                boundsBehavior: Flickable.StopAtBounds
 
-                delegate: Rectangle {
+                add: Transition {
+                    ParallelAnimation {
+                        NumberAnimation {
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: Theme.motionNormal
+                        }
+                        NumberAnimation {
+                            property: "scale"
+                            from: 0.94
+                            to: 1
+                            duration: Theme.motionNormal
+                            easing.type: Theme.easeEnter
+                        }
+                    }
+                }
+
+                delegate: Item {
+                    id: wallpaperDelegate
                     required property string modelData
-                    width: ListView.view.width
-                    height: 54
-                    radius: Theme.radiusSmall
-                    color: imagePointer.containsMouse
-                        ? Theme.primaryContainer : Theme.surfaceContainer
+                    width: wallpaperGrid.cellWidth
+                    height: wallpaperGrid.cellHeight
+                    readonly property bool selected:
+                        ShellConfig.dynamicColorWallpaper === modelData
 
-                    RowLayout {
-                        anchors { fill: parent; margins: Theme.space8 }
-                        spacing: Theme.space12
+                    Surface {
+                        anchors {
+                            fill: parent
+                            rightMargin: Theme.space6
+                            bottomMargin: Theme.space8
+                        }
+                        radius: Theme.radiusMedium
+                        color: wallpaperDelegate.selected
+                            ? Theme.primaryContainer : Theme.surfaceContainer
+                        border.width: wallpaperDelegate.selected ? 2 : 0
+                        border.color: Theme.primary
+                        scale: imagePointer.pressed ? 0.97
+                            : imagePointer.containsMouse ? 1.015 : 1
+                        clip: true
+
+                        Behavior on scale {
+                            NumberAnimation {
+                                duration: Theme.motionFast
+                                easing.type: Theme.easeEnter
+                            }
+                        }
+                        Behavior on color {
+                            ColorAnimation { duration: Theme.motionNormal }
+                        }
+
                         Image {
-                            source: "file://" + modelData
-                            sourceSize.width: 64
-                            sourceSize.height: 42
-                            Layout.preferredWidth: 64
-                            Layout.preferredHeight: 42
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                top: parent.top
+                            }
+                            height: parent.height - 30
+                            source: "file://" + wallpaperDelegate.modelData
+                            sourceSize.width: 260
+                            sourceSize.height: 180
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             cache: true
                         }
-                        StyledText {
-                            Layout.fillWidth: true
-                            text: modelData.substring(modelData.lastIndexOf("/") + 1)
-                            elide: Text.ElideMiddle
-                        }
-                    }
 
-                    MouseArea {
-                        id: imagePointer
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.choose(parent.modelData)
+                        Rectangle {
+                            anchors {
+                                right: parent.right
+                                top: parent.top
+                                margins: Theme.space8
+                            }
+                            width: 22
+                            height: 22
+                            radius: 11
+                            visible: wallpaperDelegate.selected
+                            color: Theme.primary
+                            StyledText {
+                                anchors.centerIn: parent
+                                text: "✓"
+                                color: Theme.foregroundPrimary
+                                font.weight: Theme.fontWeightTitle
+                            }
+                        }
+
+                        StyledText {
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                bottom: parent.bottom
+                                leftMargin: Theme.space8
+                                rightMargin: Theme.space8
+                            }
+                            height: 30
+                            text: wallpaperDelegate.modelData.substring(
+                                wallpaperDelegate.modelData.lastIndexOf("/") + 1)
+                            color: wallpaperDelegate.selected
+                                ? Theme.foregroundPrimaryContainer
+                                : Theme.foregroundSurfaceVariant
+                            font.pixelSize: 10
+                            elide: Text.ElideMiddle
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        MouseArea {
+                            id: imagePointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.choose(wallpaperDelegate.modelData)
+                        }
                     }
                 }
 
@@ -123,6 +344,14 @@ PopupWindow {
                         : "No PNG, JPEG, or WebP images found"
                     color: Theme.outline
                 }
+            }
+
+            StyledText {
+                Layout.fillWidth: true
+                text: "Palettes are generated locally with Matugen—images never leave this computer."
+                color: Theme.outline
+                font.pixelSize: 9
+                horizontalAlignment: Text.AlignHCenter
             }
         }
     }

@@ -13,6 +13,9 @@ QtObject {
     property string error: ""
     property string outputBuffer: ""
     property string sourcePath: ""
+    property string sourceStyle: ""
+    property string pendingPath: ""
+    property string pendingStyle: ""
     property string detectedWallpaper: ""
     readonly property bool available: colors !== null
     readonly property bool active: ShellConfig.dynamicColorsEnabled && available
@@ -35,18 +38,25 @@ QtObject {
 
     function generate(requestedPath) {
         const path = (requestedPath ?? ShellConfig.dynamicColorWallpaper).trim();
-        if (path.length === 0 || generator.running) {
-            if (path.length === 0) error = "Choose a wallpaper image first";
+        if (path.length === 0) {
+            error = "Choose a wallpaper image first";
+            return;
+        }
+        if (generator.running) {
+            pendingPath = path;
+            pendingStyle = ShellConfig.dynamicColorStyle;
+            generating = true;
             return;
         }
         error = "";
         outputBuffer = "";
         sourcePath = path;
+        sourceStyle = ShellConfig.dynamicColorStyle;
         generating = true;
         generator.command = [
             "matugen", "image", path,
             "--dry-run", "-j", "hex", "-m", "dark",
-            "-t", schemeForStyle(ShellConfig.dynamicColorStyle),
+            "-t", schemeForStyle(sourceStyle),
             "--source-color-index", "0"
         ];
         generator.running = true;
@@ -138,6 +148,19 @@ QtObject {
 
         onRunningChanged: {
             if (running) return;
+            if (root.pendingPath.length > 0
+                    && (root.pendingPath !== root.sourcePath
+                        || root.pendingStyle !== root.sourceStyle)) {
+                root.queuedPath = root.pendingPath;
+                root.pendingPath = "";
+                root.pendingStyle = "";
+                root.outputBuffer = "";
+                root.error = "";
+                queuedGenerate.restart();
+                return;
+            }
+            root.pendingPath = "";
+            root.pendingStyle = "";
             if (root.outputBuffer.length === 0) {
                 if (root.error.length === 0)
                     root.error = "Could not generate a palette from that image";
@@ -148,7 +171,7 @@ QtObject {
                     root.colors = result.colors;
                     paletteCache.colors = result.colors;
                     paletteCache.wallpaper = root.sourcePath;
-                    paletteCache.style = ShellConfig.dynamicColorStyle;
+                    paletteCache.style = root.sourceStyle;
                     paletteFile.writeAdapter();
                     ShellConfig.dynamicColorsEnabled = true;
                     root.syncKitty();
@@ -158,6 +181,16 @@ QtObject {
                 }
             }
             root.generating = false;
+        }
+    }
+
+    property string queuedPath: ""
+    property Timer queuedGenerate: Timer {
+        interval: 1
+        onTriggered: {
+            const path = root.queuedPath;
+            root.queuedPath = "";
+            root.generate(path);
         }
     }
 

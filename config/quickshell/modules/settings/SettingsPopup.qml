@@ -336,25 +336,25 @@ PanelWindow {
                     anchors { fill: parent; margins: Theme.space12 }
                     ColumnLayout {
                         Layout.fillWidth: true
-                        StyledText { text: "Wallpaper colors"; font.weight: Theme.fontWeightLabel }
+                        StyledText { text: "Wallpaper & colors"; font.weight: Theme.fontWeightLabel }
                         StyledText {
                             text: DynamicPalette.active
                                 ? (ShellConfig.dynamicColorMode === "automatic"
                                     ? "Following wallpaper • " : "Manual • ")
                                     + ShellConfig.dynamicColorStyle
-                                : "Ayame Violet"
+                                : "Ayame Violet • choose a wallpaper to match"
                             color: Theme.foregroundSurfaceVariant
                             font.pixelSize: Theme.fontSmall
                         }
                     }
                     Rectangle {
-                        implicitWidth: 82
+                        implicitWidth: 104
                         implicitHeight: 28
                         radius: Theme.radiusPill
                         color: wallpaperPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "Wallpaper"
+                            text: "CUSTOMIZE"
                             color: wallpaperPointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                             font.pixelSize: 9
@@ -366,27 +366,6 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: wallpaperPicker.open()
-                        }
-                    }
-                    Rectangle {
-                        implicitWidth: 62
-                        implicitHeight: 28
-                        radius: Theme.radiusPill
-                        color: palettePointer.containsMouse ? Theme.primary : Theme.outlineVariant
-                        StyledText {
-                            anchors.centerIn: parent
-                            text: "Colors"
-                            color: palettePointer.containsMouse
-                                ? Theme.foregroundPrimary : Theme.foregroundSurfaceVariant
-                            font.pixelSize: 9
-                            font.weight: Theme.fontWeightTitle
-                        }
-                        MouseArea {
-                            id: palettePointer
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: paletteSetup.open()
                         }
                     }
                 }
@@ -1110,11 +1089,6 @@ PanelWindow {
     }
 
     WallpaperPickerPopup { id: wallpaperPicker; hostWindow: root.hostWindow }
-    PaletteSetupPopup {
-        id: paletteSetup
-        hostWindow: root.hostWindow
-        wallpaperPicker: wallpaperPicker
-    }
     WeatherSetupPopup { id: weatherSetup; hostWindow: root.hostWindow }
     DiagnosticsPopup { id: diagnostics; hostWindow: root.hostWindow }
 }
