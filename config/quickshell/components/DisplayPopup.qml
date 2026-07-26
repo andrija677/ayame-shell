@@ -150,7 +150,9 @@ PanelWindow {
                 RowLayout {
                     Layout.fillWidth: true; spacing: Theme.space6
                     Repeater {
-                        model: [1, 1.25, 1.5, 1.75, 2]
+                        // Fractional output scales currently misalign
+                        // Quickshell input regions on Hyprland 0.55.
+                        model: [1, 2]
                         Rectangle {
                             required property real modelData
                             Layout.fillWidth: true; implicitHeight: 32; radius: Theme.radiusPill

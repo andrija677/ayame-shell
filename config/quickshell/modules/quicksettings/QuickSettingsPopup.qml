@@ -207,10 +207,12 @@ PanelWindow {
             rightMargin: Theme.outerMargin
         }
         width: 340
-        implicitHeight: content.implicitHeight + Theme.space24
+        height: Math.min(content.implicitHeight + Theme.space24,
+            root.height - Theme.space24 * 2)
         opacity: motion.value
         radius: Theme.radiusLarge
         color: Theme.surface
+        clip: true
 
         MouseArea { anchors.fill: parent }
 
@@ -222,15 +224,19 @@ PanelWindow {
             yScale: 0.84 + 0.16 * motion.value
         }
 
-        ColumnLayout {
-            id: content
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                margins: Theme.space12
-            }
-            spacing: Theme.space12
+        Flickable {
+            id: quickSettingsFlickable
+            anchors { fill: parent; margins: Theme.space12 }
+            contentWidth: width
+            contentHeight: content.implicitHeight
+            clip: true
+            interactive: contentHeight > height
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: content
+                width: quickSettingsFlickable.width
+                spacing: Theme.space12
 
             StyledText {
                 text: "Quick Settings"
@@ -711,6 +717,7 @@ PanelWindow {
                 }
             }
         }
+    }
     }
 
     SettingsPopup {
