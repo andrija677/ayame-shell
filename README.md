@@ -137,9 +137,9 @@ screenshots, microphone, camera, or shell state. It cannot execute commands.
 
 ## Aesthetic checks
 
-![Ayame desktop with a Blue Archive wallpaper and weather card](assets/screenshots/blue-archive-moment.png)
+![Ayame desktop with Professor Niyaniya from Blue Archive and the weather card](assets/screenshots/blue-archive-moment.png)
 
-<p align="center"><sub><b>“Blue Archive character name” moment, lol</b> — character identification pending; palette matching passed with honors</sub></p>
+<p align="center"><sub><b>Professor Niyaniya</b>, a.k.a. the Smiling Professor / Professor Smug — mystery solved; palette matching still passed with honors</sub></p>
 
 ## Privacy and local data
 
