@@ -102,6 +102,10 @@ while retaining the same visual language across every surface.
 
 <p align="center"><sub><b>Kitty</b> — wallpaper-matched colors, transparency, and comfortable spacing</sub></p>
 
+![Ayame Settings following a blue wallpaper palette](assets/screenshots/blue-palette-settings.png)
+
+<p align="center"><sub><b>One wallpaper, one visual language</b> — the shell, controls, and highlights move together</sub></p>
+
 ## Ayame AI
 
 Ayame includes an optional shell companion with Gemini, OpenAI-compatible, and
@@ -126,6 +130,16 @@ when a minimal Hyprland session has not already done so.
 
 The companion has no automatic access to commands, files, clipboard history,
 screenshots, microphone, camera, or shell state. It cannot execute commands.
+
+![Ayame AI cat-girl personality with a wallpaper-generated palette](assets/screenshots/ai-companion.png)
+
+<p align="center"><sub><b>Cat-girl mode confirmed operational</b> — serious Linux assistance may contain trace amounts of <code>:3</code></sub></p>
+
+## Aesthetic checks
+
+![Ayame desktop with a Blue Archive wallpaper and weather card](assets/screenshots/blue-archive-moment.png)
+
+<p align="center"><sub><b>“Blue Archive character name” moment, lol</b> — character identification pending; palette matching passed with honors</sub></p>
 
 ## Privacy and local data
 
