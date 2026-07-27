@@ -1,12 +1,44 @@
-# Ayame Shell
+<h1 align="center">Ayame Shell</h1>
 
-An original, modular Hyprland and Quickshell desktop shell for EndeavourOS and
-Arch-based systems. Debian-family compatibility detection is in beta.
+<p align="center">
+  A warm, wallpaper-adaptive Hyprland desktop built with Quickshell.
+</p>
 
-Please keep in mind that this is in beta, changes will occur in future releases.
+<p align="center">
+  <img alt="Status: beta" src="https://img.shields.io/badge/status-beta-E8B4A2">
+  <img alt="Hyprland 0.55 or newer" src="https://img.shields.io/badge/Hyprland-0.55%2B-58C6D9">
+  <img alt="Arch and EndeavourOS supported" src="https://img.shields.io/badge/Arch%20%7C%20EndeavourOS-supported-7AA2F7">
+  <img alt="Debian-family compatibility beta" src="https://img.shields.io/badge/Debian%20family-compatibility%20beta-DDB6F2">
+</p>
 
-The project is developed and tested outside `~/.config`. Nothing in this
-repository is installed automatically.
+<p align="center">
+  <a href="#showcase">Showcase</a> ·
+  <a href="#highlights">Highlights</a> ·
+  <a href="#ayame-ai">Ayame AI</a> ·
+  <a href="#install">Install</a> ·
+  <a href="docs/TESTING.md">Testing & rollback</a>
+</p>
+
+Ayame is an original, modular shell with a top bar, intelligent dock,
+application launcher, dashboard, notifications, Quick Settings, capture tools,
+wallpaper-generated colors, and an optional AI companion. Hardware-dependent
+controls appear only when the system supports them.
+
+> [!IMPORTANT]
+> Ayame is beta software. EndeavourOS and Arch Linux are the supported
+> installation targets. Debian-family detection and dependency auditing are
+> available for testing, but many stable releases do not provide a sufficiently
+> recent Hyprland and Quickshell stack.
+
+The repository is developed outside `~/.config`, and cloning it changes
+nothing on the system. Installation occurs only after running the installer.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andrija677/ayame-shell/main/bootstrap.sh | bash
+```
+
+Read [Install](#install) before using desktop replacement or testing a
+Debian-family system.
 
 ## Showcase
 
@@ -35,6 +67,19 @@ repository is installed automatically.
   </tr>
 </table>
 
+## Highlights
+
+| Desktop | Devices and workflow | Personalization |
+|---|---|---|
+| Monitor-aware top bar and animated dock | Wi-Fi, Bluetooth, audio-output and power controls | Automatic wallpaper and terminal palettes |
+| Searchable app and command launcher | Screenshot, recording and area-capture pill | Light/dark, tint, blur, density and motion |
+| Dashboard, media, calendar and weather | Brightness, Night Light, idle locking and displays | Responsive panels for small or scaled screens |
+| Notification history, actions and DND | Privacy indicators for microphone and camera | First-run guidance and built-in diagnostics |
+
+Unsupported device controls disappear instead of becoming dead buttons.
+Display mode changes are staged for the next login to avoid destabilizing the
+running compositor.
+
 ### Wallpaper-adaptive colors
 
 Ayame can generate a new shell and terminal palette from the active wallpaper,
@@ -57,55 +102,54 @@ while retaining the same visual language across every surface.
 
 <p align="center"><sub><b>Kitty</b> — wallpaper-matched colors, transparency, and comfortable spacing</sub></p>
 
-## Current shell
+## Ayame AI
 
-Ayame currently includes a monitor-aware top bar and running-app dock, animated
-dashboard with media, weather, calendar and local events, capability-driven
-Quick Settings, persistent layout and reduced-motion preferences, and optional
-wallpaper-following palettes generated locally by Matugen, with a manual image
-override and the original Ayame Violet fallback. A dedicated Settings surface
-owns persistent light/dark appearance, tint, blur, motion, density, and layout,
-while Quick Settings focuses on live device and session controls.
-Hardware-aware controls cover monitor resolution, refresh rate and scaling,
-Night Light, screen timeout and automatic locking, plus screen and keyboard
-brightness when the machine exposes those devices. Unsupported controls stay
-hidden. Display-mode changes are saved for the next login instead of risking a
-live compositor restart. Clipboard history is opt-in, stores text and image previews locally,
-and excludes password-manager payloads.
-An opt-in notification server provides queued popups, native actions, dashboard
-history, dismiss/clear controls, and Do Not Disturb without taking ownership from
-the user's current notification daemon during previews.
-The Utilities surface documents recovery-friendly window keybinds and captures
-the desktop, active monitor, or selected area instantly or after a countdown.
-The searchable application launcher can be opened from the dock and exposes a
-compositor-safe IPC toggle for an optional keyboard binding.
-Fresh installations start with Ayame's bundled CC0 anime wallpaper; existing
-wallpaper choices are preserved. A keyboard-navigable welcome introduces the
-essential shortcuts and customization surfaces on first run. Press `Super + .`
-to open the emoji picker,
-then paste the copied emoji normally.
+Ayame includes an optional shell companion with Gemini, OpenAI-compatible, and
+local Ollama providers. It is **disabled by default**: no button, process,
+API key, or network request is present until the user enables it in
+**Ayame Settings → Services → Ayame AI**.
 
-Run `ayame-shell doctor` for capability and service diagnostics, or
-`scripts/ayame-smoke-test.sh --live` from a checkout for parser, contract,
-notification, and service regression checks.
+Move the pointer into the bottom-left corner to reveal its bubble. The bubble
+expands into a compact chat panel with streaming responses and an original
+palette-colored thinking animation. Available personalities include Assistant,
+Cat-girl, Fox-girl, and a completely editable custom system prompt.
 
-The Screenshot action in Quick Settings opens a movable capture pill that
-slides in from the left. It supports desktop, monitor, and area screenshots;
-instant, three-second, and five-second countdowns; and screen recording with
-silent, system-audio, or microphone modes. Drag it freely or near an edge to
-snap it left or right. While recording, the pill shows elapsed time and remains
-available as the stop control. Recordings are saved under `Videos/Recordings`.
-`Super + Shift + R` is an emergency desktop record/stop toggle.
-Prefix launcher input with `/` to run a shell command; the prefix is a launcher
-cue and is not passed to the command. Desktop-entry metadata keeps graphical apps
-such as Firefox direct, while terminal programs such as `btop` open in Kitty.
-Quick Settings also opens a full-screen power surface with safe Lock, Log Out,
-Restart, and Shut Down actions. The repository includes an Ayame Hyprlock design,
-but does not replace the user's live lock configuration during development.
-Log Out detects the active display-manager capabilities at runtime. Plasma Login
-Manager, SDDM, GDM, and LightDM receive an explicit greeter handoff; greetd,
-tuigreet, Ly, and other logind-managed sessions use the universal session-exit
-fallback. Ayame does not install, replace, or enable a display manager.
+API keys are stored through the desktop's Secret Service implementation—not in
+Ayame settings. KWallet, GNOME Keyring, KeePassXC Secret Service, and compatible
+providers are supported. Ayame can start an installed KWallet or GNOME backend
+when a minimal Hyprland session has not already done so.
+
+> [!NOTE]
+> A ChatGPT subscription does not include OpenAI API usage. Cloud-provider
+> messages are subject to that provider's terms, quota, and billing. Ollama
+> remains local and requires no API key.
+
+The companion has no automatic access to commands, files, clipboard history,
+screenshots, microphone, camera, or shell state. It cannot execute commands.
+
+## Privacy and local data
+
+| Feature | Default | Data handling |
+|---|---:|---|
+| AI companion | Off | Messages go only to the configured provider; Ollama is local |
+| Clipboard history | Off | Text and image previews stay local; password-manager payloads are excluded |
+| Notifications | Safe preview | Ayame does not take the notification D-Bus name while another daemon owns it |
+| Wallpaper colors | Optional | Matugen processes the selected image locally |
+| Weather | Off | Enabled only after a location is configured |
+
+## Everyday controls
+
+- Open the launcher from the dock; prefix text with `/` to run a command.
+- Press `Super + .` for the emoji picker.
+- Open Screenshot from Quick Settings for desktop, monitor, or area capture,
+  countdowns, and silent/system-audio/microphone recording.
+- Use `Super + Shift + R` as the emergency desktop record/stop toggle.
+- Open Power for Lock, Log Out, Restart, and Shut Down.
+- Run `ayame-shell doctor` for service and hardware diagnostics.
+
+Recordings are saved under `~/Videos/Recordings`. Installed sessions run through
+`ayame-shell.service`; unexpected Quickshell crashes recover automatically after
+two seconds.
 
 ## Test without installing
 
