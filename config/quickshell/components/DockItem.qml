@@ -251,6 +251,7 @@ Rectangle {
                 return;
             }
 
+            revealBounce.restart();
             if (!root.toplevel) {
                 root.desktopEntry?.execute();
             } else if (!root.toplevel.wayland) {
