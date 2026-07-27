@@ -630,6 +630,57 @@ PanelWindow {
                 font.weight: Theme.fontWeightTitle
             }
 
+            Surface {
+                Layout.fillWidth: true
+                implicitHeight: 66
+                color: ShellConfig.aiEnabled
+                    ? Theme.primaryContainer : Theme.surfaceContainer
+                RowLayout {
+                    anchors { fill: parent; margins: Theme.space12 }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 1
+                        StyledText {
+                            text: "Ayame AI"
+                            font.weight: Theme.fontWeightLabel
+                            color: ShellConfig.aiEnabled
+                                ? Theme.foregroundPrimaryContainer
+                                : Theme.foregroundSurface
+                        }
+                        StyledText {
+                            text: ShellConfig.aiEnabled
+                                ? ShellConfig.aiProvider + " • "
+                                    + ShellConfig.aiPersonality
+                                : "Optional • disabled by default"
+                            color: Theme.foregroundSurfaceVariant
+                            font.pixelSize: Theme.fontSmall
+                        }
+                    }
+                    Rectangle {
+                        implicitWidth: 86
+                        implicitHeight: 30
+                        radius: Theme.radiusPill
+                        color: aiSetupPointer.containsMouse
+                            ? Theme.primary : Theme.surfaceContainerHigh
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: "CONFIGURE"
+                            color: aiSetupPointer.containsMouse
+                                ? Theme.foregroundPrimary : Theme.primary
+                            font.pixelSize: 8
+                            font.weight: Theme.fontWeightTitle
+                        }
+                        MouseArea {
+                            id: aiSetupPointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: aiSetup.open()
+                        }
+                    }
+                }
+            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: Theme.space8
@@ -1089,6 +1140,7 @@ PanelWindow {
     }
 
     WallpaperPickerPopup { id: wallpaperPicker; hostWindow: root.hostWindow }
+    AiSetupPopup { id: aiSetup; hostWindow: root.hostWindow }
     WeatherSetupPopup { id: weatherSetup; hostWindow: root.hostWindow }
     DiagnosticsPopup { id: diagnostics; hostWindow: root.hostWindow }
 }

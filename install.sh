@@ -353,7 +353,8 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-system-controls.sh" \
     "$prefix/scripts/ayame-smoke-test.sh" \
     "$prefix/scripts/ayame-session-takeover.sh" \
-    "$prefix/scripts/ayame-run-command.sh" "$prefix/uninstall.sh"
+    "$prefix/scripts/ayame-run-command.sh" \
+    "$prefix/scripts/ayame-ai.py" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
 
 if [[ "$replace_desktop" == true ]]; then

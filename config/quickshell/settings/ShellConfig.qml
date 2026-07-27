@@ -51,6 +51,12 @@ QtObject {
     property alias idleTimeoutSeconds: values.idleTimeoutSeconds
     property alias idleLockEnabled: values.idleLockEnabled
     property alias onboardingCompleted: values.onboardingCompleted
+    property alias aiEnabled: values.aiEnabled
+    property alias aiProvider: values.aiProvider
+    property alias aiModel: values.aiModel
+    property alias aiBaseUrl: values.aiBaseUrl
+    property alias aiPersonality: values.aiPersonality
+    property alias aiCustomPrompt: values.aiCustomPrompt
 
     function save() {
         saveTimer.restart();
@@ -146,6 +152,12 @@ QtObject {
         values.idleTimeoutSeconds = 600;
         values.idleLockEnabled = true;
         values.onboardingCompleted = false;
+        values.aiEnabled = false;
+        values.aiProvider = "gemini";
+        values.aiModel = "gemini-2.5-flash";
+        values.aiBaseUrl = "";
+        values.aiPersonality = "assistant";
+        values.aiCustomPrompt = "";
         save();
     }
 
@@ -211,6 +223,12 @@ QtObject {
             property int idleTimeoutSeconds: 600
             property bool idleLockEnabled: true
             property bool onboardingCompleted: false
+            property bool aiEnabled: false
+            property string aiProvider: "gemini"
+            property string aiModel: "gemini-2.5-flash"
+            property string aiBaseUrl: ""
+            property string aiPersonality: "assistant"
+            property string aiCustomPrompt: ""
         }
     }
 }

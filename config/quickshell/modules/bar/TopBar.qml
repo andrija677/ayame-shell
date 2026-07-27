@@ -13,6 +13,7 @@ import "../quicksettings"
 import "../power"
 import "../notifications"
 import "../utilities"
+import "../ai"
 
 PanelWindow {
     id: bar
@@ -356,6 +357,10 @@ PanelWindow {
     UtilitiesScreen {
         id: utilities
         screen: bar.screen
+    }
+
+    AiCornerTrigger {
+        hostWindow: bar
     }
 
     Connections {
