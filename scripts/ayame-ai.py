@@ -6,8 +6,10 @@ stdin/stdout so prompts never appear in the process list.
 """
 
 import json
+import shutil
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -17,33 +19,79 @@ def emit(kind: str, **values: object) -> None:
     print(json.dumps({"type": kind, **values}, ensure_ascii=False), flush=True)
 
 
-def secret(provider: str) -> str:
+def start_secret_service() -> bool:
+    candidates = [
+        ["ksecretd"],
+        ["gnome-keyring-daemon", "--start", "--components=secrets"],
+    ]
+    for command in candidates:
+        try:
+            subprocess.Popen(
+                command,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+            time.sleep(0.8)
+            return True
+        except FileNotFoundError:
+            continue
+    return False
+
+
+def run_secret_tool(arguments: list[str], input_text: str | None = None) -> subprocess.CompletedProcess:
     result = subprocess.run(
-        ["secret-tool", "lookup", "service", "ayame-shell-ai", "provider", provider],
-        check=False, capture_output=True, text=True,
+        ["secret-tool", *arguments],
+        input=input_text, check=False, capture_output=True, text=True,
     )
+    if result.returncode != 0 and "not activatable" in result.stderr.lower():
+        if start_secret_service():
+            result = subprocess.run(
+                ["secret-tool", *arguments],
+                input=input_text, check=False, capture_output=True, text=True,
+            )
+    return result
+
+
+def secret(provider: str) -> str:
+    if not shutil.which("secret-tool"):
+        return ""
+    result = run_secret_tool(
+        ["lookup", "service", "ayame-shell-ai", "provider", provider])
     return result.stdout.strip() if result.returncode == 0 else ""
 
 
 def store_secret(provider: str, value: str) -> int:
     if not value:
         return 2
-    result = subprocess.run(
+    if not shutil.which("secret-tool"):
+        print("Install libsecret (Arch) or libsecret-tools (Debian/Ubuntu) "
+              "to store API keys securely", file=sys.stderr)
+        return 127
+    result = run_secret_tool(
         [
-            "secret-tool", "store", "--label",
+            "store", "--label",
             f"Ayame AI ({provider})", "service", "ayame-shell-ai",
             "provider", provider,
         ],
-        input=value, text=True, check=False,
+        value,
     )
+    if result.returncode != 0:
+        print(result.stderr.strip()
+              or "No compatible Secret Service keyring is available", file=sys.stderr)
     return result.returncode
 
 
 def delete_secret(provider: str) -> int:
-    return subprocess.run(
-        ["secret-tool", "clear", "service", "ayame-shell-ai", "provider", provider],
-        check=False,
-    ).returncode
+    if not shutil.which("secret-tool"):
+        print("secret-tool is not installed", file=sys.stderr)
+        return 127
+    result = run_secret_tool(
+        ["clear", "service", "ayame-shell-ai", "provider", provider])
+    if result.returncode != 0:
+        print(result.stderr.strip(), file=sys.stderr)
+    return result.returncode
 
 
 def request(url: str, headers: dict[str, str], body: dict) -> urllib.response.addinfourl:

@@ -91,6 +91,23 @@ else
     row idle "Idle management" unavailable "Install hypridle"
 fi
 
+if ! command -v secret-tool >/dev/null 2>&1; then
+    row ai-keyring "AI key storage" optional \
+        "Install libsecret on Arch or libsecret-tools on Debian-family systems"
+elif busctl --user --no-pager list 2>/dev/null \
+        | grep -q 'org\.freedesktop\.secrets'; then
+    row ai-keyring "AI key storage" healthy "Secret Service is available"
+elif command -v ksecretd >/dev/null 2>&1; then
+    row ai-keyring "AI key storage" optional \
+        "KWallet backend available; Ayame starts it when an API key is saved"
+elif command -v gnome-keyring-daemon >/dev/null 2>&1; then
+    row ai-keyring "AI key storage" optional \
+        "GNOME Keyring backend available; Ayame starts it when needed"
+else
+    row ai-keyring "AI key storage" unavailable \
+        "Install KWallet, GNOME Keyring, or enable KeePassXC Secret Service"
+fi
+
 if command -v jq >/dev/null 2>&1; then
     if hyprctl monitors -j 2>/dev/null | jq -e 'length > 0' >/dev/null; then
         row displays "Display controls" healthy "Monitor modes and scaling available"

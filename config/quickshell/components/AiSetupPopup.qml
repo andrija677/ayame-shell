@@ -200,11 +200,19 @@ PopupWindow {
     Process {
         id: keyProcess
         stdinEnabled: true
+        property string failureText: ""
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.keyAction === "status")
                     root.status = text.trim() === "1" ? "A key is stored securely." : "No key stored yet.";
             }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: keyProcess.failureText = text.trim()
+        }
+        onRunningChanged: {
+            if (running)
+                failureText = "";
         }
         onStarted: {
             if (root.keyAction === "store")
@@ -212,10 +220,14 @@ PopupWindow {
         }
         onExited: (code, status) => {
             if (root.keyAction === "store") {
-                root.status = code === 0 ? "Key saved securely." : "The key could not be saved.";
+                root.status = code === 0 ? "Key saved securely."
+                    : (failureText.length > 0 ? failureText
+                        : "The key could not be saved.");
                 if (code === 0) keyInput.text = "";
             } else if (root.keyAction === "delete") {
-                root.status = code === 0 ? "Key removed." : "The key could not be removed.";
+                root.status = code === 0 ? "Key removed."
+                    : (failureText.length > 0 ? failureText
+                        : "The key could not be removed.");
             }
             root.keyAction = "status";
         }
