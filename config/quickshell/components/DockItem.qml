@@ -12,6 +12,8 @@ Rectangle {
     required property var hostWindow
     property string desktopId: ""
     property int windowCount: 0
+    property int dockIndex: 0
+    property int revealGeneration: 0
     readonly property string appId: desktopId.length > 0 ? desktopId
         : toplevel?.wayland?.appId || toplevel?.lastIpcObject?.class || ""
     readonly property var desktopEntry: desktopId.length > 0
@@ -38,8 +40,40 @@ Rectangle {
 
     transform: [
         Translate { id: pinSlide; x: 14 },
-        Translate { x: root.dragOffset }
+        Translate { x: root.dragOffset },
+        Translate { id: revealLift }
     ]
+
+    onRevealGenerationChanged: {
+        if (revealGeneration > 0)
+            revealBounce.restart();
+    }
+
+    SequentialAnimation {
+        id: revealBounce
+        PauseAnimation { duration: root.dockIndex * 38 }
+        NumberAnimation {
+            target: revealLift
+            property: "y"
+            to: -7
+            duration: Theme.motionFast
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: revealLift
+            property: "y"
+            to: 1.5
+            duration: Theme.motionNormal
+            easing.type: Easing.InOutSine
+        }
+        NumberAnimation {
+            target: revealLift
+            property: "y"
+            to: 0
+            duration: Theme.motionFast
+            easing.type: Easing.OutSine
+        }
+    }
 
     function playEntryAnimation() {
         enterAnimation.stop();

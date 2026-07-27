@@ -56,6 +56,14 @@ PanelWindow {
         return encountered.map(id => entries[id]);
     }
     readonly property bool hasAppItems: appEntries.length > 0
+    readonly property int runningWindowCount: {
+        let count = 0;
+        for (const candidate of Hyprland.toplevels.values) {
+            if (candidate.monitor === hyprlandMonitor)
+                count++;
+        }
+        return count;
+    }
     readonly property bool workspaceObstructed: {
         const workspace = hyprlandMonitor?.activeWorkspace;
         if (!workspace)
@@ -89,8 +97,12 @@ PanelWindow {
         return false;
     }
     readonly property bool dockHidden: ShellConfig.dockAutoHide
-        && workspaceObstructed && !pointerReveal && !launcher.panelOpen
+        && workspaceObstructed && !pointerReveal && !closeReveal
+        && !launcher.panelOpen
     property bool pointerReveal: false
+    property bool closeReveal: false
+    property int previousWindowCount: -1
+    property int revealGeneration: 0
     property bool pinHintPresented: false
     property bool pinHintOpen: false
 
@@ -104,7 +116,20 @@ PanelWindow {
     }
 
     onHasAppItemsChanged: offerPinHint()
-    Component.onCompleted: Qt.callLater(offerPinHint)
+    onRunningWindowCountChanged: {
+        if (previousWindowCount >= 0
+                && runningWindowCount < previousWindowCount
+                && ShellConfig.dockAutoHide) {
+            closeReveal = true;
+            closeRevealTimer.restart();
+            revealGeneration++;
+        }
+        previousWindowCount = runningWindowCount;
+    }
+    Component.onCompleted: {
+        previousWindowCount = runningWindowCount;
+        Qt.callLater(offerPinHint);
+    }
 
     Connections {
         target: ShellConfig
@@ -182,8 +207,11 @@ PanelWindow {
         id: dockHover
         onHoveredChanged: {
             if (hovered) {
+                const wasHidden = dock.dockHidden;
                 hideDelay.stop();
                 dock.pointerReveal = true;
+                if (wasHidden)
+                    dock.revealGeneration++;
             } else {
                 hideDelay.restart();
             }
@@ -194,6 +222,12 @@ PanelWindow {
         id: hideDelay
         interval: 420
         onTriggered: dock.pointerReveal = false
+    }
+
+    Timer {
+        id: closeRevealTimer
+        interval: 1700
+        onTriggered: dock.closeReveal = false
     }
 
     Timer {
@@ -351,10 +385,13 @@ PanelWindow {
 
                 DockItem {
                     required property var modelData
+                    required property int index
                     hostWindow: dock
                     desktopId: modelData.id
                     toplevel: modelData.toplevel
                     windowCount: modelData.windowCount
+                    dockIndex: index
+                    revealGeneration: dock.revealGeneration
                     dockController: dock
                 }
             }
