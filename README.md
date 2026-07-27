@@ -139,7 +139,7 @@ screenshots, microphone, camera, or shell state. It cannot execute commands.
 
 ![Ayame desktop with Professor Niyaniya from Blue Archive and the weather card](assets/screenshots/blue-archive-moment.png)
 
-<p align="center"><sub><b>Professor Niyaniya</b>, a.k.a. the Smiling Professor / Professor Smug — mystery solved; palette matching still passed with honors</sub></p>
+<p align="center"><sub><b>Professor Niyaniya</b>, a.k.a. the Smiling Professor / Professor Smug — palette matching still passed with honors</sub></p>
 
 ## Privacy and local data
 
