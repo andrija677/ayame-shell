@@ -29,6 +29,7 @@ Rectangle {
     property real dragOffset: 0
     property real pressSceneX: 0
     property bool dragInProgress: false
+    property bool contextMenuOpen: false
 
     implicitWidth: 42
     implicitHeight: 42
@@ -85,6 +86,25 @@ Rectangle {
         // items return from the favorites side to their previous position.
         pinSlide.x = pinned ? 14 : -14;
         enterAnimation.start();
+    }
+
+    function togglePinned() {
+        if (pinChanging)
+            return;
+        contextMenuOpen = false;
+        pinBounceDirection = pinned ? 1 : -1;
+        pinChanging = true;
+        pinBounceAnimation.restart();
+    }
+
+    function openNewWindow() {
+        contextMenuOpen = false;
+        desktopEntry?.execute();
+    }
+
+    function closeWindow() {
+        contextMenuOpen = false;
+        toplevel?.wayland?.close();
     }
 
     Component.onCompleted: {
@@ -243,11 +263,8 @@ Rectangle {
 
         onReleased: event => {
             if (event.button === Qt.RightButton && !root.dragInProgress) {
-                if (!root.pinChanging) {
-                    root.pinBounceDirection = root.pinned ? 1 : -1;
-                    root.pinChanging = true;
-                    pinBounceAnimation.restart();
-                }
+                root.contextMenuOpen = true;
+                contextMenuTimer.restart();
                 return;
             }
 
@@ -304,6 +321,143 @@ Rectangle {
         onTriggered: root.tooltipOpen = true
     }
 
+    Timer {
+        id: contextMenuTimer
+        interval: 7000
+        onTriggered: root.contextMenuOpen = false
+    }
+
+    PopupWindow {
+        id: contextMenu
+        anchor.window: root.hostWindow
+        anchor.rect.x: Math.max(Theme.outerMargin,
+            root.mapToItem(null, 0, 0).x - width / 2 + root.width / 2)
+        anchor.rect.y: root.mapToItem(null, 0, 0).y - height - Theme.space8
+        implicitWidth: 196
+        implicitHeight: contextMenuColumn.implicitHeight + Theme.space16
+        color: "transparent"
+        grabFocus: true
+        visible: root.contextMenuOpen
+
+        Shortcut {
+            sequence: "Escape"
+            onActivated: root.contextMenuOpen = false
+        }
+
+        Surface {
+            anchors.fill: parent
+            radius: Theme.radiusLarge
+            color: Theme.surfaceContainerHigh
+
+            Column {
+                id: contextMenuColumn
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: Theme.space8
+                }
+                spacing: Theme.space4
+
+                StyledText {
+                    width: parent.width
+                    height: 28
+                    leftPadding: Theme.space8
+                    rightPadding: Theme.space8
+                    text: root.displayName
+                    color: Theme.foregroundSurfaceVariant
+                    font.pixelSize: Theme.fontSmall
+                    font.weight: Theme.fontWeightLabel
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 36
+                    radius: Theme.radiusSmall
+                    color: newWindowPointer.containsMouse
+                        ? Theme.primaryContainer : "transparent"
+                    opacity: root.desktopEntry ? 1 : 0.45
+                    StyledText {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            margins: Theme.space8
+                        }
+                        text: "Open New Window"
+                        font.weight: Theme.fontWeightLabel
+                    }
+                    MouseArea {
+                        id: newWindowPointer
+                        anchors.fill: parent
+                        enabled: root.desktopEntry !== null
+                            && root.desktopEntry !== undefined
+                        hoverEnabled: true
+                        cursorShape: enabled
+                            ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: root.openNewWindow()
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 36
+                    radius: Theme.radiusSmall
+                    color: pinPointer.containsMouse
+                        ? Theme.primaryContainer : "transparent"
+                    StyledText {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            margins: Theme.space8
+                        }
+                        text: root.pinned ? "Unpin from Dock" : "Pin to Dock"
+                        font.weight: Theme.fontWeightLabel
+                    }
+                    MouseArea {
+                        id: pinPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.togglePinned()
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: root.windowCount > 0 ? 36 : 0
+                    visible: root.windowCount > 0
+                    radius: Theme.radiusSmall
+                    color: closeWindowPointer.containsMouse
+                        ? Theme.error : "transparent"
+                    StyledText {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            margins: Theme.space8
+                        }
+                        text: root.windowCount > 1
+                            ? "Close One Window" : "Close Window"
+                        color: closeWindowPointer.containsMouse
+                            ? Theme.foregroundPrimary : Theme.error
+                        font.weight: Theme.fontWeightLabel
+                    }
+                    MouseArea {
+                        id: closeWindowPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.closeWindow()
+                    }
+                }
+            }
+        }
+    }
+
     PopupWindow {
         anchor.window: root.hostWindow
         anchor.rect.x: root.mapToItem(null, 0, 0).x
@@ -315,6 +469,7 @@ Rectangle {
         color: "transparent"
         grabFocus: false
         visible: root.tooltipOpen && pointer.containsMouse
+            && !root.contextMenuOpen
 
         Surface {
             anchors.fill: parent
