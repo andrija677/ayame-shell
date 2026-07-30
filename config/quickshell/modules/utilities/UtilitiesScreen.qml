@@ -14,6 +14,9 @@ PanelWindow {
     property string page: "keys"
     property string captureMode: "area"
     property int captureDelay: 0
+    property int titleClicks: 0
+    property int titleTeaseStage: 0
+    property string titleTeaseText: ""
     property string status: ""
     property string captureError: ""
     property bool selectionMode: false
@@ -49,6 +52,25 @@ PanelWindow {
             { keys: "SUPER + SHIFT + R", action: "Start or stop recording" }
         ] }
     ]
+    readonly property var titleTeases: [
+        "Nyaah, stop clicking me!",
+        "Owie, that hurts—stop it >:(",
+        "You really are curious, huh? :3",
+        "The Keybinds title is not a button…",
+        "Still clicking? I admire the dedication.",
+        "Okay, you win. Have a tiny headpat ♡",
+        "No more secrets here—promise!"
+    ]
+
+    function teaseTitle() {
+        titleClicks++;
+        if (titleClicks < 7)
+            return;
+        titleClicks = 0;
+        titleTeaseText = titleTeases[titleTeaseStage % titleTeases.length];
+        titleTeaseStage++;
+        titleTeaseTimer.restart();
+    }
 
     function openCapturePill() {
         closePanel();
@@ -261,6 +283,11 @@ PanelWindow {
                     font.pixelSize: 24
                     font.weight: Theme.fontWeightDisplay
                     Layout.fillWidth: true
+                    MouseArea {
+                        anchors { fill: parent; margins: -Theme.space8 }
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.teaseTitle()
+                    }
                 }
                 StyledText {
                     text: "Ayame shortcuts"
@@ -338,6 +365,45 @@ PanelWindow {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
             }
+        }
+    }
+
+    Timer {
+        id: titleTeaseTimer
+        interval: 4000
+        onTriggered: root.titleTeaseText = ""
+    }
+
+    Surface {
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+            topMargin: Theme.outerMargin + Theme.space12
+        }
+        visible: opacity > 0
+        opacity: root.titleTeaseText.length > 0 ? 1 : 0
+        scale: root.titleTeaseText.length > 0 ? 1 : 0.88
+        implicitWidth: titleTeaseLabel.implicitWidth + Theme.space24
+        implicitHeight: titleTeaseLabel.implicitHeight + Theme.space12
+        radius: height / 2
+        color: Theme.primaryContainer
+        z: 40
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.motionNormal }
+        }
+        Behavior on scale {
+            NumberAnimation {
+                duration: Theme.motionNormal
+                easing.type: Theme.easeEnter
+            }
+        }
+        StyledText {
+            id: titleTeaseLabel
+            anchors.centerIn: parent
+            text: root.titleTeaseText
+            color: Theme.foregroundPrimaryContainer
+            font.pixelSize: Theme.fontSmall
+            font.weight: Theme.fontWeightLabel
         }
     }
 
