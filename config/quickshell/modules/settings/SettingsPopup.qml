@@ -335,7 +335,6 @@ PanelWindow {
                 RowLayout {
                     anchors { fill: parent; margins: Theme.space12 }
                     ColumnLayout {
-                        Layout.fillWidth: true
                         StyledText { text: "Wallpaper & colors"; font.weight: Theme.fontWeightLabel }
                         StyledText {
                             text: DynamicPalette.active
@@ -347,7 +346,9 @@ PanelWindow {
                             font.pixelSize: Theme.fontSmall
                         }
                     }
+                    Item { Layout.fillWidth: true }
                     Rectangle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         implicitWidth: 104
                         implicitHeight: 28
                         radius: Theme.radiusPill
