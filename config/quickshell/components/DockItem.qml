@@ -214,25 +214,28 @@ Rectangle {
         anchors {
             right: parent.right
             bottom: parent.bottom
-            rightMargin: 2
-            bottomMargin: 5
+            rightMargin: 1
+            bottomMargin: 8
         }
-        width: 16
-        height: 16
-        radius: 8
+        width: 17
+        height: 17
+        radius: 8.5
         visible: root.windowCount >= 2
         color: Theme.primary
-        border.width: 2
+        border.width: 1
         border.color: root.active
             ? Theme.primaryContainer : Theme.surface
         z: 4
 
         StyledText {
-            anchors.centerIn: parent
+            anchors {
+                centerIn: parent
+                verticalCenterOffset: -1
+            }
             text: root.windowCount > 9 ? "9+" : String(root.windowCount)
             color: Theme.foregroundPrimary
             font.family: Theme.fontFamilyNumeric
-            font.pixelSize: 8
+            font.pixelSize: root.windowCount > 9 ? 7 : 9
             font.weight: Theme.fontWeightTitle
         }
 
