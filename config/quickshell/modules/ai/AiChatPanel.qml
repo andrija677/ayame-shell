@@ -19,6 +19,8 @@ PanelWindow {
     property bool historyLoaded: false
     property string pendingImagePath: ""
     property string pendingImageUrl: ""
+    property int copiedMessageIndex: -1
+    property string pendingCopyText: ""
     readonly property string basePrompt:
         "You are Ayame, an AI assistant living inside a Linux and Hyprland desktop shell. "
         + "Be concise, helpful, warm, and technically accurate. Never claim you ran commands, "
@@ -68,12 +70,37 @@ PanelWindow {
         messages = copy;
         saveHistory();
         append("assistant", "");
+        startChat();
+    }
+    function startChat() {
         thinking = true;
         receiving = false;
         chatProcess.command = [
             Quickshell.shellDir + "/../../scripts/ayame-ai.py", "chat"
         ];
         chatProcess.running = true;
+    }
+    function retryLast() {
+        if (chatProcess.running || messages.length < 2)
+            return;
+        const copy = messages.slice();
+        if (copy[copy.length - 1].role !== "assistant")
+            return;
+        copy[copy.length - 1] = { role: "assistant", content: "" };
+        messages = copy;
+        saveHistory();
+        startChat();
+    }
+    function copyMessage(index, content) {
+        if (!content || copyProcess.running)
+            return;
+        pendingCopyText = content;
+        copiedMessageIndex = index;
+        copiedTimer.restart();
+        copyProcess.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-ai.py", "copy"
+        ];
+        copyProcess.running = true;
     }
     function selectImage(url) {
         const value = url.toString();
@@ -137,6 +164,19 @@ PanelWindow {
         title: "Attach an image"
         nameFilters: ["Images (*.png *.jpg *.jpeg *.webp *.gif)"]
         onAccepted: root.selectImage(selectedFile)
+    }
+
+    Timer {
+        id: copiedTimer
+        interval: 1600
+        onTriggered: root.copiedMessageIndex = -1
+    }
+
+    Process {
+        id: copyProcess
+        stdinEnabled: true
+        onStarted: write(JSON.stringify({ text: root.pendingCopyText }) + "\n")
+        onExited: root.pendingCopyText = ""
     }
 
     screen: hostWindow.screen
@@ -226,6 +266,7 @@ PanelWindow {
                 model: root.messages
                 delegate: Item {
                     required property var modelData
+                    required property int index
                     width: ListView.view.width
                     height: bubble.implicitHeight
                     Surface {
@@ -263,6 +304,53 @@ PanelWindow {
                                 color: bubble.parent.modelData.role === "user"
                                     ? Theme.foregroundPrimaryContainer : Theme.foregroundSurface
                             }
+                            Row {
+                                anchors.right: parent.right
+                                spacing: Theme.space12
+                                opacity: messagePointer.containsMouse ? 1 : 0
+                                visible: body.text.length > 0
+                                Behavior on opacity {
+                                    NumberAnimation { duration: Theme.motionFast }
+                                }
+                                StyledText {
+                                    text: root.copiedMessageIndex === bubble.parent.index
+                                        ? "COPIED" : "COPY"
+                                    color: copyPointer.containsMouse
+                                        ? Theme.primary : Theme.outline
+                                    font.pixelSize: 8
+                                    font.weight: Theme.fontWeightTitle
+                                    MouseArea {
+                                        id: copyPointer
+                                        anchors { fill: parent; margins: -Theme.space6 }
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.copyMessage(
+                                            bubble.parent.index, body.text)
+                                    }
+                                }
+                                StyledText {
+                                    visible: bubble.parent.modelData.role === "assistant"
+                                        && bubble.parent.index === root.messages.length - 1
+                                    text: "RETRY"
+                                    color: retryPointer.containsMouse
+                                        ? Theme.primary : Theme.outline
+                                    font.pixelSize: 8
+                                    font.weight: Theme.fontWeightTitle
+                                    MouseArea {
+                                        id: retryPointer
+                                        anchors { fill: parent; margins: -Theme.space6 }
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.retryLast()
+                                    }
+                                }
+                            }
+                        }
+                        MouseArea {
+                            id: messagePointer
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.NoButton
                         }
                     }
                 }

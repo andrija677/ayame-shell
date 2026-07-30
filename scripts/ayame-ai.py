@@ -97,6 +97,17 @@ def delete_secret(provider: str) -> int:
     return result.returncode
 
 
+def copy_text() -> int:
+    if not shutil.which("wl-copy"):
+        print("Install wl-clipboard to copy AI messages", file=sys.stderr)
+        return 127
+    payload = json.loads(sys.stdin.readline())
+    text = str(payload.get("text", ""))
+    if not text:
+        return 2
+    return subprocess.run(["wl-copy"], input=text, text=True, check=False).returncode
+
+
 def request(url: str, headers: dict[str, str], body: dict) -> urllib.response.addinfourl:
     data = json.dumps(body, ensure_ascii=False).encode()
     return urllib.request.urlopen(
@@ -260,7 +271,9 @@ def main() -> int:
     if action == "key-status":
         print("1" if secret(provider) else "0")
         return 0
-    print("Usage: ayame-ai.py {chat|key-store|key-delete|key-status} [provider]",
+    if action == "copy":
+        return copy_text()
+    print("Usage: ayame-ai.py {chat|copy|key-store|key-delete|key-status} [provider]",
           file=sys.stderr)
     return 2
 
