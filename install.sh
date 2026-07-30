@@ -420,6 +420,9 @@ After=graphical-session.target pipewire.service
 [Service]
 Type=simple
 ExecStart=$bin_dir/ayame-shell --autostart
+# Desktop entries launched by Quickshell inherit this service's cgroup.
+# Stop only Quickshell itself so a shell restart never terminates user apps.
+KillMode=process
 Restart=on-failure
 RestartSec=2
 TimeoutStopSec=5
