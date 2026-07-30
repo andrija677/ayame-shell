@@ -338,6 +338,12 @@ Rectangle {
         color: "transparent"
         grabFocus: true
         visible: root.contextMenuOpen
+        onVisibleChanged: {
+            if (!visible && root.contextMenuOpen) {
+                contextMenuTimer.stop();
+                root.contextMenuOpen = false;
+            }
+        }
 
         Shortcut {
             sequence: "Escape"
