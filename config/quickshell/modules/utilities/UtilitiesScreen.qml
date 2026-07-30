@@ -59,7 +59,8 @@ PanelWindow {
         "The Keybinds title is not a button…",
         "Still clicking? I admire the dedication.",
         "Okay, you win. Have a tiny headpat ♡",
-        "No more secrets here—promise!"
+        "No more secrets here—promise!",
+        "*purrs* Mmh, keep petting me—or, in this situation, clicking me."
     ]
 
     function teaseTitle() {
@@ -67,8 +68,10 @@ PanelWindow {
         if (titleClicks < 7)
             return;
         titleClicks = 0;
-        titleTeaseText = titleTeases[titleTeaseStage % titleTeases.length];
-        titleTeaseStage++;
+        titleTeaseText = titleTeases[Math.min(
+            titleTeaseStage, titleTeases.length - 1)];
+        titleTeaseStage = Math.min(
+            titleTeaseStage + 1, titleTeases.length - 1);
         titleTeaseTimer.restart();
     }
 
@@ -94,6 +97,10 @@ PanelWindow {
 
     function closePanel() {
         panelOpen = false;
+        titleClicks = 0;
+        titleTeaseStage = 0;
+        titleTeaseText = "";
+        titleTeaseTimer.stop();
         closeTimer.restart();
     }
 
@@ -285,7 +292,6 @@ PanelWindow {
                     Layout.fillWidth: true
                     MouseArea {
                         anchors { fill: parent; margins: -Theme.space8 }
-                        cursorShape: Qt.PointingHandCursor
                         onClicked: root.teaseTitle()
                     }
                 }
