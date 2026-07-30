@@ -6,6 +6,9 @@ stdin/stdout so prompts never appear in the process list.
 """
 
 import json
+import base64
+import mimetypes
+from pathlib import Path
 import shutil
 import subprocess
 import sys
@@ -102,13 +105,44 @@ def request(url: str, headers: dict[str, str], body: dict) -> urllib.response.ad
     )
 
 
+def image_data(path_value: str) -> tuple[str, str]:
+    path = Path(path_value).expanduser()
+    if not path.is_file():
+        raise RuntimeError("The attached image is no longer available")
+    mime = mimetypes.guess_type(path.name)[0] or ""
+    if mime not in {"image/jpeg", "image/png", "image/webp", "image/gif"}:
+        raise RuntimeError("Attach a PNG, JPEG, WebP, or GIF image")
+    if path.stat().st_size > 10 * 1024 * 1024:
+        raise RuntimeError("Attached images must be 10 MB or smaller")
+    return mime, base64.b64encode(path.read_bytes()).decode("ascii")
+
+
+def openai_messages(messages: list[dict]) -> list[dict]:
+    result = []
+    for item in messages:
+        image_path = item.get("imagePath", "")
+        if item["role"] != "user" or not image_path:
+            result.append({"role": item["role"], "content": item["content"]})
+            continue
+        mime, encoded = image_data(image_path)
+        result.append({
+            "role": "user",
+            "content": [
+                {"type": "text", "text": item["content"]},
+                {"type": "image_url",
+                 "image_url": {"url": f"data:{mime};base64,{encoded}"}},
+            ],
+        })
+    return result
+
+
 def openai_stream(config: dict, messages: list[dict]) -> None:
     key = secret("openai")
     if not key:
         raise RuntimeError("Add an OpenAI-compatible API key in Ayame Settings")
     base = config.get("baseUrl", "https://api.openai.com").rstrip("/")
     body = {"model": config.get("model") or "gpt-4.1-mini",
-            "messages": messages, "stream": True}
+            "messages": openai_messages(messages), "stream": True}
     with request(base + "/v1/chat/completions",
                  {"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
                  body) as response:
@@ -135,9 +169,13 @@ def gemini_stream(config: dict, messages: list[dict]) -> None:
     system = messages[0]["content"]
     contents = []
     for item in messages[1:]:
+        parts = [{"text": item["content"]}]
+        if item["role"] == "user" and item.get("imagePath"):
+            mime, encoded = image_data(item["imagePath"])
+            parts.append({"inline_data": {"mime_type": mime, "data": encoded}})
         contents.append({
             "role": "model" if item["role"] == "assistant" else "user",
-            "parts": [{"text": item["content"]}],
+            "parts": parts,
         })
     body = {"system_instruction": {"parts": [{"text": system}]}, "contents": contents}
     with request(url, {"Content-Type": "application/json"}, body) as response:
@@ -154,8 +192,15 @@ def gemini_stream(config: dict, messages: list[dict]) -> None:
 
 def ollama_stream(config: dict, messages: list[dict]) -> None:
     base = config.get("baseUrl", "http://127.0.0.1:11434").rstrip("/")
+    ollama_messages = []
+    for item in messages:
+        message = {"role": item["role"], "content": item["content"]}
+        if item["role"] == "user" and item.get("imagePath"):
+            _, encoded = image_data(item["imagePath"])
+            message["images"] = [encoded]
+        ollama_messages.append(message)
     body = {"model": config.get("model") or "llama3.2",
-            "messages": messages, "stream": True}
+            "messages": ollama_messages, "stream": True}
     with request(base + "/api/chat", {"Content-Type": "application/json"}, body) as response:
         for raw in response:
             if not raw.strip():
@@ -172,7 +217,11 @@ def chat() -> int:
     config = json.loads(sys.stdin.readline())
     history = config.get("history", [])[-20:]
     messages = [{"role": "system", "content": config["systemPrompt"]}]
-    messages.extend({"role": item["role"], "content": item["content"]} for item in history)
+    messages.extend({
+        "role": item["role"],
+        "content": item["content"],
+        "imagePath": item.get("imagePath", ""),
+    } for item in history)
     provider = config.get("provider", "gemini")
     try:
         if provider == "gemini":

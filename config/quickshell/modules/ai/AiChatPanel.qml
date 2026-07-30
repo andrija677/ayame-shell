@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
@@ -16,6 +17,8 @@ PanelWindow {
     property bool receiving: false
     property var messages: []
     property bool historyLoaded: false
+    property string pendingImagePath: ""
+    property string pendingImageUrl: ""
     readonly property string basePrompt:
         "You are Ayame, an AI assistant living inside a Linux and Hyprland desktop shell. "
         + "Be concise, helpful, warm, and technically accurate. Never claim you ran commands, "
@@ -54,9 +57,16 @@ PanelWindow {
     }
     function send() {
         const text = input.text.trim();
-        if (!text || chatProcess.running) return;
+        if ((!text && !pendingImagePath) || chatProcess.running) return;
+        const prompt = text || "What can you tell me about this image?";
+        const imagePath = pendingImagePath;
         input.text = "";
-        append("user", text);
+        pendingImagePath = "";
+        pendingImageUrl = "";
+        const copy = messages.slice();
+        copy.push({ role: "user", content: prompt, imagePath: imagePath });
+        messages = copy;
+        saveHistory();
         append("assistant", "");
         thinking = true;
         receiving = false;
@@ -64,6 +74,12 @@ PanelWindow {
             Quickshell.shellDir + "/../../scripts/ayame-ai.py", "chat"
         ];
         chatProcess.running = true;
+    }
+    function selectImage(url) {
+        const value = url.toString();
+        pendingImageUrl = value;
+        pendingImagePath = decodeURIComponent(value.replace(/^file:\/\//, ""));
+        input.forceActiveFocus();
     }
     function acceptEvent(line) {
         if (!line.trim()) return;
@@ -114,6 +130,13 @@ PanelWindow {
             id: historyAdapter
             property var messages: []
         }
+    }
+
+    FileDialog {
+        id: imagePicker
+        title: "Attach an image"
+        nameFilters: ["Images (*.png *.jpg *.jpeg *.webp *.gif)"]
+        onAccepted: root.selectImage(selectedFile)
     }
 
     screen: hostWindow.screen
@@ -207,22 +230,39 @@ PanelWindow {
                     height: bubble.implicitHeight
                     Surface {
                         id: bubble
-                        width: Math.min(parent.width * 0.88, body.implicitWidth + Theme.space24)
+                        width: parent.modelData.imagePath
+                            ? Math.min(parent.width * 0.88, 300)
+                            : Math.min(parent.width * 0.88, body.implicitWidth + Theme.space24)
                         anchors.right: parent.modelData.role === "user" ? parent.right : undefined
                         anchors.left: parent.modelData.role === "assistant" ? parent.left : undefined
-                        implicitHeight: body.implicitHeight + Theme.space16
+                        implicitHeight: messageColumn.implicitHeight + Theme.space16
                         color: parent.modelData.role === "user"
                             ? Theme.primaryContainer : Theme.surfaceContainerHigh
-                        StyledText {
-                            id: body
+                        Column {
+                            id: messageColumn
                             anchors { left: parent.left; right: parent.right; top: parent.top; margins: Theme.space8 }
-                            text: bubble.parent.modelData.content
-                            // Plain text prevents model output from loading remote
-                            // images or interpreting HTML inside the shell.
-                            textFormat: Text.PlainText
-                            wrapMode: Text.Wrap
-                            color: bubble.parent.modelData.role === "user"
-                                ? Theme.foregroundPrimaryContainer : Theme.foregroundSurface
+                            spacing: Theme.space8
+                            Image {
+                                width: parent.width
+                                height: visible ? Math.min(180, implicitHeight) : 0
+                                visible: bubble.parent.modelData.imagePath
+                                    && bubble.parent.modelData.imagePath.length > 0
+                                source: visible ? "file://" + bubble.parent.modelData.imagePath : ""
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                cache: false
+                            }
+                            StyledText {
+                                id: body
+                                width: parent.width
+                                text: bubble.parent.modelData.content
+                                // Plain text prevents model output from loading remote
+                                // images or interpreting HTML inside the shell.
+                                textFormat: Text.PlainText
+                                wrapMode: Text.Wrap
+                                color: bubble.parent.modelData.role === "user"
+                                    ? Theme.foregroundPrimaryContainer : Theme.foregroundSurface
+                            }
                         }
                     }
                 }
@@ -266,13 +306,46 @@ PanelWindow {
 
             Surface {
                 Layout.fillWidth: true
+                implicitHeight: root.pendingImagePath ? 82 : 0
+                opacity: root.pendingImagePath ? 1 : 0
+                visible: implicitHeight > 0
+                color: Theme.surfaceContainerHigh
+                Behavior on implicitHeight { NumberAnimation { duration: Theme.motionNormal } }
+                Image {
+                    anchors { left: parent.left; verticalCenter: parent.verticalCenter; margins: Theme.space8 }
+                    width: 66; height: 66
+                    source: root.pendingImageUrl
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: false
+                }
+                StyledText {
+                    anchors { right: parent.right; top: parent.top; margins: Theme.space12 }
+                    text: "Remove"
+                    color: removeImagePointer.containsMouse ? Theme.primary : Theme.outline
+                    font.pixelSize: 9
+                    MouseArea {
+                        id: removeImagePointer
+                        anchors { fill: parent; margins: -Theme.space8 }
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.pendingImagePath = "";
+                            root.pendingImageUrl = "";
+                        }
+                    }
+                }
+            }
+
+            Surface {
+                Layout.fillWidth: true
                 implicitHeight: Math.max(48, input.implicitHeight + Theme.space16)
                 color: Theme.surfaceContainer
                 border.width: input.activeFocus ? 1 : 0
                 border.color: Theme.primary
                 TextArea {
                     id: input
-                    anchors { left: parent.left; right: sendButton.left; top: parent.top; bottom: parent.bottom; margins: Theme.space8 }
+                    anchors { left: attachButton.right; right: sendButton.left; top: parent.top; bottom: parent.bottom; margins: Theme.space8 }
                     placeholderText: "Message Ayame…"
                     color: Theme.foregroundSurface
                     placeholderTextColor: Theme.outline
@@ -285,6 +358,26 @@ PanelWindow {
                                 && !(event.modifiers & Qt.ShiftModifier)) {
                             root.send(); event.accepted = true;
                         }
+                    }
+                }
+                Rectangle {
+                    id: attachButton
+                    anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: Theme.space8 }
+                    width: 34; height: 34; radius: 17
+                    color: attachPointer.containsMouse
+                        ? Theme.surfaceContainerHigh : "transparent"
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: "＋"
+                        color: root.pendingImagePath ? Theme.primary : Theme.foregroundSurfaceVariant
+                        font.pixelSize: Theme.fontTitle
+                    }
+                    MouseArea {
+                        id: attachPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: imagePicker.open()
                     }
                 }
                 Rectangle {
