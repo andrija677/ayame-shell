@@ -15,6 +15,7 @@ PanelWindow {
     property bool thinking: false
     property bool receiving: false
     property var messages: []
+    property bool historyLoaded: false
     readonly property string basePrompt:
         "You are Ayame, an AI assistant living inside a Linux and Hyprland desktop shell. "
         + "Be concise, helpful, warm, and technically accurate. Never claim you ran commands, "
@@ -38,7 +39,18 @@ PanelWindow {
         const copy = messages.slice();
         copy.push({ role: role, content: content });
         messages = copy;
+        saveHistory();
         Qt.callLater(() => chatList.positionViewAtEnd());
+    }
+    function saveHistory() {
+        if (!historyLoaded) return;
+        historyAdapter.messages = messages.slice(-60);
+        historySaveTimer.restart();
+    }
+    function clearHistory() {
+        if (chatProcess.running) chatProcess.signal(15);
+        messages = [];
+        saveHistory();
     }
     function send() {
         const text = input.text.trim();
@@ -73,11 +85,35 @@ PanelWindow {
                 copy[copy.length - 1] = { role: "assistant",
                     content: "⚠ " + event.message };
                 messages = copy;
+                saveHistory();
             } else if (event.type === "done") {
                 thinking = false;
                 receiving = false;
+                saveHistory();
             }
         } catch (error) {}
+    }
+
+    Timer {
+        id: historySaveTimer
+        interval: 180
+        onTriggered: historyFile.writeAdapter()
+    }
+
+    FileView {
+        id: historyFile
+        path: Quickshell.dataDir + "/ai-chat-history.json"
+        preload: true
+        atomicWrites: true
+        printErrors: false
+        onLoaded: {
+            root.messages = historyAdapter.messages || [];
+            root.historyLoaded = true;
+        }
+        JsonAdapter {
+            id: historyAdapter
+            property var messages: []
+        }
     }
 
     screen: hostWindow.screen
@@ -143,7 +179,7 @@ PanelWindow {
                         anchors { fill: parent; margins: -Theme.space8 }
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.messages = []
+                        onClicked: root.clearHistory()
                     }
                 }
                 StyledText {
@@ -181,7 +217,9 @@ PanelWindow {
                             id: body
                             anchors { left: parent.left; right: parent.right; top: parent.top; margins: Theme.space8 }
                             text: bubble.parent.modelData.content
-                            textFormat: Text.MarkdownText
+                            // Plain text prevents model output from loading remote
+                            // images or interpreting HTML inside the shell.
+                            textFormat: Text.PlainText
                             wrapMode: Text.Wrap
                             color: bubble.parent.modelData.role === "user"
                                 ? Theme.foregroundPrimaryContainer : Theme.foregroundSurface
