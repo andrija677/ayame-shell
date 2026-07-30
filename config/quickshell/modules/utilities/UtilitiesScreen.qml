@@ -14,8 +14,6 @@ PanelWindow {
     property string page: "keys"
     property string captureMode: "area"
     property int captureDelay: 0
-    property int titleClicks: 0
-    property bool easterEggOpen: false
     property string status: ""
     property string captureError: ""
     property bool selectionMode: false
@@ -74,7 +72,6 @@ PanelWindow {
 
     function closePanel() {
         panelOpen = false;
-        easterEggOpen = false;
         closeTimer.restart();
     }
 
@@ -264,16 +261,6 @@ PanelWindow {
                     font.pixelSize: 24
                     font.weight: Theme.fontWeightDisplay
                     Layout.fillWidth: true
-                    MouseArea {
-                        anchors { fill: parent; margins: -Theme.space8 }
-                        onClicked: {
-                            root.titleClicks++;
-                            if (root.titleClicks >= 7) {
-                                root.titleClicks = 0;
-                                root.easterEggOpen = true;
-                            }
-                        }
-                    }
                 }
                 StyledText {
                     text: "Ayame shortcuts"
@@ -352,21 +339,6 @@ PanelWindow {
                 wrapMode: Text.WordWrap
             }
         }
-    }
-
-    Surface {
-        anchors.centerIn: parent
-        visible: root.easterEggOpen
-        width: 360; implicitHeight: 420; radius: Theme.radiusLarge
-        color: Theme.surfaceContainerHigh
-        z: 10
-        Image {
-            anchors { fill: parent; margins: Theme.space8 }
-            source: Quickshell.shellDir + "/../../assets/images/alya-easter-egg.png"
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-        }
-        MouseArea { anchors.fill: parent; onClicked: root.easterEggOpen = false }
     }
 
     Item {
