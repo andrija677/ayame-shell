@@ -25,6 +25,7 @@ Rectangle {
     readonly property bool pinned: ShellConfig.dockAppPinned(favoriteId)
     readonly property string displayName: desktopEntry?.name || appId || "Application"
     property bool pinChanging: false
+    property real pinBounceDirection: -1
     property real dragOffset: 0
     property real pressSceneX: 0
     property bool dragInProgress: false
@@ -41,7 +42,8 @@ Rectangle {
     transform: [
         Translate { id: pinSlide; x: 14 },
         Translate { x: root.dragOffset },
-        Translate { id: revealLift }
+        Translate { id: revealLift },
+        Translate { id: pinBounce }
     ]
 
     onRevealGenerationChanged: {
@@ -51,7 +53,7 @@ Rectangle {
 
     SequentialAnimation {
         id: revealBounce
-        PauseAnimation { duration: root.dockIndex * 38 }
+        PauseAnimation { duration: Math.max(0, root.dockIndex) * 38 }
         NumberAnimation {
             target: revealLift
             property: "y"
@@ -107,23 +109,40 @@ Rectangle {
     }
 
     SequentialAnimation {
-        id: pinAnimation
-        ParallelAnimation {
-            NumberAnimation {
-                target: root; property: "opacity"; to: 0
-                duration: Theme.motionFast; easing.type: Theme.easeExit
-            }
-            NumberAnimation {
-                target: pinSlide; property: "x"
-                to: root.pinned ? 16 : -16
-                duration: Theme.motionFast; easing.type: Theme.easeExit
-            }
+        id: pinBounceAnimation
+        onFinished: {
+            if (!root.pinChanging)
+                return;
+            ShellConfig.toggleDockFavorite(root.favoriteId);
+            root.pinChanging = false;
         }
-        ScriptAction {
-            script: {
-                ShellConfig.toggleDockFavorite(root.favoriteId);
-                Qt.callLater(root.playEntryAnimation);
-            }
+        NumberAnimation {
+            target: pinBounce
+            property: "y"
+            to: root.pinBounceDirection * 6
+            duration: Math.round(Theme.motionFast * 0.7)
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: pinBounce
+            property: "y"
+            to: 0
+            duration: Math.round(Theme.motionNormal * 0.6)
+            easing.type: Easing.OutSine
+        }
+        NumberAnimation {
+            target: pinBounce
+            property: "y"
+            to: root.pinBounceDirection * 4
+            duration: Math.round(Theme.motionFast * 0.7)
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: pinBounce
+            property: "y"
+            to: 0
+            duration: Math.round(Theme.motionNormal * 0.6)
+            easing.type: Easing.OutSine
         }
     }
 
@@ -225,8 +244,9 @@ Rectangle {
         onReleased: event => {
             if (event.button === Qt.RightButton && !root.dragInProgress) {
                 if (!root.pinChanging) {
+                    root.pinBounceDirection = root.pinned ? 1 : -1;
                     root.pinChanging = true;
-                    pinAnimation.start();
+                    pinBounceAnimation.restart();
                 }
                 return;
             }
