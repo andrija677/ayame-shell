@@ -209,8 +209,8 @@ Surface {
                     spacing: Theme.space6
 
                     Rectangle {
-                        implicitWidth: 20
-                        implicitHeight: 20
+                        implicitWidth: 18
+                        implicitHeight: 18
                         radius: Theme.radiusPill
                         color: addPointer.containsMouse
                             ? Theme.foregroundPrimary : Theme.primary
@@ -226,7 +226,7 @@ Surface {
                             text: "+"
                             color: addPointer.containsMouse
                                 ? Theme.primary : Theme.foregroundPrimary
-                            font.pixelSize: 15
+                            font.pixelSize: 14
                             font.weight: Theme.fontWeightTitle
                         }
                     }

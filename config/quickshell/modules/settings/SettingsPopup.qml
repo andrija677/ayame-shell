@@ -638,7 +638,6 @@ PanelWindow {
                 RowLayout {
                     anchors { fill: parent; margins: Theme.space12 }
                     ColumnLayout {
-                        Layout.fillWidth: true
                         spacing: 1
                         StyledText {
                             text: "Ayame AI"
@@ -656,7 +655,9 @@ PanelWindow {
                             font.pixelSize: Theme.fontSmall
                         }
                     }
+                    Item { Layout.fillWidth: true }
                     Rectangle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         implicitWidth: 86
                         implicitHeight: 30
                         radius: Theme.radiusPill
@@ -877,7 +878,7 @@ PanelWindow {
 
             Surface {
                 Layout.fillWidth: true
-                implicitHeight: 108
+                implicitHeight: 132
                 visible: SystemControlService.idleAvailable
                 color: Theme.surfaceContainer
                 ColumnLayout {

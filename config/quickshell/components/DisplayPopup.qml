@@ -85,14 +85,27 @@ PanelWindow {
         ColumnLayout {
             anchors { fill: parent; margins: Theme.space16 }
             spacing: Theme.space12
-            RowLayout {
+            Item {
                 Layout.fillWidth: true
+                implicitHeight: displayHeaderText.implicitHeight
                 ColumnLayout {
-                    Layout.fillWidth: true; spacing: Theme.space2
+                    id: displayHeaderText
+                    anchors {
+                        left: parent.left
+                        right: displayCloseLabel.left
+                        rightMargin: Theme.space12
+                        verticalCenter: parent.verticalCenter
+                    }
+                    spacing: Theme.space2
                     StyledText { text: "Display Controls"; font.pixelSize: Theme.fontTitle; font.weight: Theme.fontWeightTitle }
                     StyledText { text: "Resolution, refresh rate and scaling"; color: Theme.foregroundSurfaceVariant; font.pixelSize: Theme.fontSmall }
                 }
                 StyledText {
+                    id: displayCloseLabel
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
                     text: "Close"; color: closePointer.containsMouse ? Theme.primary : Theme.outline
                     font.pixelSize: 9; font.weight: Theme.fontWeightTitle
                     MouseArea {

@@ -58,10 +58,18 @@ PanelWindow {
             anchors { fill: parent; margins: Theme.space16 }
             spacing: Theme.space12
 
-            RowLayout {
+            Item {
                 Layout.fillWidth: true
+                implicitHeight: headerText.implicitHeight
                 ColumnLayout {
-                    Layout.fillWidth: true; spacing: Theme.space2
+                    id: headerText
+                    anchors {
+                        left: parent.left
+                        right: closeLabel.left
+                        rightMargin: Theme.space12
+                        verticalCenter: parent.verticalCenter
+                    }
+                    spacing: Theme.space2
                     StyledText { text: "Clipboard History"; font.pixelSize: Theme.fontTitle; font.weight: Theme.fontWeightTitle }
                     StyledText {
                         text: ShellConfig.clipboardHistoryEnabled
@@ -71,6 +79,11 @@ PanelWindow {
                     }
                 }
                 StyledText {
+                    id: closeLabel
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
                     text: "Close"; color: closePointer.containsMouse ? Theme.primary : Theme.outline
                     font.pixelSize: 9; font.weight: Theme.fontWeightTitle
                     MouseArea {
