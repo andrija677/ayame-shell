@@ -318,7 +318,7 @@ PanelWindow {
                         spacing: Theme.space4
 
                         StyledText {
-                            text: parent.modelData.title.toUpperCase()
+                            text: parent.modelData.title
                             color: Theme.primary
                             font.pixelSize: 10
                             font.weight: Theme.fontWeightTitle

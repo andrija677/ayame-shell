@@ -778,12 +778,15 @@ PanelWindow {
                     }
                     Rectangle {
                         implicitWidth: 66
-                        implicitHeight: 28
+                        implicitHeight: 30
                         radius: Theme.radiusPill
                         color: weatherPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
                             text: WeatherService.configured ? "Change" : "Set up"
+                            color: weatherPointer.containsMouse
+                                ? Theme.foregroundPrimary
+                                : Theme.foregroundPrimaryContainer
                             font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
                         }

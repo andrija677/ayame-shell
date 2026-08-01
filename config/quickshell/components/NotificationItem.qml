@@ -205,7 +205,7 @@ Surface {
                 Rectangle {
                     required property var modelData
                     implicitWidth: actionLabel.implicitWidth + Theme.space16
-                    implicitHeight: 28
+                    implicitHeight: 30
                     radius: Theme.radiusPill
                     color: actionPointer.containsMouse
                         ? Theme.primary : Theme.primaryContainer

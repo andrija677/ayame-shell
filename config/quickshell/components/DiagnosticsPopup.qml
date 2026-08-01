@@ -40,6 +40,13 @@ PanelWindow {
         if (state === "warning") return Theme.warning;
         return Theme.outline;
     }
+    function stateLabel(state) {
+        if (state === "healthy") return "Healthy";
+        if (state === "error") return "Error";
+        if (state === "warning") return "Warning";
+        if (state === "unavailable") return "Unavailable";
+        return state;
+    }
 
     screen: hostWindow.screen
     anchors { top: true; bottom: true; left: true; right: true }
@@ -171,7 +178,7 @@ PanelWindow {
                             }
                         }
                         StyledText {
-                            text: parent.parent.modelData.state.toUpperCase()
+                            text: root.stateLabel(parent.parent.modelData.state)
                             color: root.stateColor(parent.parent.modelData.state)
                             font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
