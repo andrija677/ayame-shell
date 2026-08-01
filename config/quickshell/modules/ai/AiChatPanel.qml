@@ -314,7 +314,7 @@ PanelWindow {
                                 }
                                 StyledText {
                                     text: root.copiedMessageIndex === bubble.parent.index
-                                        ? "COPIED" : "COPY"
+                                        ? "Copied" : "Copy"
                                     color: copyPointer.containsMouse
                                         ? Theme.primary : Theme.outline
                                     font.pixelSize: 8
@@ -331,7 +331,7 @@ PanelWindow {
                                 StyledText {
                                     visible: bubble.parent.modelData.role === "assistant"
                                         && bubble.parent.index === root.messages.length - 1
-                                    text: "RETRY"
+                                    text: "Retry"
                                     color: retryPointer.containsMouse
                                         ? Theme.primary : Theme.outline
                                     font.pixelSize: 8

@@ -27,7 +27,7 @@ Rectangle {
         text: WeatherService.hasData
             ? Math.round(WeatherService.forecast.current.temperature_2m)
                 + (ShellConfig.weatherTemperatureUnit === "celsius" ? "°C" : "°F")
-            : WeatherService.loading ? "WEATHER…" : "WEATHER"
+            : WeatherService.loading ? "Weather…" : "Weather"
         color: WeatherService.error.length > 0
             ? Theme.warning : Theme.foregroundSurfaceVariant
         font.family: Theme.fontFamily

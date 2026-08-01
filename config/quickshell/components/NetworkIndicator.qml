@@ -213,7 +213,7 @@ Rectangle {
                         ? Theme.primary : Theme.primaryContainer
                     StyledText {
                         anchors.centerIn: parent
-                        text: "OPEN QUICK SETTINGS"
+                        text: "Open quick settings"
                         color: detailsPointer.containsMouse
                             ? Theme.foregroundPrimary
                             : Theme.foregroundPrimaryContainer

@@ -64,7 +64,7 @@ Surface {
 
                 Rectangle {
                     required property var modelData
-                    implicitWidth: modelData.label === "TODAY" ? 52 : 26
+                    implicitWidth: modelData.label === "Today" ? 52 : 26
                     implicitHeight: 24
                     radius: Theme.radiusPill
                     color: navigationPointer.containsMouse
@@ -75,7 +75,7 @@ Surface {
                         text: parent.modelData.label
                         color: navigationPointer.containsMouse
                             ? Theme.primary : Theme.foregroundSurfaceVariant
-                        font.pixelSize: parent.modelData.label === "TODAY" ? 9 : 16
+                        font.pixelSize: parent.modelData.label === "Today" ? 9 : 16
                         font.weight: Theme.fontWeightTitle
                     }
 
@@ -99,7 +99,7 @@ Surface {
             columnSpacing: Theme.space4
 
             Repeater {
-                model: ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+                model: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
                 StyledText {
                     required property string modelData
@@ -279,7 +279,7 @@ Surface {
                 StyledText {
                     Layout.fillWidth: true
                     text: modelData.title
-                        + (modelData.recurrence === "yearly" ? "  •  YEARLY" : "")
+                        + (modelData.recurrence === "yearly" ? "  •  Yearly" : "")
                     elide: Text.ElideRight
                 }
                 StyledText {

@@ -324,13 +324,16 @@ PanelWindow {
                             }
                         }
                         Rectangle {
-                            implicitWidth: 78; implicitHeight: 28
+                            implicitWidth: 78; implicitHeight: 30
                             radius: Theme.radiusPill
                             color: connectPointer.containsMouse
                                 ? Theme.primary : Theme.primaryContainer
                             StyledText {
                                 anchors.centerIn: parent
-                                text: "CONNECT"
+                                text: "Connect"
+                                color: connectPointer.containsMouse
+                                    ? Theme.foregroundPrimary
+                                    : Theme.foregroundPrimaryContainer
                                 font.pixelSize: 9
                                 font.weight: Theme.fontWeightTitle
                             }

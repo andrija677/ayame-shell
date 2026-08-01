@@ -350,12 +350,12 @@ PanelWindow {
                     Rectangle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         implicitWidth: 104
-                        implicitHeight: 28
+                        implicitHeight: 30
                         radius: Theme.radiusPill
                         color: wallpaperPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "CUSTOMIZE"
+                            text: "Customize"
                             color: wallpaperPointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                             font.pixelSize: 9
@@ -663,13 +663,14 @@ PanelWindow {
                         implicitHeight: 30
                         radius: Theme.radiusPill
                         color: aiSetupPointer.containsMouse
-                            ? Theme.primary : Theme.surfaceContainerHigh
+                            ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "CONFIGURE"
+                            text: "Configure"
                             color: aiSetupPointer.containsMouse
-                                ? Theme.foregroundPrimary : Theme.primary
-                            font.pixelSize: 8
+                                ? Theme.foregroundPrimary
+                                : Theme.foregroundPrimaryContainer
+                            font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
                         }
                         MouseArea {
@@ -782,7 +783,7 @@ PanelWindow {
                         color: weatherPointer.containsMouse ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: WeatherService.configured ? "CHANGE" : "SET UP"
+                            text: WeatherService.configured ? "Change" : "Set up"
                             font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
                         }
@@ -958,7 +959,7 @@ PanelWindow {
                             ? Theme.primary : Theme.primaryContainer
                         StyledText {
                             anchors.centerIn: parent
-                            text: "RUN CHECK"
+                            text: "Run check"
                             color: diagnosticsPointer.containsMouse
                                 ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                             font.pixelSize: 9

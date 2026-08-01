@@ -57,7 +57,7 @@ Surface {
 
             StyledText {
                 text: WeatherService.hasData
-                    ? "FEELS " + Math.round(
+                    ? "Feels " + Math.round(
                         WeatherService.forecast.current.apparent_temperature) + "°"
                     : ""
                 color: Theme.foregroundSurfaceVariant
@@ -67,7 +67,7 @@ Surface {
             }
             StyledText {
                 text: WeatherService.hasData
-                    ? "WIND " + Math.round(
+                    ? "Wind " + Math.round(
                         WeatherService.forecast.current.wind_speed_10m) + " "
                         + (WeatherService.forecast.current_units?.wind_speed_10m || "km/h")
                     : ""
@@ -78,7 +78,7 @@ Surface {
             }
             Item { Layout.fillWidth: true }
             StyledText {
-                text: WeatherService.stale ? "CACHED" : "UPDATED"
+                text: WeatherService.stale ? "Cached" : "Updated"
                 color: WeatherService.stale ? Theme.warning : Theme.success
                 font.pixelSize: 9
                 font.weight: Theme.fontWeightTitle
@@ -98,8 +98,8 @@ Surface {
                     spacing: Theme.space2
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: index === 0 ? "TODAY"
-                            : Qt.formatDate(new Date(modelData + "T12:00:00"), "ddd").toUpperCase()
+                        text: index === 0 ? "Today"
+                            : Qt.formatDate(new Date(modelData + "T12:00:00"), "ddd")
                         color: Theme.outline
                         font.pixelSize: 9
                         font.weight: Theme.fontWeightTitle

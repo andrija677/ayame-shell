@@ -44,7 +44,7 @@ Surface {
 
     function actionText(action) {
         const label = (action?.text ?? "").trim();
-        return label.length > 0 ? label.toUpperCase() : "OPEN";
+        return label.length > 0 ? label : "Open";
     }
 
     function finishDismiss() {

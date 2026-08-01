@@ -151,7 +151,13 @@ PanelWindow {
                         RowLayout {
                             anchors { fill: parent; margins: Theme.space12 }
                             StyledText { text: parent.parent.modelData; Layout.fillWidth: true }
-                            StyledText { text: root.selectedMode === parent.parent.modelData ? "SELECTED" : "CHOOSE"; color: Theme.primary; font.pixelSize: 9; font.weight: Theme.fontWeightTitle }
+                            StyledText {
+                                text: root.selectedMode === parent.parent.modelData
+                                    ? "Selected" : "Choose"
+                                color: Theme.primary
+                                font.pixelSize: 9
+                                font.weight: Theme.fontWeightTitle
+                            }
                         }
                         MouseArea {
                             anchors.fill: parent; cursorShape: Qt.PointingHandCursor

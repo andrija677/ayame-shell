@@ -268,7 +268,7 @@ PanelWindow {
                         Layout.fillWidth: true
                         StyledText { text: "Volume"; Layout.fillWidth: true }
                         StyledText {
-                            text: root.audio?.muted ? "MUTED"
+                            text: root.audio?.muted ? "Muted"
                                 : Math.round((root.audio?.volume ?? 0) * 100) + "%"
                             color: root.audio?.muted
                                 ? Theme.error : Theme.foregroundSurfaceVariant
@@ -284,7 +284,7 @@ PanelWindow {
                                 ? Theme.primaryContainer : Theme.surfaceContainerHigh
                             StyledText {
                                 anchors.centerIn: parent
-                                text: root.outputsOpen ? "OUTPUTS  ⌃" : "OUTPUTS  ⌄"
+                                text: root.outputsOpen ? "Outputs  ⌃" : "Outputs  ⌄"
                                 color: Theme.foregroundPrimaryContainer
                                 font.pixelSize: 9
                                 font.weight: Theme.fontWeightTitle
@@ -499,7 +499,7 @@ PanelWindow {
                     anchors { fill: parent; margins: Theme.space12 }
                     StyledText { text: "Wi-Fi networks"; Layout.fillWidth: true }
                     StyledText {
-                        text: Networking.wifiEnabled ? "BROWSE  ›" : "TURN ON  ›"
+                        text: Networking.wifiEnabled ? "Browse  ›" : "Turn on  ›"
                         color: Theme.primary
                         font.pixelSize: 9
                         font.weight: Theme.fontWeightTitle
@@ -541,7 +541,7 @@ PanelWindow {
                     anchors { fill: parent; margins: Theme.space12 }
                     StyledText { text: "Bluetooth devices"; Layout.fillWidth: true }
                     StyledText {
-                        text: "MANAGE  ›"
+                        text: "Manage  ›"
                         color: Theme.primary
                         font.pixelSize: 9
                         font.weight: Theme.fontWeightTitle

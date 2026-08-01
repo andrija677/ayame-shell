@@ -158,8 +158,22 @@ PopupWindow {
                 }
                 Rectangle {
                     implicitWidth: 72; implicitHeight: 32; radius: Theme.radiusPill; color: Theme.primaryContainer
-                    StyledText { anchors.centerIn: parent; text: "SAVE KEY"; font.pixelSize: 8; font.weight: Theme.fontWeightTitle }
-                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.saveKey() }
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: "Save key"
+                        color: saveKeyPointer.containsMouse
+                            ? Theme.foregroundPrimary
+                            : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    MouseArea {
+                        id: saveKeyPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.saveKey()
+                    }
                 }
             }
             RowLayout {

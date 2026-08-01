@@ -148,12 +148,13 @@ PanelWindow {
                                 maximumLineCount: 3; elide: Text.ElideRight; wrapMode: Text.Wrap
                             }
                             StyledText {
-                                text: parent.parent.parent.modelData.kind.toUpperCase()
+                                text: parent.parent.parent.modelData.kind === "image"
+                                    ? "Image" : "Text"
                                 color: Theme.outline; font.pixelSize: 9; font.weight: Theme.fontWeightTitle
                             }
                         }
                         StyledText {
-                            text: "COPY"; color: copyPointer.containsMouse ? Theme.primary : Theme.foregroundSurfaceVariant
+                            text: "Copy"; color: copyPointer.containsMouse ? Theme.primary : Theme.foregroundSurfaceVariant
                             font.pixelSize: 9; font.weight: Theme.fontWeightTitle
                             MouseArea {
                                 id: copyPointer; anchors { fill: parent; margins: -Theme.space8 }

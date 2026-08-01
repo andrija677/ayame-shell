@@ -113,18 +113,18 @@ PopupWindow {
 
                     Rectangle {
                         implicitWidth: 92
-                        implicitHeight: 28
+                        implicitHeight: 30
                         radius: Theme.radiusPill
                         color: violetPointer.containsMouse
                             ? Theme.primary : Theme.outlineVariant
                         visible: DynamicPalette.active
                         StyledText {
                             anchors.centerIn: parent
-                            text: "AYAME VIOLET"
+                            text: "Ayame Violet"
                             color: violetPointer.containsMouse
                                 ? Theme.foregroundPrimary
                                 : Theme.foregroundSurfaceVariant
-                            font.pixelSize: 8
+                            font.pixelSize: 9
                             font.weight: Theme.fontWeightTitle
                         }
                         MouseArea {
