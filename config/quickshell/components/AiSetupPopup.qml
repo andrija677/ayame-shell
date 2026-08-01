@@ -60,10 +60,21 @@ PopupWindow {
     Surface {
         anchors.fill: parent
         color: Theme.surfaceContainerHigh
-        ColumnLayout {
-            id: setup
+        Flickable {
+            id: setupFlickable
             anchors { fill: parent; margins: Theme.space12 }
-            spacing: Theme.space12
+            contentWidth: width
+            contentHeight: setup.implicitHeight
+            clip: true
+            interactive: contentHeight > height
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+
+            ColumnLayout {
+                id: setup
+                width: setupFlickable.width
+                    - (setupFlickable.interactive ? Theme.space8 : 0)
+                spacing: Theme.space12
             RowLayout {
                 Layout.fillWidth: true
                 StyledText { text: "Ayame AI"; font.pixelSize: Theme.fontTitle; font.weight: Theme.fontWeightTitle; Layout.fillWidth: true }
@@ -250,6 +261,31 @@ PopupWindow {
                 Layout.fillWidth: true
                 text: "Ayame never gives the model automatic command, clipboard, screenshot, or file access."
                 color: Theme.outline; font.pixelSize: 9; wrapMode: Text.WordWrap
+            }
+            }
+        }
+
+        Rectangle {
+            anchors {
+                top: setupFlickable.top
+                bottom: setupFlickable.bottom
+                right: setupFlickable.right
+            }
+            width: 3
+            radius: Theme.radiusPill
+            color: Theme.translucent(Theme.outlineVariant, 0.3)
+            visible: setupFlickable.interactive
+
+            Rectangle {
+                width: parent.width
+                height: Math.max(36, parent.height
+                    * setupFlickable.height / setupFlickable.contentHeight)
+                y: setupFlickable.contentY
+                    / Math.max(1, setupFlickable.contentHeight
+                        - setupFlickable.height)
+                    * (parent.height - height)
+                radius: Theme.radiusPill
+                color: Theme.primary
             }
         }
     }
