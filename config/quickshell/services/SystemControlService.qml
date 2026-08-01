@@ -87,9 +87,10 @@ QtObject {
             }
         }
     }
-    property Process actionProcess: Process {
-        onRunningChanged: if (!running) root.refresh()
-    }
+    // Values changed through Ayame are already reflected locally. Refreshing
+    // after every action fed status back into applyNightLight()/applyIdle(),
+    // continuously stopping and restarting their services.
+    property Process actionProcess: Process {}
     property Timer startup: Timer {
         interval: 700; running: true
         onTriggered: root.refresh()
