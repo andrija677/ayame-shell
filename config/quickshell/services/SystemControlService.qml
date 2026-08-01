@@ -18,6 +18,7 @@ QtObject {
     property int keyboardBrightness: 0
     property var displays: []
     property bool ready: false
+    property bool persistentControlsRestored: false
 
     function action(args) {
         actionProcess.command = [script].concat(args.map(value => String(value)));
@@ -41,6 +42,15 @@ QtObject {
         action(["idle", ShellConfig.idleEnabled ? 1 : 0,
             ShellConfig.idleTimeoutSeconds, ShellConfig.idleLockEnabled ? 1 : 0]);
     }
+    function restorePersistentControls() {
+        if (persistentControlsRestored || !ready || !ShellConfig.ready)
+            return;
+        persistentControlsRestored = true;
+        if (nightLightAvailable && ShellConfig.nightLightEnabled)
+            applyNightLight();
+        if (idleAvailable && ShellConfig.idleEnabled)
+            applyIdle();
+    }
 
     property Process statusProcess: Process {
         command: [root.script, "status"]
@@ -63,10 +73,7 @@ QtObject {
                 }
                 root.ready = true;
                 root.refreshDisplays();
-                if (root.nightLightAvailable && ShellConfig.nightLightEnabled)
-                    root.applyNightLight();
-                if (root.idleAvailable && ShellConfig.idleEnabled)
-                    root.applyIdle();
+                root.restorePersistentControls();
             }
         }
     }
@@ -91,6 +98,10 @@ QtObject {
     // after every action fed status back into applyNightLight()/applyIdle(),
     // continuously stopping and restarting their services.
     property Process actionProcess: Process {}
+    property Connections settingsReadyConnection: Connections {
+        target: ShellConfig
+        function onReadyChanged() { root.restorePersistentControls(); }
+    }
     property Timer startup: Timer {
         interval: 700; running: true
         onTriggered: root.refresh()
