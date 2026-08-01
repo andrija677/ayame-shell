@@ -42,9 +42,16 @@ PanelWindow {
     }
     Shortcut { sequence: "Left"; enabled: root.page > 0; onActivated: root.page-- }
     Timer {
-        interval: 1200; running: true
-        onTriggered: if (ShellConfig.ready && !ShellConfig.onboardingCompleted)
-            root.visible = true
+        interval: 250
+        repeat: true
+        running: true
+        onTriggered: {
+            if (!ShellConfig.ready)
+                return;
+            stop();
+            if (!ShellConfig.onboardingCompleted)
+                root.visible = true;
+        }
     }
 
     Rectangle { anchors.fill: parent; color: Theme.translucent("#000000", 0.42) }

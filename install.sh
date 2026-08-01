@@ -57,7 +57,8 @@ case " $os_id $os_like " in
 esac
 
 required=(qs hyprctl hyprlock hyprpaper grim slurp wf-recorder wl-copy wl-paste \
-    cliphist kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3)
+    cliphist kitty matugen rofi rofimoji curl pw-dump nmcli notify-send python3 \
+    bluetoothctl upower powerprofilesctl)
 
 hyprland_version="missing"
 hyprland_compatible=false
@@ -90,6 +91,9 @@ declare -A command_packages=(
     [nmcli]=networkmanager
     [notify-send]=libnotify
     [python3]=python
+    [bluetoothctl]=bluez-utils
+    [upower]=upower
+    [powerprofilesctl]=power-profiles-daemon
 )
 if [[ "$package_family" == debian ]]; then
     command_packages[qs]=quickshell
@@ -111,6 +115,9 @@ if [[ "$package_family" == debian ]]; then
     command_packages[nmcli]=network-manager
     command_packages[notify-send]=libnotify-bin
     command_packages[python3]=python3
+    command_packages[bluetoothctl]=bluez
+    command_packages[upower]=upower
+    command_packages[powerprofilesctl]=power-profiles-daemon
 fi
 missing=()
 for command_name in "${required[@]}"; do
@@ -159,6 +166,12 @@ if ((${#missing[@]})); then
         [[ " ${missing_packages[*]} " == *" $package_name "* ]] \
             || missing_packages+=("$package_name")
     done
+    # Arch splits the bluetooth daemon and CLI into separate packages.
+    if [[ "$package_family" == arch \
+            && " ${missing[*]} " == *" bluetoothctl "* \
+            && " ${missing_packages[*]} " != *" bluez "* ]]; then
+        missing_packages+=(bluez)
+    fi
     printf 'Packages needed: %s\n' "${missing_packages[*]}"
 
     if [[ "$update_only" == true ]]; then
@@ -255,6 +268,12 @@ echo "  Hyprland:    $hypr_fragment"
 if [[ "$assume_yes" != true ]]; then
     read -r -p "Continue? [y/N] " answer
     [[ "$answer" =~ ^[Yy]$ ]] || exit 0
+fi
+
+if [[ "$update_only" != true && -x /usr/lib/bluetooth/bluetoothd ]]; then
+    if ! sudo systemctl enable --now bluetooth.service; then
+        echo "Bluetooth service could not be enabled; Ayame will hide Bluetooth until it is available." >&2
+    fi
 fi
 
 if [[ "$update_only" != true && -f "$sudoers_file" ]]; then

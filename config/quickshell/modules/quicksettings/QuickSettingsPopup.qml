@@ -75,7 +75,9 @@ PanelWindow {
         || Networking.connectivity === NetworkConnectivity.Portal
 
     function wifiSignalPercent(strength) {
-        return Math.round(Math.max(0, Math.min(1, Number(strength) || 0)) * 100);
+        const value = Number(strength) || 0;
+        return Math.round(Math.max(0, Math.min(100,
+            value > 1 ? value : value * 100)));
     }
     readonly property int connectedBluetoothCount: {
         let count = 0;
@@ -646,7 +648,8 @@ PanelWindow {
                     anchors { fill: parent; margins: Theme.space12 }
                     StyledText { text: "Battery"; Layout.fillWidth: true }
                     StyledText {
-                        text: Math.round(root.battery?.percentage ?? 0) + "%"
+                        text: Math.round(Math.max(0, Math.min(1,
+                            root.battery?.percentage ?? 0)) * 100) + "%"
                         color: Theme.foregroundSurfaceVariant
                         font.pixelSize: Theme.fontSmall
                         font.weight: Theme.fontWeightLabel

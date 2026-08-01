@@ -130,11 +130,11 @@ QtObject {
         values.showPassiveTrayItems = true;
         values.animationsEnabled = true;
         values.densityMode = "normal";
-        values.dynamicColorsEnabled = false;
+        values.dynamicColorsEnabled = true;
         values.dynamicColorMode = "automatic";
         values.dynamicColorWallpaper = "";
         values.dynamicColorStyle = "tonal";
-        values.colorScheme = "dark";
+        values.colorScheme = "light";
         values.blurEnabled = false;
         values.wallpaperTintEnabled = true;
         values.workspaceCount = 5;
@@ -201,11 +201,11 @@ QtObject {
             property bool showPassiveTrayItems: true
             property bool animationsEnabled: true
             property string densityMode: "normal"
-            property bool dynamicColorsEnabled: false
+            property bool dynamicColorsEnabled: true
             property string dynamicColorMode: "automatic"
             property string dynamicColorWallpaper: ""
             property string dynamicColorStyle: "tonal"
-            property string colorScheme: "dark"
+            property string colorScheme: "light"
             property bool blurEnabled: false
             property bool wallpaperTintEnabled: true
             property int workspaceCount: 5

@@ -234,6 +234,13 @@ PanelWindow {
 
                         BatteryIndicator {
                             visible: ShellConfig.batteryEnabled && available
+                            onActivated: {
+                                if (weatherIndicator.open)
+                                    weatherIndicator.closePanel();
+                                if (dashboard.open)
+                                    dashboard.closePanel();
+                                quickSettings.openPanel();
+                            }
                         }
 
                         QuickSettingsButton {

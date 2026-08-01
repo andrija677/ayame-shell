@@ -48,7 +48,9 @@ Rectangle {
         : limited ? Theme.warning : Theme.error
 
     function wifiSignalPercent(strength) {
-        return Math.round(Math.max(0, Math.min(1, Number(strength) || 0)) * 100);
+        const value = Number(strength) || 0;
+        return Math.round(Math.max(0, Math.min(100,
+            value > 1 ? value : value * 100)));
     }
 
     function nonWifiConnectionLabel(device) {
@@ -92,21 +94,18 @@ Rectangle {
 
             if (root.connectedWifi) {
                 const strength = root.signalPercent;
-                ctx.beginPath();
-                ctx.arc(9, 15, 2, Math.PI * 1.18, Math.PI * 1.82);
-                ctx.stroke();
                 if (strength > 33) {
                     ctx.beginPath();
-                    ctx.arc(9, 15, 5, Math.PI * 1.18, Math.PI * 1.82);
+                    ctx.arc(9, 14, 5, Math.PI * 1.18, Math.PI * 1.82);
                     ctx.stroke();
                 }
                 if (strength > 66) {
                     ctx.beginPath();
-                    ctx.arc(9, 15, 8, Math.PI * 1.18, Math.PI * 1.82);
+                    ctx.arc(9, 14, 8, Math.PI * 1.18, Math.PI * 1.82);
                     ctx.stroke();
                 }
                 ctx.beginPath();
-                ctx.arc(9, 14.5, 1.3, 0, Math.PI * 2);
+                ctx.arc(9, 14, 1.5, 0, Math.PI * 2);
                 ctx.fill();
             } else if (root.online || root.limited) {
                 ctx.beginPath();

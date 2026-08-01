@@ -17,6 +17,7 @@ QtObject {
     property string pendingPath: ""
     property string pendingStyle: ""
     property string detectedWallpaper: ""
+    property string ayameWallpaperPath: ""
     readonly property bool available: colors !== null
     readonly property bool active: ShellConfig.dynamicColorsEnabled && available
 
@@ -76,6 +77,20 @@ QtObject {
             return;
         }
         automaticGenerate.restart();
+    }
+
+    function followAyameWallpaper(path) {
+        const clean = path.trim();
+        if (!ShellConfig.ready || clean.length === 0)
+            return;
+        // Migrate installations created with the old first-run defaults, but
+        // never override an established user's chosen appearance.
+        if (!ShellConfig.onboardingCompleted
+                && clean.endsWith("/assets/wallpapers/ayame-default.jpg")) {
+            ShellConfig.colorScheme = "light";
+            ShellConfig.dynamicColorMode = "automatic";
+        }
+        followWallpaper(clean);
     }
 
     function useAutomatic() {
@@ -213,6 +228,22 @@ QtObject {
         }
     }
 
+    property FileView ayameWallpaperFile: FileView {
+        path: (Quickshell.env("XDG_STATE_HOME")
+            || Quickshell.env("HOME") + "/.local/state")
+            + "/ayame-shell/wallpaper.path"
+        preload: true
+        watchChanges: true
+        printErrors: false
+
+        onLoaded: {
+            root.ayameWallpaperPath = text().trim();
+            if (ShellConfig.ready)
+                root.followAyameWallpaper(root.ayameWallpaperPath);
+        }
+        onFileChanged: reload()
+    }
+
     property FileView paletteFile: FileView {
         id: paletteFile
         path: Quickshell.cacheDir + "/dynamic-palette.json"
@@ -256,6 +287,10 @@ QtObject {
 
     property Connections styleConnections: Connections {
         target: ShellConfig
+        function onReadyChanged() {
+            if (ShellConfig.ready && root.ayameWallpaperPath.length > 0)
+                root.followAyameWallpaper(root.ayameWallpaperPath);
+        }
         function onDynamicColorStyleChanged() {
             if (ShellConfig.dynamicColorMode === "automatic"
                     && root.detectedWallpaper.length > 0)
