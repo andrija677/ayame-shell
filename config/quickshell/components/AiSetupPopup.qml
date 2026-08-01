@@ -16,6 +16,11 @@ PopupWindow {
         checkKey();
     }
     function checkKey() {
+        if (ShellConfig.aiProvider === "ollama") {
+            status = "Ollama stays local and needs no API key.";
+            return;
+        }
+        keyAction = "status";
         keyProcess.command = [Quickshell.shellDir + "/../../scripts/ayame-ai.py",
             "key-status", ShellConfig.aiProvider];
         keyProcess.running = true;
@@ -31,6 +36,14 @@ PopupWindow {
         keyAction = "delete";
         keyProcess.command = [Quickshell.shellDir + "/../../scripts/ayame-ai.py",
             "key-delete", ShellConfig.aiProvider];
+        keyProcess.running = true;
+    }
+    function testConnection() {
+        if (keyProcess.running) return;
+        keyAction = "test";
+        status = "Testing connection…";
+        keyProcess.command = [Quickshell.shellDir + "/../../scripts/ayame-ai.py",
+            "test"];
         keyProcess.running = true;
     }
     property string keyAction: "status"
@@ -157,7 +170,11 @@ PopupWindow {
                     }
                 }
                 Rectangle {
-                    implicitWidth: 72; implicitHeight: 32; radius: Theme.radiusPill; color: Theme.primaryContainer
+                    implicitWidth: 72
+                    implicitHeight: 30
+                    radius: Theme.radiusPill
+                    color: saveKeyPointer.containsMouse
+                        ? Theme.primary : Theme.primaryContainer
                     StyledText {
                         anchors.centerIn: parent
                         text: "Save key"
@@ -180,9 +197,7 @@ PopupWindow {
                 Layout.fillWidth: true
                 StyledText {
                     Layout.fillWidth: true
-                    text: ShellConfig.aiProvider === "ollama"
-                        ? "Ollama stays local and needs no API key."
-                        : root.status
+                    text: root.status
                     color: Theme.foregroundSurfaceVariant
                     font.pixelSize: Theme.fontSmall
                     wrapMode: Text.WordWrap
@@ -203,6 +218,33 @@ PopupWindow {
                         onClicked: root.removeKey()
                     }
                 }
+                Rectangle {
+                    implicitWidth: 108
+                    implicitHeight: 30
+                    radius: Theme.radiusPill
+                    color: testPointer.containsMouse && !keyProcess.running
+                        ? Theme.primary : Theme.primaryContainer
+                    opacity: keyProcess.running ? 0.65 : 1
+                    StyledText {
+                        anchors.centerIn: parent
+                        text: keyProcess.running && root.keyAction === "test"
+                            ? "Testing…" : "Test connection"
+                        color: testPointer.containsMouse && !keyProcess.running
+                            ? Theme.foregroundPrimary
+                            : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+                    MouseArea {
+                        id: testPointer
+                        anchors.fill: parent
+                        enabled: !keyProcess.running
+                        hoverEnabled: true
+                        cursorShape: enabled
+                            ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: root.testConnection()
+                    }
+                }
             }
             StyledText {
                 Layout.fillWidth: true
@@ -215,8 +257,10 @@ PopupWindow {
         id: keyProcess
         stdinEnabled: true
         property string failureText: ""
+        property string outputText: ""
         stdout: StdioCollector {
             onStreamFinished: {
+                keyProcess.outputText = text.trim();
                 if (root.keyAction === "status")
                     root.status = text.trim() === "1" ? "A key is stored securely." : "No key stored yet.";
             }
@@ -227,10 +271,18 @@ PopupWindow {
         onRunningChanged: {
             if (running)
                 failureText = "";
+            if (running)
+                outputText = "";
         }
         onStarted: {
             if (root.keyAction === "store")
                 write(keyInput.text.trim() + "\n");
+            else if (root.keyAction === "test")
+                write(JSON.stringify({
+                    provider: ShellConfig.aiProvider,
+                    model: ShellConfig.aiModel,
+                    baseUrl: ShellConfig.aiBaseUrl
+                }) + "\n");
         }
         onExited: (code, status) => {
             if (root.keyAction === "store") {
@@ -242,6 +294,10 @@ PopupWindow {
                 root.status = code === 0 ? "Key removed."
                     : (failureText.length > 0 ? failureText
                         : "The key could not be removed.");
+            } else if (root.keyAction === "test") {
+                root.status = code === 0 ? outputText
+                    : (failureText.length > 0 ? failureText
+                        : "The connection test failed.");
             }
             root.keyAction = "status";
         }

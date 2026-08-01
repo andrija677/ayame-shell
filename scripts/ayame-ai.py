@@ -116,6 +116,44 @@ def request(url: str, headers: dict[str, str], body: dict) -> urllib.response.ad
     )
 
 
+def provider_test(config: dict) -> int:
+    provider = config.get("provider", "gemini")
+    model = config.get("model", "").strip()
+    if not model:
+        raise RuntimeError("Choose a model before testing the connection")
+    if provider == "gemini":
+        key = secret("gemini")
+        if not key:
+            raise RuntimeError("Add a Gemini API key before testing")
+        encoded_model = urllib.parse.quote(model, safe="")
+        url = ("https://generativelanguage.googleapis.com/v1beta/models/"
+               f"{encoded_model}?key={urllib.parse.quote(key, safe='')}")
+        headers = {}
+        body = None
+    elif provider == "openai":
+        key = secret("openai")
+        if not key:
+            raise RuntimeError("Add an OpenAI-compatible API key before testing")
+        base = (config.get("baseUrl") or "https://api.openai.com").rstrip("/")
+        url = base + "/v1/models/" + urllib.parse.quote(model, safe="")
+        headers = {"Authorization": f"Bearer {key}"}
+        body = None
+    elif provider == "ollama":
+        base = (config.get("baseUrl") or "http://127.0.0.1:11434").rstrip("/")
+        url = base + "/api/show"
+        headers = {"Content-Type": "application/json"}
+        body = json.dumps({"model": model}).encode()
+    else:
+        raise RuntimeError("Unsupported AI provider")
+    request_object = urllib.request.Request(
+        url, data=body, headers=headers,
+        method="POST" if body is not None else "GET")
+    with urllib.request.urlopen(request_object, timeout=15) as response:
+        response.read(1024)
+    print(f"Connected • {model} is available")
+    return 0
+
+
 def image_data(path_value: str) -> tuple[str, str]:
     path = Path(path_value).expanduser()
     if not path.is_file():
@@ -273,7 +311,26 @@ def main() -> int:
         return 0
     if action == "copy":
         return copy_text()
-    print("Usage: ayame-ai.py {chat|copy|key-store|key-delete|key-status} [provider]",
+    if action == "test":
+        try:
+            return provider_test(json.loads(sys.stdin.readline()))
+        except urllib.error.HTTPError as error:
+            detail = error.read().decode("utf-8", "replace")
+            try:
+                parsed = json.loads(detail)
+                detail = parsed.get("error", {}).get("message", detail)
+            except json.JSONDecodeError:
+                pass
+            print(f"Provider error {error.code}: {detail[:180]}", file=sys.stderr)
+            return 1
+        except (urllib.error.URLError, TimeoutError) as error:
+            reason = getattr(error, "reason", error)
+            print(f"Could not reach the AI provider: {reason}", file=sys.stderr)
+            return 1
+        except (KeyError, ValueError, RuntimeError) as error:
+            print(str(error), file=sys.stderr)
+            return 1
+    print("Usage: ayame-ai.py {chat|copy|test|key-store|key-delete|key-status} [provider]",
           file=sys.stderr)
     return 2
 
