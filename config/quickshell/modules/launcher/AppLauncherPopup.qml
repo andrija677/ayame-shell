@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Dialogs
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
@@ -68,6 +67,7 @@ PanelWindow {
     function closePanel() {
         openTimer.stop();
         focusRetry.stop();
+        executablePicker.close();
         panelOpen = false;
         search.text = "";
         closeTimer.restart();
@@ -96,19 +96,6 @@ PanelWindow {
         closePanel();
     }
 
-    function addAppImage(url) {
-        if (addAppImageProcess.running)
-            return;
-        const value = url.toString();
-        const path = decodeURIComponent(value.replace(/^file:\/\//, ""));
-        addAppStatus = "Adding AppImage…";
-        addAppImageProcess.command = [
-            Quickshell.shellDir + "/../../scripts/ayame-add-appimage.sh",
-            path
-        ];
-        addAppImageProcess.running = true;
-    }
-
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
@@ -120,7 +107,8 @@ PanelWindow {
 
     Shortcut {
         sequence: "Escape"
-        onActivated: root.closePanel()
+        onActivated: executablePicker.visible
+            ? executablePicker.close() : root.closePanel()
     }
 
     onVisibleChanged: {
@@ -160,29 +148,6 @@ PanelWindow {
 
     Process { id: commandProcess }
 
-    FileDialog {
-        id: appImagePicker
-        title: "Add an AppImage"
-        nameFilters: ["AppImages (*.AppImage *.appimage)"]
-        onAccepted: root.addAppImage(selectedFile)
-    }
-
-    Process {
-        id: addAppImageProcess
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const name = text.trim();
-                if (name.length > 0)
-                    root.addAppStatus = name + " added";
-            }
-        }
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode !== 0)
-                root.addAppStatus = "Could not add that AppImage";
-            addAppStatusTimer.restart();
-        }
-    }
-
     Timer {
         id: addAppStatusTimer
         interval: 3200
@@ -197,6 +162,7 @@ PanelWindow {
 
     MouseArea {
         anchors.fill: parent
+        enabled: !executablePicker.visible
         onClicked: root.closePanel()
     }
 
@@ -551,7 +517,7 @@ PanelWindow {
                     StyledText {
                         id: addAppLabel
                         anchors.centerIn: parent
-                        text: addAppImageProcess.running ? "Adding…" : "+ Add AppImage"
+                        text: "+ Add an app"
                         color: addAppPointer.containsMouse
                             ? Theme.foregroundPrimary
                             : Theme.foregroundPrimaryContainer
@@ -562,10 +528,9 @@ PanelWindow {
                     MouseArea {
                         id: addAppPointer
                         anchors.fill: parent
-                        enabled: !addAppImageProcess.running
                         hoverEnabled: true
-                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        onClicked: appImagePicker.open()
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: executablePicker.open()
                     }
                 }
 
@@ -595,6 +560,15 @@ PanelWindow {
                     font.family: Theme.fontFamily
                 }
             }
+        }
+    }
+
+    ExecutablePickerPopup {
+        id: executablePicker
+        hostWindow: root
+        onAppAdded: name => {
+            root.addAppStatus = name + " added";
+            addAppStatusTimer.restart();
         }
     }
 }

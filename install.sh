@@ -373,7 +373,7 @@ chmod +x "$prefix/scripts/ayame-screenshot.sh" \
     "$prefix/scripts/ayame-smoke-test.sh" \
     "$prefix/scripts/ayame-session-takeover.sh" \
     "$prefix/scripts/ayame-run-command.sh" \
-    "$prefix/scripts/ayame-add-appimage.sh" \
+    "$prefix/scripts/ayame-add-app.sh" \
     "$prefix/scripts/ayame-ai.py" "$prefix/uninstall.sh"
 chmod +x "$prefix/bootstrap.sh" "$prefix/install.sh"
 
