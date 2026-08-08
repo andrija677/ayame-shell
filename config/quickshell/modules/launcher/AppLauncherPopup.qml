@@ -14,6 +14,8 @@ PanelWindow {
     property var recentAppIds: []
     property string addAppStatus: ""
     property var newlyAddedApps: []
+    property var removedAppIds: []
+    property var pendingRemoval: null
     MotionProgress { id: motion; open: root.panelOpen }
     readonly property bool commandMode: search.text.startsWith("/")
     readonly property string commandText: commandMode
@@ -23,7 +25,8 @@ PanelWindow {
         if (commandMode)
             return [];
         const needle = search.text.trim().toLowerCase();
-        const desktopApps = DesktopEntries.applications.values;
+        const desktopApps = DesktopEntries.applications.values.filter(entry =>
+            removedAppIds.indexOf(entry.id) < 0);
         const pendingApps = newlyAddedApps.filter(added =>
             !desktopApps.some(entry => (entry.execString || "").includes(added.path)));
         const apps = desktopApps.concat(pendingApps).filter(entry => {
@@ -105,6 +108,29 @@ PanelWindow {
         closePanel();
     }
 
+    function isAyameApp(entry) {
+        return entry && (entry.ayameExecutable
+            || (entry.id || "").startsWith("ayame-app-"));
+    }
+
+    function removeApp(entry) {
+        if (!isAyameApp(entry) || removeAppProcess.running)
+            return;
+        const path = entry.path || (entry.command && entry.command.length > 0
+            ? entry.command[0] : "");
+        if (path.length === 0) {
+            addAppStatus = "Could not locate that app";
+            addAppStatusTimer.restart();
+            return;
+        }
+        pendingRemoval = { id: entry.id, path: path, name: entry.name };
+        removeAppProcess.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-add-app.sh",
+            "--remove", path
+        ];
+        removeAppProcess.running = true;
+    }
+
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
@@ -157,6 +183,25 @@ PanelWindow {
 
     Process { id: commandProcess }
     Process { id: addedAppProcess }
+    Process {
+        id: removeAppProcess
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0 && root.pendingRemoval) {
+                root.removedAppIds = root.removedAppIds.concat([
+                    root.pendingRemoval.id
+                ]);
+                root.newlyAddedApps = root.newlyAddedApps.filter(app =>
+                    app.path !== root.pendingRemoval.path);
+                root.recentAppIds = root.recentAppIds.filter(id =>
+                    id !== root.pendingRemoval.id);
+                root.addAppStatus = root.pendingRemoval.name + " removed";
+            } else {
+                root.addAppStatus = "Could not remove that app";
+            }
+            root.pendingRemoval = null;
+            addAppStatusTimer.restart();
+        }
+    }
 
     Timer {
         id: addAppStatusTimer
@@ -480,15 +525,27 @@ PanelWindow {
                             font.pixelSize: 9
                             font.weight: Theme.fontWeightLabel
                         }
+                        StyledText {
+                            visible: root.isAyameApp(appDelegate.modelData)
+                            text: "Right-click to remove"
+                            color: Theme.outline
+                            font.pixelSize: 9
+                        }
                     }
 
                     MouseArea {
                         id: appPointer
                         anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onEntered: appList.currentIndex = appDelegate.index
-                        onClicked: root.launch(appDelegate.modelData)
+                        onClicked: mouse => {
+                            if (mouse.button === Qt.RightButton)
+                                root.removeApp(appDelegate.modelData);
+                            else
+                                root.launch(appDelegate.modelData);
+                        }
                     }
                 }
             }

@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+mode="add"
+if [[ "${1:-}" == "--remove" ]]; then
+    mode="remove"
+    shift
+fi
+
 executable="${1:-}"
 [[ -n "$executable" ]] || { printf 'No executable was selected.\n' >&2; exit 2; }
-[[ -f "$executable" ]] || { printf 'The selected file no longer exists.\n' >&2; exit 2; }
-
-executable="$(realpath "$executable")"
-chmod u+x "$executable"
-[[ -x "$executable" ]] || { printf 'The selected file is not executable.\n' >&2; exit 2; }
+if [[ "$mode" == "remove" ]]; then
+    executable="$(realpath -m "$executable")"
+else
+    [[ -f "$executable" ]] || { printf 'The selected file no longer exists.\n' >&2; exit 2; }
+    executable="$(realpath "$executable")"
+    chmod u+x "$executable"
+    [[ -x "$executable" ]] || { printf 'The selected file is not executable.\n' >&2; exit 2; }
+fi
 
 data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
 applications_dir="$data_home/applications"
@@ -20,6 +29,15 @@ display_name="${display_name//-/ }"
 desktop_id="ayame-app-$(printf '%s' "$executable" | sha256sum | cut -c1-16)"
 desktop_file="$applications_dir/$desktop_id.desktop"
 icon_name="application-x-executable"
+
+if [[ "$mode" == "remove" ]]; then
+    rm -f -- "$desktop_file"
+    find "$icons_dir" -maxdepth 1 -type f -name "$desktop_id.*" -delete 2>/dev/null || true
+    command -v update-desktop-database >/dev/null 2>&1 \
+        && update-desktop-database "$applications_dir" >/dev/null 2>&1 || true
+    printf '%s\n' "$display_name"
+    exit 0
+fi
 
 # AppImages normally contain their own desktop metadata and icon. Extract them
 # only to improve presentation; every other executable uses a system icon.

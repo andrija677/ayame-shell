@@ -155,7 +155,8 @@ screenshots, microphone, camera, or shell state. It cannot execute commands.
 
 - Open the launcher from the dock; prefix text with `/` to run a command.
 - Use **Add an app** in the launcher to register runnable files that do not
-  provide an application-menu entry of their own.
+  provide an application-menu entry of their own. Right-click an app registered
+  by Ayame to remove its launcher entry again.
 - Press `Super + .` for the emoji picker.
 - Open Screenshot from Quick Settings for desktop, monitor, or area capture,
   countdowns, and silent/system-audio/microphone recording.
