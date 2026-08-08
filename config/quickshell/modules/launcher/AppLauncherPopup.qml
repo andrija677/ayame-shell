@@ -13,6 +13,7 @@ PanelWindow {
     property bool panelOpen: false
     property var recentAppIds: []
     property string addAppStatus: ""
+    property var newlyAddedApps: []
     MotionProgress { id: motion; open: root.panelOpen }
     readonly property bool commandMode: search.text.startsWith("/")
     readonly property string commandText: commandMode
@@ -22,7 +23,10 @@ PanelWindow {
         if (commandMode)
             return [];
         const needle = search.text.trim().toLowerCase();
-        const apps = DesktopEntries.applications.values.filter(entry => {
+        const desktopApps = DesktopEntries.applications.values;
+        const pendingApps = newlyAddedApps.filter(added =>
+            !desktopApps.some(entry => (entry.execString || "").includes(added.path)));
+        const apps = desktopApps.concat(pendingApps).filter(entry => {
             if (entry.noDisplay)
                 return false;
             if (needle.length === 0)
@@ -81,7 +85,12 @@ PanelWindow {
             const recents = recentAppIds.filter(recentId => recentId !== id);
             recentAppIds = [id].concat(recents).slice(0, 5);
         }
-        entry.execute();
+        if (entry.ayameExecutable) {
+            addedAppProcess.command = [entry.path];
+            addedAppProcess.running = true;
+        } else {
+            entry.execute();
+        }
         closePanel();
     }
 
@@ -147,6 +156,7 @@ PanelWindow {
     }
 
     Process { id: commandProcess }
+    Process { id: addedAppProcess }
 
     Timer {
         id: addAppStatusTimer
@@ -566,7 +576,21 @@ PanelWindow {
     ExecutablePickerPopup {
         id: executablePicker
         hostWindow: root
-        onAppAdded: name => {
+        onAppAdded: (name, path) => {
+            const id = "ayame-added:" + path;
+            const remaining = root.newlyAddedApps.filter(app => app.path !== path);
+            root.newlyAddedApps = remaining.concat([{
+                id: id,
+                name: name,
+                genericName: "Added by Ayame",
+                comment: path,
+                keywords: [],
+                icon: "application-x-executable",
+                noDisplay: false,
+                execString: path,
+                path: path,
+                ayameExecutable: true
+            }]);
             root.addAppStatus = name + " added";
             addAppStatusTimer.restart();
         }

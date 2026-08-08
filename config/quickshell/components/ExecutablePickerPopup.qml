@@ -11,7 +11,7 @@ PopupWindow {
     property var executables: []
     property string query: ""
     property string status: ""
-    signal appAdded(string name)
+    signal appAdded(string name, string path)
 
     readonly property var filteredExecutables: {
         const needle = query.trim().toLowerCase();
@@ -40,6 +40,7 @@ PopupWindow {
         if (registration.running)
             return;
         status = "Adding app…";
+        registration.selectedPath = path;
         registration.command = [
             Quickshell.shellDir + "/../../scripts/ayame-add-app.sh",
             path
@@ -275,12 +276,13 @@ PopupWindow {
 
     Process {
         id: registration
+        property string selectedPath: ""
         stdout: StdioCollector {
             onStreamFinished: {
                 const name = text.trim();
                 if (name.length > 0) {
                     root.status = name + " added";
-                    root.appAdded(name);
+                    root.appAdded(name, registration.selectedPath);
                     closeTimer.restart();
                 }
             }
