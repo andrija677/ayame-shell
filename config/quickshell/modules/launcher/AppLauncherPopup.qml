@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
@@ -12,6 +13,7 @@ PanelWindow {
 
     property bool panelOpen: false
     property var recentAppIds: []
+    property string addAppStatus: ""
     MotionProgress { id: motion; open: root.panelOpen }
     readonly property bool commandMode: search.text.startsWith("/")
     readonly property string commandText: commandMode
@@ -94,6 +96,19 @@ PanelWindow {
         closePanel();
     }
 
+    function addAppImage(url) {
+        if (addAppImageProcess.running)
+            return;
+        const value = url.toString();
+        const path = decodeURIComponent(value.replace(/^file:\/\//, ""));
+        addAppStatus = "Adding AppImage…";
+        addAppImageProcess.command = [
+            Quickshell.shellDir + "/../../scripts/ayame-add-appimage.sh",
+            path
+        ];
+        addAppImageProcess.running = true;
+    }
+
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
@@ -144,6 +159,35 @@ PanelWindow {
     }
 
     Process { id: commandProcess }
+
+    FileDialog {
+        id: appImagePicker
+        title: "Add an AppImage"
+        nameFilters: ["AppImages (*.AppImage *.appimage)"]
+        onAccepted: root.addAppImage(selectedFile)
+    }
+
+    Process {
+        id: addAppImageProcess
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const name = text.trim();
+                if (name.length > 0)
+                    root.addAppStatus = name + " added";
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode !== 0)
+                root.addAppStatus = "Could not add that AppImage";
+            addAppStatusTimer.restart();
+        }
+    }
+
+    Timer {
+        id: addAppStatusTimer
+        interval: 3200
+        onTriggered: root.addAppStatus = ""
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -484,16 +528,50 @@ PanelWindow {
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: !root.commandMode && root.filteredApps.length > 0
+                visible: !root.commandMode
+
+                Rectangle {
+                    implicitWidth: addAppLabel.implicitWidth + Theme.space16
+                    implicitHeight: 28
+                    radius: Theme.radiusPill
+                    color: addAppPointer.containsMouse
+                        ? Theme.primary : Theme.primaryContainer
+                    scale: addAppPointer.pressed ? 0.96 : 1
+
+                    Behavior on color {
+                        ColorAnimation { duration: Theme.motionFast }
+                    }
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: Theme.motionFast
+                            easing.type: Theme.easeEnter
+                        }
+                    }
+
+                    StyledText {
+                        id: addAppLabel
+                        anchors.centerIn: parent
+                        text: addAppImageProcess.running ? "Adding…" : "+ Add AppImage"
+                        color: addAppPointer.containsMouse
+                            ? Theme.foregroundPrimary
+                            : Theme.foregroundPrimaryContainer
+                        font.pixelSize: 9
+                        font.weight: Theme.fontWeightTitle
+                    }
+
+                    MouseArea {
+                        id: addAppPointer
+                        anchors.fill: parent
+                        enabled: !addAppImageProcess.running
+                        hoverEnabled: true
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: appImagePicker.open()
+                    }
+                }
 
                 StyledText {
+                    visible: root.addAppStatus.length === 0 && root.filteredApps.length > 0
                     text: "↑↓  Navigate"
-                    color: Theme.outline
-                    font.pixelSize: 9
-                    font.family: Theme.fontFamily
-                }
-                StyledText {
-                    text: "Enter  Open"
                     color: Theme.outline
                     font.pixelSize: 9
                     font.family: Theme.fontFamily
@@ -501,6 +579,16 @@ PanelWindow {
                     horizontalAlignment: Text.AlignHCenter
                 }
                 StyledText {
+                    visible: root.addAppStatus.length > 0
+                    text: root.addAppStatus
+                    color: root.addAppStatus.endsWith(" added")
+                        ? Theme.success : Theme.foregroundSurfaceVariant
+                    font.pixelSize: 9
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                }
+                StyledText {
+                    visible: root.filteredApps.length > 0
                     text: "/  Command"
                     color: Theme.outline
                     font.pixelSize: 9

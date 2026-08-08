@@ -154,6 +154,8 @@ screenshots, microphone, camera, or shell state. It cannot execute commands.
 ## Everyday controls
 
 - Open the launcher from the dock; prefix text with `/` to run a command.
+- Use **Add AppImage** in the launcher to register standalone AppImages that do
+  not provide an application-menu entry of their own.
 - Press `Super + .` for the emoji picker.
 - Open Screenshot from Quick Settings for desktop, monitor, or area capture,
   countdowns, and silent/system-audio/microphone recording.
