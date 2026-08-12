@@ -71,12 +71,18 @@ Surface {
                         ? Theme.surfaceContainerHigh : "transparent"
 
                     StyledText {
-                        anchors.centerIn: parent
+                        anchors {
+                            fill: parent
+                            leftMargin: Theme.space4
+                            rightMargin: Theme.space4
+                        }
                         text: parent.modelData.label
                         color: navigationPointer.containsMouse
                             ? Theme.primary : Theme.foregroundSurfaceVariant
                         font.pixelSize: parent.modelData.label === "Today" ? 9 : 16
                         font.weight: Theme.fontWeightTitle
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     MouseArea {
@@ -252,6 +258,8 @@ Surface {
                             ? Theme.foregroundPrimary : Theme.foregroundPrimaryContainer
                         font.pixelSize: 10
                         font.weight: Theme.fontWeightTitle
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.topMargin: 1
                     }
                 }
                 MouseArea {
