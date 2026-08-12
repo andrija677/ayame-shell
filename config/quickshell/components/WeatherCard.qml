@@ -40,6 +40,7 @@ Surface {
                 }
             }
             StyledText {
+                Layout.alignment: Qt.AlignVCenter
                 text: WeatherService.hasData
                     ? Math.round(WeatherService.forecast.current.temperature_2m)
                         + (ShellConfig.weatherTemperatureUnit === "celsius" ? "°C" : "°F")
@@ -56,6 +57,7 @@ Surface {
             spacing: Theme.space12
 
             StyledText {
+                Layout.alignment: Qt.AlignVCenter
                 text: WeatherService.hasData
                     ? "Feels " + Math.round(
                         WeatherService.forecast.current.apparent_temperature) + "°"
@@ -78,6 +80,7 @@ Surface {
             }
             Item { Layout.fillWidth: true }
             StyledText {
+                Layout.alignment: Qt.AlignVCenter
                 text: WeatherService.stale ? "Cached" : "Updated"
                 color: WeatherService.stale ? Theme.warning : Theme.success
                 font.pixelSize: 9
@@ -85,9 +88,10 @@ Surface {
             }
         }
 
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            spacing: Theme.space6
+            columns: 5
+            columnSpacing: Theme.space6
             Repeater {
                 model: WeatherService.hasData
                     ? WeatherService.forecast.daily.time.slice(0, 5) : []
@@ -95,6 +99,7 @@ Surface {
                     required property string modelData
                     required property int index
                     Layout.fillWidth: true
+                    Layout.preferredWidth: 1
                     spacing: Theme.space2
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter

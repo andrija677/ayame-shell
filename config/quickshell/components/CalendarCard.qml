@@ -184,12 +184,14 @@ Surface {
 
             StyledText {
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
                 text: Qt.formatDate(root.selectedDate, "dddd, d MMMM")
                 font.weight: Theme.fontWeightLabel
                 elide: Text.ElideRight
             }
 
             Rectangle {
+                Layout.alignment: Qt.AlignVCenter
                 implicitWidth: 106
                 implicitHeight: 32
                 radius: Theme.radiusPill
@@ -221,13 +223,26 @@ Surface {
                         }
                         Behavior on color { ColorAnimation { duration: Theme.motionFast } }
 
-                        StyledText {
+                        Canvas {
                             anchors.centerIn: parent
-                            text: "+"
-                            color: addPointer.containsMouse
+                            width: 10
+                            height: 10
+                            property color strokeColor: addPointer.containsMouse
                                 ? Theme.primary : Theme.foregroundPrimary
-                            font.pixelSize: 14
-                            font.weight: Theme.fontWeightTitle
+                            onStrokeColorChanged: requestPaint()
+                            onPaint: {
+                                const ctx = getContext("2d");
+                                ctx.reset();
+                                ctx.strokeStyle = strokeColor;
+                                ctx.lineWidth = 1.8;
+                                ctx.lineCap = "round";
+                                ctx.beginPath();
+                                ctx.moveTo(5, 1.5);
+                                ctx.lineTo(5, 8.5);
+                                ctx.moveTo(1.5, 5);
+                                ctx.lineTo(8.5, 5);
+                                ctx.stroke();
+                            }
                         }
                     }
 
